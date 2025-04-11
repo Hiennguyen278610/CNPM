@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+!theme superhero-outline
+start
+
+:CustomerGetMenu;
+:Customer adds products to cart;
+if (products available?) then (no)
+    :Notify customer food unavailable;
+else (yes)
+    :Customer place order;
+    :System requests Clerk to accept order;
+    :Clerk accepts order;
+    :Clerk requests payment;
+    if (payment successful?) then (yes)
+        :Notify customer payment successful;
+        :Notify clerk payment successful;
+        :Clerk confirms order with kitchen;
+        :Kitchen cooks the order;
+        :Kitchen delivers order to system;
+        :System notify dish to Clerk;
+        :Clerk delivers order to customer;
+        :Customer provides feedback;
+    else (no)
+        repeat
+            if (customer wants to change order?) then (yes)
+               :Customer cancels payment;
+               break
+            else (no)
+               :Customer pays;
+            endif
+        repeat while (payment not successful)
+    endif
+endif
+
+stop
+@enduml
