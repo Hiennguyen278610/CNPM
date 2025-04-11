@@ -20,8 +20,8 @@
     > next dev
     
     ▲ Next.js 15.2.4
-    - Local:        http://localhost:3000
-      - Network:      http://xxx.xxx.xx.x:3000
+    - Local:        http://localhost:1234
+      - Network:      http://xxx.xxx.xx.x:1234
     
     ✓ Starting...
     ✓ Ready in 2s
@@ -92,8 +92,48 @@ link: http://localhost:27017
     Nếu thấy thấy có dòng chữ “If you like you are trying to 
     access MongoDB over HTTP on the native driver port” là thành công
 
-### 3.10. Kết nối db với backend:
-    Dưới terminal, gõ lệnh sau:
-```bash
-    cd backend # Nếu đang ở root
-```
+# II. Quy trình làm việc 
+## 1. Tạo nhánh mới
+    git checkout -b <tên nhánh riêng>
+## 2. Commit code
+    git add .
+    git commit -m "<nội dung commit>"
+## 3. Push code lên nhánh mới
+    git push origin <tên nhánh riêng>
+## 4. Sau khi push lên nhánh riêng xong
+    git checkout main
+    git merge <tên nhánh mới> # Nếu có thay đổi hoặc cập nhật bên nhánh riêng thì merge vô
+## 5. Kiểm tra sự khác nhau giữa nhánh chính và nhánh riêng
+    git diff main <tên nhánh riêng>
+## 6. Nếu không có gì khác nhau đẩy lên nhánh chính
+    git push origin main
+## 7. Checkout qua nhánh riêng
+    git checkout <tên nhánh riêng>
+    Lúc này muốn chỉnh sửa gì thì chỉnh sửa
+
+# III. Cấu trúc dự án
+    Root/
+    ├── .gitignore 
+    ├── README.md                           # Bắt buộc đọc trước khi làm
+    │
+    ├── asset/                              # Ảnh và tài liệu
+    │   ├── diagram/                        # Các diagram
+    │   ├── png/
+    │   └── svg/
+    │
+    ├── backend/                            # Thư mục backend
+    │   ├── src/                            # viết code backend
+    │   ├── test/
+    │   ├── .env.example
+    │   ├── .env
+    │   ├── docker-compose.yml
+    │   └── package.json
+    │
+    ├── frontend/                           # Thư mục frontend
+    │   ├── public/
+    │   ├── src/                            # Viết code frontend
+    │   └── package.json
+    │
+    └── report/
+        ├── report.tex                      # (File báo cáo)
+        └── references.bib                  # (Tài liệu tham khảo) 
