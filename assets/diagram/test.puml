@@ -1,0 +1,38 @@
+@startuml
+|Người dùng|
+start
+:Nhập yêu cầu lọc dữ liệu;
+|Hệ thống|
+:Nhận yêu cầu từ người dùng;
+:Kiểm tra tính hợp lệ;
+if (Hợp lệ?) then (Có)
+  :Truy xuất dữ liệu từ DB;
+  |Database|
+  :Cung cấp dữ liệu;
+  |Hệ thống|
+  fork
+    :Lọc theo điều kiện thời gian;
+  fork again
+    :Lọc theo danh mục;
+  fork again
+    :Lọc theo trạng thái;
+  end fork
+  :Hợp nhất dữ liệu đã lọc;
+  :Kiểm tra dữ liệu đầu ra;
+  if (Có kết quả?) then (Có)
+    :Trả kết quả cho người dùng;
+    |Người dùng|
+    :Chọn xuất dữ liệu;
+    if (Xuất file Excel?) then (Có)
+      :Xuất ra file Excel;
+    else (Không)
+      :Hiển thị trên giao diện;
+    endif
+  else (Không)
+    :Thông báo "Không tìm thấy dữ liệu";
+  endif
+else (Không hợp lệ)
+  :Trả thông báo lỗi;
+endif
+stop
+@enduml

@@ -111,6 +111,13 @@ link: http://localhost:27017
     git checkout <tên nhánh riêng>
     Lúc này muốn chỉnh sửa gì thì chỉnh sửa
 
+# Lưu ý:
+    Mỗi lần ae pull code về thì phải cd vào frontend và backend dưới terminal và gõ lệnh sau:
+```bash
+npm i
+```
+    Để cập nhật các thay đổi trong package.json nếu có. Trường hợp không có thì vẫn nên chạy thử kiểm tra cho an toàn :))))
+
 # III. Cấu trúc dự án
     Root/
     ├── .gitignore 
