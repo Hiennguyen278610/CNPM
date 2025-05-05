@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query} from '@nestjs
 import { AccountService } from '@/modules/account/account.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { UpdateAccountDto } from './dto/update-account.dto';
+import {Public} from '@/decorator/customize';
 
 @Controller('account')
 export class AccountController {
@@ -13,6 +14,7 @@ export class AccountController {
   }
 
   @Get()
+  @Public()
   async findAll(
       @Query() query: any,
       @Query('current') current: string,
@@ -26,13 +28,13 @@ export class AccountController {
     return this.accountService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAccountDto: UpdateAccountDto) {
-    return this.accountService.update(+id, updateAccountDto);
+  @Patch()
+  update(@Body() updateAccountDto: UpdateAccountDto) {
+    return this.accountService.update(updateAccountDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.accountService.remove(+id);
+    return this.accountService.remove(id);
   }
 }
