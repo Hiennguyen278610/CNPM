@@ -144,3 +144,23 @@ npm i
     └── report/
         ├── report.tex                      # (File báo cáo)
         └── references.bib                  # (Tài liệu tham khảo) 
+
+nest g resource <tên đối tượng> --spec-no
+nest g resource user --spec-no
+
+# IV. .env Backend:
+    PORT= 3000 # Tùy chọn
+    MONGO_INITDB_ROOT_USERNAME=root # Cần thì đổi luôn thằng này
+    MONGO_INITDB_ROOT_PASSWORD=123456  # Thay bằng mật khẩu của ae
+    MONGO_PORT=27017 # Giữ nguyên
+    MONGODB_URI= mongodb://root:123456@localhost:27017?authSource=admin # Chỗ root với 123456 cũng đổi theo
+    JWT_SECRET= # dưới terminal gõ lệnh sau:
+```bash
+    node -e "console.log(require('uuid').v4())"
+```
+    Copy kết quả vào JWT_SECRET trong backend/.env, kết quả sẽ là 1 chuỗi uuid, ví dụ: 4c0f3b2e-5a8d-4c7b-xxxd-6a2e5bxxxx0b
+    JWT_ACCESS_TOKEN_EXPIRED=1h # Thay đổi thời gian token nếu cần
+
+    MAIL_INCOMING_USER=gmail.com của bạn
+    MAIL_INCOMING_PASS=pass
+Hướng dẫn: [youtube](https://youtu.be/fthiw89XG4s?si=GkSkqLMcdkvzqtM6&t=21453)
