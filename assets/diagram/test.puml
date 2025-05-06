@@ -1,38 +1,130 @@
 @startuml
-|Người dùng|
-start
-:Nhập yêu cầu lọc dữ liệu;
-|Hệ thống|
-:Nhận yêu cầu từ người dùng;
-:Kiểm tra tính hợp lệ;
-if (Hợp lệ?) then (Có)
-  :Truy xuất dữ liệu từ DB;
-  |Database|
-  :Cung cấp dữ liệu;
-  |Hệ thống|
-  fork
-    :Lọc theo điều kiện thời gian;
-  fork again
-    :Lọc theo danh mục;
-  fork again
-    :Lọc theo trạng thái;
-  end fork
-  :Hợp nhất dữ liệu đã lọc;
-  :Kiểm tra dữ liệu đầu ra;
-  if (Có kết quả?) then (Có)
-    :Trả kết quả cho người dùng;
-    |Người dùng|
-    :Chọn xuất dữ liệu;
-    if (Xuất file Excel?) then (Có)
-      :Xuất ra file Excel;
-    else (Không)
-      :Hiển thị trên giao diện;
-    endif
-  else (Không)
-    :Thông báo "Không tìm thấy dữ liệu";
-  endif
-else (Không hợp lệ)
-  :Trả thông báo lỗi;
-endif
-stop
+class User {
+    -loginId: string
+    -password: string
+    -email: string
+    +GetUserDetails(userID): User
+}
+
+class Customer extends User {
+    -wishlist: List<Product>
+}
+
+class Administrator extends User {
+    +AddProduct(): void
+    +EditProduct(): void
+}
+
+class Guest
+
+class Product {
+    -productID: int
+    -productName: string
+    -description: string
+    -price: decimal
+    -quantity: int
+    -image: image
+    -category: Category
+    -brand: Brand
+    -seller: Seller
+    -rating: decimal
+    +GetImage(productID): image
+    +GetPrice(productID): decimal
+}
+
+class ShoppingCart {
+    -productList: List<Product>
+    +GetCartItems(customerID): List<Product>
+}
+
+enum OrderStatus {
+    Ordered,
+    Processing,
+    Confirmed,
+    Shipped
+}
+
+enum Payment {
+    Paypal,
+    Creditcard
+}
+
+class Order extends PaymentClass {
+    -orderId: bigint
+    -orderDate: datetime
+    -shipped_Date: datetime
+    -ship_to: Address
+    -total: decimal
+    -productList: List<Product>
+    +GetOrderDetails(orderId): Order
+    -status: OrderStatus
+    -payment: Payment
+}
+
+abstract class PaymentClass {
+    +CapturePayment(): void
+    +ProcessPayment(): void
+}
+
+class UserAccount {
+    -id: string
+    -address: Address[]
+    -phone: Phone[]
+    -email: string
+    -orders: Order[]
+    +GetCustomer2Address(customerId): Address
+}
+
+class Address {
+    -HouseNo: string
+    -RoadL: string
+    -City: string
+    -State: string
+}
+
+enum CustomerStatus {
+    Active,
+    Blocked
+}
+
+class Seller {
+    -sellerId: int
+    -name: string
+    -rating: decimal
+    +GetSellerDetails(sellerId): Seller
+}
+
+class Category {
+    -categoryId: int
+    -categoryName: string
+}
+
+class Brand {
+    -brandId: int
+    -brandName: string
+}
+
+class Phone {
+    -phoneNumber: string
+    -type: string
+}
+User <|-- Customer
+User <|-- Administrator
+
+Customer o-- ShoppingCart : has
+Order o-- Product : includes
+
+UserAccount *-- Address : has-a
+Customer *-- Address : lives at
+
+Product --> Category : belongs to
+Product --> Brand : of
+Product --> Seller : sold by
+Order --> Address : ships to
+
+Order ..> OrderStatus : depends on
+Order ..> Payment : uses
+Customer ..> CustomerStatus
+Administrator ..> Product : manages
+
 @enduml

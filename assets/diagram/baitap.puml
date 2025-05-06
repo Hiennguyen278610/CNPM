@@ -1,0 +1,125 @@
+@startuml
+' =========================
+' ENUMS
+' =========================
+enum OrderStatus {
+  Ordered
+  Processing
+  Confirmed
+  Shipped
+}
+
+enum CustomerStatus {
+  Active
+  Blocked
+}
+
+' =========================
+' CLASSES
+' =========================
+
+abstract class User {
+  - loginID: string
+  - password: string
+  - email: string
+  + GetUserDetails(userID): User
+}
+
+class Customer {
+  - status: CustomerStatus
+  + wishlist: Product[]
+}
+
+class Administrator {
+  + AddProduct()
+  + EditProducts()
+}
+
+class Guest
+
+class Product {
+  - productID: int
+  - productName: string
+  - description: string
+  - price: decimal
+  - quantity: int
+  - image: image
+  - rating: decimal
+  + GetImage(productID): image
+  + GetPrice(productID): decimal
+}
+
+class Category
+class Brand
+class Seller
+
+class ShoppingCart {
+  + GetCartItems(customerID)
+}
+
+class Order {
+  - orderID: bigint
+  - order_date: datetime
+  - shipped_date: datetime
+  - total: decimal
+  - status: OrderStatus
+  + GetOrderDetails(orderID): Order
+}
+
+abstract class PaymentClass {
+  + CapturePayment()
+  + ProcessPayment()
+}
+
+class Paypal
+class CreditCard
+
+class UserAccount {
+  - id: string
+  - email: string
+  + GetCustomer2Address(customerID): Address
+}
+
+class Address {
+  - HouseNo: string
+  - Road: string
+  - City: string
+  - State: string
+}
+
+class Phone
+
+' =========================
+' RELATIONSHIPS
+' =========================
+
+' Inheritance
+User <|-- Customer
+User <|-- Administrator
+
+PaymentClass <|-- Paypal
+PaymentClass <|-- CreditCard
+
+' Association
+Customer "1" o-- "1" ShoppingCart : owns >
+Customer "0..*" o-- "0..*" Product : wishlist >
+Customer -- CustomerStatus
+Customer "1" -- "0..*" Order : places >
+Order "1" o-- "1..*" Product : contains >
+Order "1" --> "1" OrderStatus
+Order "1" --> "1" PaymentClass : uses >
+Order "1" *-- "1" Address : ship_to >
+
+Product "1" --> "1" Category
+Product "1" --> "1" Brand
+Product "1" --> "1" Seller
+
+UserAccount "1" *-- "1..*" Address
+UserAccount "1" o-- "0..*" Phone
+UserAccount "1" o-- "0..*" Order
+
+' Guest is not a User
+note right of Guest
+  Guest is not a subclass of User
+end note
+@enduml
