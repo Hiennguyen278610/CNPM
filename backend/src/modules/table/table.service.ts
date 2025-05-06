@@ -5,13 +5,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Table } from './schemas/table.schema';
 import { v4 as uuidv4 } from 'uuid'; // Import the uuid library to generate unique tokens
-import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class TableService {
   constructor(
     @InjectModel('Table') private tableModel: Model<Table>,
-    private readonly httpService: HttpService,
   ) {}
   create(createTableDto: CreateTableDto) {
     const { tableName } = createTableDto; // Destructure the DTO to get the properties
