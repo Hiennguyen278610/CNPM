@@ -1,26 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { OptionGroup, OptionGroupDocument } from './schemas/option-group.schema';
 import { CreateOptionGroupDto } from './dto/create-option-group.dto';
 import { UpdateOptionGroupDto } from './dto/update-option-group.dto';
 
 @Injectable()
 export class OptionGroupService {
-  create(createOptionGroupDto: CreateOptionGroupDto) {
-    return 'This action adds a new optionGroup';
+  constructor(
+    @InjectModel(OptionGroup.name)
+    private optionGroupModel: Model<OptionGroupDocument>,
+  ) {}
+
+  async create(createOptionGroupDto: CreateOptionGroupDto): Promise<OptionGroupDocument> {
+    const createdOptionGroup = new this.optionGroupModel(createOptionGroupDto);
+    return createdOptionGroup.save();
   }
 
-  findAll() {
-    return `This action returns all optionGroup`;
+  async findAll(): Promise<OptionGroupDocument[]> {
+    return this.optionGroupModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} optionGroup`;
+  async findOne(id: string): Promise<OptionGroupDocument> {
+    const optionGroup = await this.optionGroupModel.findById(id).exec();
+    if (!optionGroup) throw new NotFoundException('OptionGroup not found');
+    return optionGroup;
   }
 
-  update(id: number, updateOptionGroupDto: UpdateOptionGroupDto) {
-    return `This action updates a #${id} optionGroup`;
+  async update(id: string, updateOptionGroupDto: UpdateOptionGroupDto): Promise<OptionGroupDocument> {
+    const updated = await this.optionGroupModel.findByIdAndUpdate(id, updateOptionGroupDto, { new: true }).exec();
+    if (!updated) throw new NotFoundException('OptionGroup not found');
+    return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} optionGroup`;
+  async remove(id: string): Promise<OptionGroupDocument> {
+    const deleted = await this.optionGroupModel.findByIdAndDelete(id).exec();
+    if (!deleted) throw new NotFoundException('OptionGroup not found');
+    return deleted;
   }
 }
