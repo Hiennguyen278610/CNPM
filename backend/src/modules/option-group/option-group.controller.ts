@@ -19,16 +19,16 @@ export class OptionGroupController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.optionGroupService.findOne(+id);
+    return this.optionGroupService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOptionGroupDto: UpdateOptionGroupDto) {
-    return this.optionGroupService.update(+id, updateOptionGroupDto);
+    return this.optionGroupService.update(id, updateOptionGroupDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.optionGroupService.remove(+id);
+    return this.optionGroupService.remove(id);
   }
 }
