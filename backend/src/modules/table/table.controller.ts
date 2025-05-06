@@ -11,12 +11,15 @@ export class TableController {
   create(@Body() createTableDto: CreateTableDto) {
     return this.tableService.create(createTableDto);
   }
-
   @Get()
   findAll() {
     return this.tableService.findAll();
   }
 
+  @Get('qr/:qrToken')
+  findByQrToken(@Param('qrToken') qrToken: string) {
+    return this.tableService.findByQrToken(qrToken);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tableService.findOne(+id);
