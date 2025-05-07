@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+// src/modules/order-detail/order-detail.controller.ts
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { OrderDetailService } from './order-detail.service';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
@@ -13,22 +23,29 @@ export class OrderDetailController {
   }
 
   @Get()
-  findAll() {
-    return this.orderDetailService.findAll();
+  async findAll(
+    @Query() query: any,
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
+  ) {
+    return this.orderDetailService.findAll(query, +current, +pageSize);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.orderDetailService.findOne(+id);
+    return this.orderDetailService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDetailDto: UpdateOrderDetailDto) {
-    return this.orderDetailService.update(+id, updateOrderDetailDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateOrderDetailDto: UpdateOrderDetailDto,
+  ) {
+    return this.orderDetailService.update(id, updateOrderDetailDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.orderDetailService.remove(+id);
+    return this.orderDetailService.remove(id);
   }
 }
