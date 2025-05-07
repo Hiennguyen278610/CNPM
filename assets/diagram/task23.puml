@@ -1,0 +1,108 @@
+@startuml
+
+class Account {
+    + accountID: int
+    username: string
+    password: string
+    phone: string
+    email: string
+    accountType: string
+    role: string
+    status: string
+    verifyCode: string
+    verifyTime: int
+    + Account(accountID: id, username: name, password: pwd, phone: phone, email: mail, accountType: type, role: role, status: status, verifyCode: code, verifyTime: time)
+}
+
+class Customer {
+    + customerID: int
+    accountID: int
+    customerName: string
+    phone: string
+    + Customer(customerID: id, accountID: id, customerName: name, phone: phone)
+}
+
+class Table {
+    + tableID: int
+    tableName: string
+    qrToken: string
+    + Table(tableID: id, tableName: name, qrToken: token)
+}
+
+class Order {
+    + orderID: int
+    customerID: int
+    tableID: int
+    + Order(orderID: id, customerID: id, tableID: id)
+}
+
+class OrderDetail {
+    + orderID: int
+    + dishID: int
+    quantity: int
+    + OrderDetail(orderID: id, dishID: id, quantity: qty)
+}
+
+class Option {
+    + optionID: int
+    dishName: string
+    dishPrice: decimal
+    + Option(optionID: id, dishName: name, dishPrice: price)
+}
+
+class OptionGroup {
+    + dishID: int
+    + optionID: int
+    + optionGroupName: string
+    + optionGroup(dishID: id, optionID: id, optionGroupName: name)
+}
+
+class Dish {
+    + dishID: int
+    + dishName: string
+    + dishPrice: double
+    Dish(dishID: id, dishName: name, dishPrice: price)
+}
+
+class Recipe {
+    + dishID: int
+    + IngredientsID: int
+    + quantity: int
+    + Recipe (dishID: id, IngredientsID: id, quantity: quantity)
+}
+
+class Ingredient {
+    + ingredientID: int
+    + integrientName: string
+    + Ingredient(ingredientID: id, integrientName: name, unit: unit)
+}
+
+class Inventory {
+    + inventoryID: int
+    + quantity: int
+}
+
+enum unit <<enumeration>> {
+    + l
+    + ml
+    + g
+    + kg
+    + pcs
+}
+
+Account   "1" o-- "0..*" Customer     : has
+Customer  "1" o-- "0..*" Order        : has
+Table     "1" o-- "0..*" Order        : has
+
+Order     "1" *-- "1..*" OrderDetail  : composition
+
+Option    "1" o-- "0..*" OptionGroup  : has
+Dish      "1" o-- "0..*" OptionGroup  : has
+Dish       "1" o-- "0..*" OrderDetail  : has
+
+Dish      "1" *-- "0..*" Recipe       : composition
+Recipe    "0..*" --> "1" Ingredient   : include
+
+Ingredient "1" o-- "0..*" Inventory   : has
+Ingredient -- unit
+@enduml

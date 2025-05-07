@@ -115,3 +115,27 @@ link hướng dẫn youtube: https://youtu.be/v1nu5xKFEl8?si=krxucYxDhCP9bPP1&t=
     - Để thằng này nhận dạng được một biến, thì phải dùng dấu `` chứ đéo phải dấu ''. Đcm :)))).
     - Ví dụ: throw new BadRequestException(`Email ${email} already exists`); thì nó sẽ nhận dạng được biến email.
     - Còn nếu dùng throw new BadRequestException('Email ${email} already exists'); thì nó sẽ dell hiểu.
+
+## 8. Ý nghĩa và luồng hoạt động của ValidationPipe trong main.ts
+file ứng dụng: [backend/src/main.ts](backend/src/main.ts)
+    
+    - ValidationPipe là một lớp trong NestJS dùng để xác thực và chuyển đổi dữ liệu đầu vào.
+    - Lệnh thực thi: 
+```bash
+    app.useGlobalPipes(new ValidationPipe({
+        whitelist : true,
+        forbidNonWhitelisted: true
+    }));
+```
+    
+    - Luồng hoạt động của ValidationPipe:
+        1. Khi một yêu cầu đến ứng dụng, ValidationPipe sẽ kiểm tra dữ liệu đầu vào dựa trên các quy tắc xác thực đã được định nghĩa trong DTO (Data Transfer Object).
+        2. Nếu dữ liệu không hợp lệ, ValidationPipe sẽ trả về lỗi 400 Bad Request với thông báo chi tiết về lỗi.
+        3. Nếu dữ liệu hợp lệ, ValidationPipe sẽ chuyển đổi dữ liệu theo kiểu mà bạn đã định nghĩa trong DTO và truyền nó đến controller.
+
+## 9. Ý nghĩa mã lỗi khi test api: 
+    - 400: Bad Request: Yêu cầu không hợp lệ, thường do dữ liệu đầu vào không đúng định dạng hoặc thiếu thông tin cần thiết.
+    - 401: Unauthorized: Không được phép truy cập tài nguyên yêu cầu, thường do thiếu hoặc không hợp lệ token xác thực.
+    - 403: Forbidden: Không có quyền truy cập vào tài nguyên yêu cầu, ngay cả khi đã xác thực.
+    - 404: Not Found: Tài nguyên yêu cầu không tồn tại trên server.
+    - 500: Internal Server Error: Lỗi không xác định xảy ra trên server trong quá trình xử lý yêu cầu.

@@ -14,6 +14,10 @@ import {OrderModule} from "@/modules/order/order.module";
 import {OrderDetailModule} from "@/modules/order-detail/order-detail.module";
 import {RecipeModule} from "@/modules/recipe/recipe.module";
 import {TableModule} from "@/modules/table/table.module";
+import { AuthModule } from '@/auth/auth.module';
+import {JwtAuthGuard} from '@/auth/jwt-auth.guard';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
     imports: [
@@ -35,10 +39,38 @@ import {TableModule} from "@/modules/table/table.module";
                 uri: configService.get('MONGODB_URI'),
             }),
             inject: [ConfigService],
-        })
+        }),
+        AuthModule,
+        MailerModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                transport: {
+                    host: 'smtp.gmail.com',
+                    port: 465,
+                    secure: true,
+                    // ignoreTLS: true,
+                    auth: {
+                      user: configService.get<string>('MAILDEV_INCOMING_USER'),
+                      pass: configService.get<string>('MAILDEV_INCOMING_PASS'),
+                    },
+                  },
+                  defaults: {
+                    from: '"Sea Food" <no-reply@localhost>',
+                  },
+                  // preview: true,
+                  template: {
+                    dir: process.cwd() + '/src/mail/templates/',
+                    adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+                    options: {
+                      strict: true,
+                    },
+                  },
+            }),
+            inject: [ConfigService],
+          }),
     ],
     controllers: [AppController],
-    providers: [AppService],
+    providers: [AppService, {provide: 'APP_GUARD', useClass: JwtAuthGuard}],
 })
 export class AppModule {
 }

@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Option, OptionDocument } from './schemas/option.schema';
 import { CreateOptionDto } from './dto/create-option.dto';
 import { UpdateOptionDto } from './dto/update-option.dto';
 
 @Injectable()
 export class OptionService {
-  create(createOptionDto: CreateOptionDto) {
-    return 'This action adds a new option';
+  constructor(
+    @InjectModel(Option.name)
+    private optionModel: Model<OptionDocument>,
+  ) {}
+
+  async create(createOptionDto: CreateOptionDto): Promise<Option> {
+    const createdOption = new this.optionModel(createOptionDto);
+    return createdOption.save();
   }
 
-  findAll() {
-    return `This action returns all option`;
+  async findAll(): Promise<Option[]> {
+    return this.optionModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} option`;
+  async findOne(id: string): Promise<Option> {
+    const option = await this.optionModel.findById(id);
+    if (!option) throw new NotFoundException('Option not found');
+    return option;
   }
 
-  update(id: number, updateOptionDto: UpdateOptionDto) {
-    return `This action updates a #${id} option`;
+  async update(id: string, updateOptionDto: UpdateOptionDto): Promise<Option> {
+    const updated = await this.optionModel.findByIdAndUpdate(id, updateOptionDto, {
+      new: true,
+    });
+    if (!updated) throw new NotFoundException('Option not found');
+    return updated;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} option`;
+  async remove(id: string): Promise<void> {
+    const result = await this.optionModel.findByIdAndDelete(id);
+    if (!result) throw new NotFoundException('Option not found');
   }
 }
