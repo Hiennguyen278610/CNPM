@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lexend_Deca } from "next/font/google";
 import {AntdRegistry} from "@ant-design/nextjs-registry";
+import 'material-symbols';
 import "@/app/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// Chỉ sử dụng Lexend Deca làm font chính
+const lexendDeca = Lexend_Deca({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-lexend-deca",
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -24,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <AntdRegistry>{children}</AntdRegistry>
+    <html lang="en" className={lexendDeca.className}>
+      <body>
+        <AntdRegistry>{children}</AntdRegistry>
       </body>
     </html>
   );

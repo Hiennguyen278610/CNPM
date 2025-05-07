@@ -19,16 +19,16 @@ export class OptionController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.optionService.findOne(+id);
+    return this.optionService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOptionDto: UpdateOptionDto) {
-    return this.optionService.update(+id, updateOptionDto);
+    return this.optionService.update(id, updateOptionDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.optionService.remove(+id);
+    return this.optionService.remove(id);
   }
 }
