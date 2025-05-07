@@ -1,5 +1,37 @@
+@import "tailwindcss";
+@import "tailwindcss/utilities";
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+@theme {
+  --color-primary: #2C3A57;
+  --color-secondary: #E1E7EB;
+  --color-dark: #000000;
+  --color-light: #FFFFFF;
+  --color-accent: #F81A1A;
+  --color-transparent: transparent;
+}
+
+
+.no-select {
+  @apply select-none;            /* Tailwind user-select: none */  
+  -webkit-touch-callout: none;    /* chặn menu long‑press trên iOS */  
+}
+
+nextjs-portal {
+  display: none;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+.flex-nesw {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

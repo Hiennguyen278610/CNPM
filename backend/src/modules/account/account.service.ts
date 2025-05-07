@@ -51,7 +51,7 @@ export class AccountService {
     return {results, totalPages};
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} account`;
   }
 
