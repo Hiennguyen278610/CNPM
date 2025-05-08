@@ -12,7 +12,8 @@ import {
 import { OrderDetailService } from './order-detail.service';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
-
+import { Public } from '@/decorator/customize';
+@Public()
 @Controller('order-detail')
 export class OrderDetailController {
   constructor(private readonly orderDetailService: OrderDetailService) {}

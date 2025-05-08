@@ -5,16 +5,26 @@ import { Model } from 'mongoose';
 import { OrderDetail } from './schemas/order-detail.schema';
 import { CreateOrderDetailDto } from './dto/create-order-detail.dto';
 import { UpdateOrderDetailDto } from './dto/update-order-detail.dto';
+import { Order, OrderDocument } from '../order/schemas/order.schema';
+import { OrderService } from '../order/order.service';
+
 import aqp from 'api-query-params'; // Change this line
 
 @Injectable()
 export class OrderDetailService {
   constructor(
     @InjectModel(OrderDetail.name) private orderDetailModel: Model<OrderDetail>,
+    @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+  private readonly orderService: OrderService, 
   ) {}
 
   async create(createOrderDetailDto: CreateOrderDetailDto) {
     const orderDetail = await this.orderDetailModel.create(createOrderDetailDto);
+
+    const totalprice = await this.orderService.calculateTotalPrice(orderDetail.order.toString());
+  
+    await this.orderModel.findByIdAndUpdate(orderDetail.order, { totalPrice : totalprice});
+  
     return orderDetail._id;
   }
 
