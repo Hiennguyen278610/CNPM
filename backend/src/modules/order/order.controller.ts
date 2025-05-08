@@ -11,8 +11,9 @@ import {
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { Public } from '@/decorator/customize';
 import { UpdateOrderDto } from './dto/update-order.dto';
-
+@Public()  //bo qua jwtauthguard
 @Controller('order')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -31,11 +32,17 @@ export class OrderController {
     return this.orderService.findAll(query, +current, +pageSize);
   }
 
+
+  
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.orderService.findOne(id);
   }
-
+  @Get(':id/total')
+  async getTotal(@Param('id') id: string) {
+    const totalPrice = await this.orderService.calculateTotalPrice(id);
+    return { totalPrice };  
+  }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
     return this.orderService.update(id, updateOrderDto);
