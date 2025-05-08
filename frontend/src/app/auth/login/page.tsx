@@ -21,13 +21,13 @@ export default function LoginPage() {
                                 <div className="h-px bg-dark flex-1"></div>
                             </div>
                             <div className='flex flex-row w-full gap-4'>
-                                <button type="button" className="w-full bg-light hover:bg-secondary text-dark font-bold text-lg rounded-xl !p-4 no-select 
-                                cursor-pointer flex-nesw flex-row gap-2 border-1 border-dark  transition duration-300 ease-in-out transform hover:scale-105">
+                                <button type="button" className="w-full bg-light hover:bg-secondary text-dark font-bold text-lg rounded-xl !p-4 
+                                cursor-pointer flex-nesw flex-row gap-2 border-1 border-dark hoverBtn">
                                     <span className='w-max h-max'><DeviconGoogle/></span>
                                     <span className='w-max'>Login with Google</span>
                                 </button>    
-                                <button type="button" className="w-full bg-accent hover:bg-red-700 text-white font-bold text-lg rounded-xl !p-4 no-select 
-                                cursor-pointer transition duration-300 ease-in-out transform hover:scale-105" onClick={() => router.push('/auth/register')}> Register</button>
+                                <button type="button" className="w-full bg-accent hover:bg-red-700 text-white font-bold text-lg rounded-xl !p-4
+                                hoverBtn" onClick={() => router.push('/auth/register')}> Register</button>
                             </div>
                     </form>
                 </div>
