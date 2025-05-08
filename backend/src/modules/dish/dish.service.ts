@@ -1,26 +1,34 @@
+// src/modules/dish/dish.service.ts
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Dish, DishDocument } from './schemas/dish.schema';
 import { CreateDishDto } from './dto/create-dish.dto';
-import { UpdateDishDto } from './dto/update-dish.dto';
 
 @Injectable()
 export class DishService {
-  create(createDishDto: CreateDishDto) {
-    return 'This action adds a new dish';
+  constructor(
+    @InjectModel(Dish.name) private dishModel: Model<DishDocument>,
+  ) {}
+
+  async create(createDishDto: CreateDishDto): Promise<Dish> {
+    const dish = new this.dishModel(createDishDto);
+    return dish.save();
   }
 
-  findAll() {
-    return `This action returns all dish`;
+  async findAll(): Promise<Dish[]> {
+    return this.dishModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dish`;
+  async findById(id: string): Promise<Dish | null> {
+    return this.dishModel.findById(id).exec();
   }
 
-  update(id: number, updateDishDto: UpdateDishDto) {
-    return `This action updates a #${id} dish`;
+  async delete(id: string): Promise<any> {
+    return this.dishModel.findByIdAndDelete(id).exec();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} dish`;
+  async update(id: string, updateDishDto: Partial<CreateDishDto>): Promise<Dish | null> {
+    return this.dishModel.findByIdAndUpdate(id, updateDishDto, { new: true }).exec();
   }
 }
