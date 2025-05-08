@@ -35,3 +35,20 @@ nextjs-portal {
   justify-content: center;
   align-items: center;
 }
+
+.hoverBtn {
+  @apply transition duration-300 ease-in-out transform hover:scale-105 select-none cursor-pointer;
+}
+
+.overflow-y-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.cart-item {
+  @apply w-full h-max border-2 rounded-2xl border-secondary;
+}
+
+.hoverChangeBtn {
+  @apply border-2 border-accent rounded-lg hover:bg-accent hover:text-light cursor-pointer ;
+}
