@@ -94,7 +94,7 @@ export default function OrderLayout() {
                     onDecrement={handleDecrement}
                     onDelete={handleDelete}
                 />
-                <CartFooter />
+                <CartFooter onClick={() => router.push('/order/payment')}/>
             </div>
         </div>
     );
