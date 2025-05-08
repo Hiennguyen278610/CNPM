@@ -7,13 +7,13 @@ export type DishDocument = Dish & Document;
 @Schema()
 export class Dish {
   @Prop({ required: true })
-  name: string;
+  dishName: string;
 
   @Prop()
-  price: number;
+  dishPrice: number;
 
   @Prop()
-  description: string;
+  dishImg: string;
 }
 
 export const DishSchema = SchemaFactory.createForClass(Dish);

@@ -13,7 +13,7 @@ export class OrderDetail {
 
   @IsNotEmpty()
   @Prop({ type: Types.ObjectId, ref: 'Dish', required: true })
-  dish: Types.ObjectId[];
+  dish: Types.ObjectId;
 
   @IsNotEmpty()
   @Prop({ required: true })

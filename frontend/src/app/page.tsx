@@ -23,7 +23,7 @@ export default function Home() {
       <div className="absolute inset-0 flex items-center justify-center z-10">
         <div className="w-3/10 h-4/15 bg-transparent shadow-lg flex items-center justify-center">
           <div className="flex flex-1 w-full h-full gap-6">
-            <NavButton label="Come to order" spanName="shopping_cart" onClick={() => alert("Bạn vừa bấm Come to order!")} />
+            <NavButton label="Come to order" spanName="shopping_cart" onClick={() => router.push('/order')} /> 
             <NavButton label="Login" spanName="person" onClick={() => router.push('/auth/login')} />
           </div>
         </div>
