@@ -31,7 +31,7 @@ export default function OrderLayout() {
             <div className="w-[35%] h-full bg-white flex flex-col">
                 <MenuRightHead/>
                 <CartList />
-                <CartFooter />
+                <CartFooter onClick={() => router.push('/order/payment')}/>
             </div>
         </div>
     );
