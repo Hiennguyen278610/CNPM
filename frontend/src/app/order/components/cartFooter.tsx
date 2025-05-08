@@ -1,4 +1,7 @@
-export default function CartFooter() {
+interface CometoPayment {
+    onClick?: () => void;
+}
+export default function CartFooter({ onClick }: CometoPayment) {
     return (
         <div className="w-full h-1/5 !p-2">
             <div className="w-full h-1/2">
@@ -13,7 +16,7 @@ export default function CartFooter() {
             </div>
             <div className="w[-full h-1/2 !p-2 flex-nesw">
                 <button className="bg-accent rounded-2xl w-full h-full text-light hoverBtn" 
-                onClick={() => {alert('Order placed!')}}>Order</button>
+                onClick={onClick}>Order</button>
             </div>
         </div>
     );
