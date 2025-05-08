@@ -5,19 +5,24 @@
   import { Order } from './schemas/order.schema';
   import { CreateOrderDto } from './dto/create-order.dto';
   import { UpdateOrderDto } from './dto/update-order.dto';
-  import aqp from 'api-query-params'; // Change this line
-
+  import aqp from 'api-query-params';
+  import { OrderDetail } from '../order-detail/schemas/order-detail.schema';
   @Injectable()
   export class OrderService {
-    constructor(@InjectModel(Order.name) private orderModel: Model<Order>) {}
-
+    constructor(
+      @InjectModel(OrderDetail.name)
+      private readonly orderDetailModel: Model<OrderDetail>,
+      
+      @InjectModel(Order.name)
+      private readonly orderModel: Model<Order>,
+    ) {}
     async create(createOrderDto: CreateOrderDto) {
       const order = await this.orderModel.create(createOrderDto);
       return order._id;
     }
 
     async findAll(query: any, current: number, pageSize: number) {
-      const { filter, sort } = aqp(query); // Now aqp is a callable function
+      const { filter, sort } = aqp(query);
       if (filter.current) delete filter.current;
       if (filter.pageSize) delete filter.pageSize;
 
@@ -33,15 +38,12 @@
         .find(filter)
         .limit(pageSize)
         .skip(skip)
-        .populate(['clerk', 'customer', 'table', 'orderDetail', 'payment'])
         .sort(sort as any);
       return { results, totalPages };
     }
 
     async findOne(id: string) {
-      const order = await this.orderModel
-        .findById(id)
-        .populate(['clerk', 'customer', 'table', 'orderDetail', 'payment']);
+      const order = await this.orderModel.findById(id);
       if (!order) {
         throw new BadRequestException('Order not found');
       }
@@ -65,4 +67,17 @@
       }
       return order._id;
     }
-  }
+  // order.service.ts
+    async calculateTotalPrice(orderId: string): Promise<number> {
+      const orderDetails = await this.orderDetailModel
+        .find({ order: orderId })
+        .populate('dish'); // để lấy dish.dishPrice
+
+      const totalPrice = orderDetails.reduce((sum, detail) => {
+        const dish = detail.dish as unknown as { dishPrice: number }; // 👈 chuẩn TypeScript
+        return sum + dish.dishPrice * detail.quantity;
+      }, 0);
+
+      return totalPrice;
+    }
+}
