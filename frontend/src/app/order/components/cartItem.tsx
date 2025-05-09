@@ -3,6 +3,7 @@ interface CartItemProps {
     dishPrice: number;
     dishImage: string;
     dishQuantity: number;
+    dishType : string
     dishOptions: {
         id: string;
         name: string;
@@ -13,7 +14,7 @@ interface CartItemProps {
     onDelete: () => void;
 }
 
-export default function CartItem({ dishName, dishPrice, dishImage, dishQuantity, dishOptions=[],
+export default function CartItem({ dishName, dishPrice, dishImage, dishQuantity, dishOptions=[], dishType,
      onIncrement, onDecrement, onDelete }: CartItemProps) {
     return (
         <div className="cart-item h-auto flex flex-r">
@@ -36,15 +37,17 @@ export default function CartItem({ dishName, dishPrice, dishImage, dishQuantity,
                         Xóa
                     </span>
                 </div>
-                <span 
-                    className="text-sml text-gray-400">
-                        Add : {dishOptions.length === 0 ? "None" : dishOptions.map((option, index) => (
-                            <span key={index}>
-                                {option.name}
-                                {index < dishOptions.length - 1 && ", "}
-                            </span>
+                {dishType !== "Soda" && (
+                    <span className="text-sml text-gray-400">
+                        Add: {dishOptions.length === 0 ? "None" : dishOptions.map((option, index) => (
+                        <span key={index}>
+                            {option.name}
+                            {index < dishOptions.length - 1 && ", "}
+                        </span>
                         ))}
-                </span>
+                    </span>
+                    )
+                }
                 <div className="w-full h-2/3 flex flex-row justify-between items-center">
                     <span className="text-lg text-accent select-none">${dishPrice.toFixed(2)}</span>
                     <div className="flex flex-row gap-5">

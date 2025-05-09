@@ -7,12 +7,15 @@ interface CartItemProps {
     name: string;
     price: number;
   }[];
+  dishType:string;
 }
 export default function CartItemPayment({
   dishName,
   dishPrice,
   dishQuantity,
   dishOptions = [],
+  dishType,
+
 }: CartItemProps) {
   return (
     <div className="cart-item h-auto flex flex-r !border-2 rounded-3xl bg-light shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out">
@@ -25,15 +28,17 @@ export default function CartItemPayment({
           </span>
         </div>
         <span className="text-sml text-gray-400">
-          Add :{" "}
-          {dishOptions.length === 0
-            ? "None"
-            : dishOptions.map((option, index) => (
-                <span key={index}>
-                  {option.name}
-                  {index < dishOptions.length - 1 && ", "}
-                </span>
-              ))}
+          {dishType !== "Soda" && (
+                    <span className="text-sml text-gray-400">
+                        Add: {dishOptions.length === 0 ? "None" : dishOptions.map((option, index) => (
+                        <span key={index}>
+                            {option.name}
+                            {index < dishOptions.length - 1 && ", "}
+                        </span>
+                        ))}
+                    </span>
+                    )
+          }
         </span>
         <div className="w-full h-2/3 flex flex-row justify-between items-center">
           <span className="text-lg select-none">
