@@ -1,8 +1,10 @@
+
 interface cartQuantity{
     cartItems: number;
+    tableName : string;
 }
 
-export default function MenuRightHead({cartItems} : cartQuantity) {
+export default function MenuRightHead({cartItems, tableName} : cartQuantity) {
     return (
         <div className="w-full h-1/10 !p-4 flex flex-row justify-between">
             <div className="w-max h-full flex-nesw flex-row select-none">   
@@ -10,7 +12,7 @@ export default function MenuRightHead({cartItems} : cartQuantity) {
                 <p className="text-accent text-2xl">Your cart ({cartItems})</p>
             </div>
             <div className="w-max h-full bg-secondary flex-nesw !p-4 rounded-3xl">
-                <p className="text-xl select-none">Dine in</p>
+                <p className="text-xl select-none">{tableName}</p>
             </div>
         </div>
     );
