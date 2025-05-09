@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Lexend_Deca } from "next/font/google";
-import {AntdRegistry} from "@ant-design/nextjs-registry";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import 'material-symbols';
 import "@/app/globals.css";
+import { CartProvider } from "@/context/CartContext"; // Import context
 
-// Chỉ sử dụng Lexend Deca làm font chính
 const lexendDeca = Lexend_Deca({
   subsets: ["latin", "vietnamese"],
   weight: ["300", "400", "500", "600", "700"],
@@ -25,7 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={lexendDeca.className}>
       <body>
-        <AntdRegistry>{children}</AntdRegistry>
+        <AntdRegistry>
+          <CartProvider> 
+            {children}
+          </CartProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

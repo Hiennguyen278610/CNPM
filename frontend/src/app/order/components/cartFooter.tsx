@@ -12,7 +12,7 @@ export default function CartFooter({totalPrice, onClick }: CometoPayment) {
                 </div>
                 <div className="w-full h-2/3 flex justify-between text-primary select-none">
                     <p className="text-2xl">Total: </p>
-                    <p className="text-accent text-2xl">${totalPrice}</p>
+                    <p className="text-accent text-2xl">${totalPrice.toFixed(2)}</p>
                 </div>
             </div>
             <div className="w[-full h-1/2 !p-2 flex-nesw">
