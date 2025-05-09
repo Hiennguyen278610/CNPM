@@ -62,12 +62,26 @@ export default function OrderLayout() {
         }
       };
       
+
+      //Hàm xử lý xóa món khỏi giỏ hàng :
       const handleDelete = (item:any) => {
         const updatedCart = cartItems.filter( cartItem => {
             return !isSameCartItem(item, cartItem)
         })
         setCartItems(updatedCart)
       }
+      
+      const totalPrice = cartItems.reduce((sum, dish) => {
+        const optionsPrice = dish.options?.reduce( (optionSum: number, option : any)=> {
+          return optionSum + option.price
+        },0) || 0
+        return sum + (dish.dishPrice + optionsPrice)* dish.quantity;
+      }, 0);
+
+      const cartQuantity = cartItems.reduce((totalQuantity, dish) => {
+        return totalQuantity + dish.quantity
+      },0)
+
 
     return (
         <div className="h-screen w-screen overflow-hidden flex flex-row">
@@ -87,14 +101,18 @@ export default function OrderLayout() {
 
             </div>
             <div className="w-[35%] h-full bg-white flex flex-col">
-                <MenuRightHead/>
+                <MenuRightHead cartItems={cartQuantity}/>
                 <CartList 
                     items={cartItems}
                     onIncrement={handleIncrement}
                     onDecrement={handleDecrement}
                     onDelete={handleDelete}
                 />
-                <CartFooter onClick={() => router.push('/order/payment')}/>
+
+                <CartFooter
+                    onClick={() => router.push('/order/payment')}
+                    totalPrice={totalPrice}
+                />
             </div>
         </div>
     );
