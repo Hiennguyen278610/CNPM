@@ -27,7 +27,7 @@ export class CustomerController {
     @Query('current') current: string,
     @Query('pageSize') pageSize: string,
   ) {
-    return this.customerService.findAll(query, +current, +pageSize);
+    return this.customerService.findAll(query, +current || 1, +pageSize || 10);
   }
 
   @Get(':id')

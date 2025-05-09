@@ -60,7 +60,7 @@
 		\tiny \bf 
 	\end{tabular}  }
 \fancyfoot{} % clear all footer fields
-\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Phát triển phần mềm mã nguồn mở - Niên khóa 2023-2024}
+\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Công Nghệ Phần Mềm - Niên khóa 2024-2025}
 \fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/\pageref{LastPage}}
 \renewcommand{\headrulewidth}{0.3pt}
 \renewcommand{\footrulewidth}{0.3pt}
@@ -169,168 +169,326 @@ KHOA CÔNG NGHỆ THÔNG TIN
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Phần giới thiệu}
-\subsection{Xác định số lượng sinh viên trong tập mẫu}
+\section{Giới thiệu}
+\subsection{Tổng quan về hệ thống quản lý nhà hàng}
 
+Ứng dụng web quản lý nhà hàng là một hệ thống toàn diện được phát triển nhằm quản lý hiệu quả các hoạt động của nhà hàng, từ quản lý thực đơn, đặt bàn, xử lý đơn hàng đến quản lý nguyên liệu và kho hàng. Hệ thống được xây dựng với kiến trúc phân tách rõ ràng giữa front-end và back-end.
 
-		\begin{mdframed}[hidealllines=true,backgroundcolor=magenta!10]
-		\begin{lstlisting}
-		% ------------------------------- %
-		%     XOA MAN HINH VA CAC BIEN    %
-		% ------------------------------- %
-		clear
-		clc
-		
-		% ------------------------------- %
-		%      NHAP DU LIEU BAI TOAN      %
-		% ------------------------------- %
-		n = ...;      % So nguoi dan
-		m = ...;      % So benh vien
-		% Ma tran D bieu dien thu tu uu tien cua benh vien doi voi benh nhan
-		% ung voi tung hang
-		D = [...];
-		% Ma tran B bieu dien thu tu uu tien cua benh nhan doi voi benh vien
-		% ung voi tung cot
-		B = [...];
-		% Ma tran c bieu dien suc chua cua tung benh vien
-		c = [...];
-		% Ma tran a bieu dien moi benh nhan chi duoc chon lua mot benh vien
-		a = ones(n,1);
-		
-		% ------------------------------- %
-		% GIAI BAI TOAN BANG SOLVER MOSEK %
-		% ------------------------------- %
-		cvx_begin
-			cvx_solver mosek
-			% Bien x(i,j) chi nhan gia tri 0 hoac 1
-			% ung voi su ghep goi benh nhan r_i voi benh vien h_j
-			variable x(n,m) binary
-			% Toi da tong cac bien x(i,j)
-			% tuc la cang nhieu cap duoc ghep doi cang tot
-			maximize( 0 )
-			subject to
-				% Tong cac hang trong cung mot cot (so benh nhan duoc chon)
-				% nho hon hoac bang suc chua cua benh vien
-				sum(x,1) <= c;
-				% Tong cac cot trong cung mot cot (so benh vien duoc chon)
-				% nho hon hoac bang 1
-				sum(x,2) <= a;
-			% Bao dam khong co cac cap chan
-			for u = 1:n
-				for v = 1:m
-					%Tinh so hang dau tien trong ham dieu kien on dinh
-					t1 = 0;
-					for j = 1:m 
-						t1 = t1 + lt(D(u,j),D(u,v)) * x(u,j); 
-					end
-					%Tinh so hang thu hai trong ham dieu kien on dinh
-					t2 = 0;
-					for i = 1:n
-						t2 = t2 + lt(B(i,v),B(u,v)) * x(i,v) / c(v); 
-					end
-					%Xac lap ham dieu kien on dinh
-					t1 + t2 + x(u,v) >= 1;
-					%Ham dam bao cac cap (r_u,h_v) duoc xet nam trong A, neu
-					%cap do khong nam trong A thi x_uv = 0
-					if D(u,v) == m+n+1 || B(u,v) == m+n+1
-						(eq(D(u,v),m+n+1) + eq(B(u,v),m+n+1)) * x(u,v) == 0;
-					end
-				end
-			end
-		cvx_end
-		
-		% ------------------------------- %
-		%  HIEN THI KET QUA RA MAN HINH   %
-		% ------------------------------- %
-		D
-		B
-		c
-		x       % Cac cap duoc ghep doi
-	\end{lstlisting}
-	\end{mdframed}
-	\subsection{Các công trình liên quan}
-	\textbf{ Giới thiệu vấn đề}
-	Công việc các bạn cần làm
+\subsection{Hệ thống quản lý bán hàng}
 
- \section{Phần giới thiệu 2}
-    \subsection{âsddfffggg}
+POS (Point of Sale) là một hệ thống quản lý bán hàng được thiết kế đặc biệt cho các nhà hàng, quán cà
+phê, quán bar, và các cơ sở kinh doanh ăn uống khác. Hệ thống này đóng vai trò trung tâm trong việc
+quản lý giao dịch và hoạt động hàng ngày của một nhà hàng. Tại điểm bán hàng, người bán sẽ tính toán
+số tiền mà khách hàng phải trả, thông báo số tiền đó, có thể chuẩn bị hóa đơn cho khách hàng, và chỉ ra
+các lựa chọn để khách hàng thực hiện thanh toán. Trong kinh doanh nhà hàng, hệ thống POS thường
+bao gồm đặt bàn, đặt món ăn, cảnh báo, thanh toán, xử lý thẻ tín dụng và quản lý khách hàng. Các hệ
+thống như vậy được kỳ vọng sẽ tăng cường trong việc kinh doanh, giảm lãng phí và cơ hội để mở rộng
+quy mô kinh doanh lớn hơn. Hơn nữa, các hệ thống này nên hỗ trợ tùy chọn mang đi. Khách hàng có
+nhiều nhà hàng và cần phát triển một hệ thống POS dựa trên web linh hoạt, triển khai dòng chảy kinh
+doanh hiện tại như mô tả trong Hình 1. (Máy POS hiện tại có thể được thay thế bằng giải pháp dựa trên
+web này).
 
- \section{Phần giới thiệu 2}
-    \subsection{âsddfffggg}
+\subsection{Yêu cầu hệ thống}
 
-\section{Phần giới thiệu 2}
-    \subsection{âsddfffggg}
+Các chủ nhà hàng yêu cầu một số điều kiện đặc biệt cho hệ thống mới:
+\begin{itemize}
+\item Hệ thống nên cho phép không có tiếp xúc trực tiếp giữa Nhân viên và Khách hàng nghĩa là hệ
+thống sẽ được thiết kế để tránh việc nhân viên nhà hàng phải gặp mặt hoặc tiếp xúc trực tiếp với khách
+hàng. Thay vào đó, khách hàng có thể thực hiện các yêu cầu hoặc thao tác như đặt món, thanh toán, đặt
+bàn thông qua một nền tảng trực tuyến (ví dụ: qua điện thoại, máy tính bảng hoặc mã QR).
+\item Hệ thống được triển khai sử dụng công nghệ Web và mã QR, để khách hàng không cần phải cài
+đặt ứng dụng.
+\item Hệ thống có thể sử dụng được trên các thiết bị di động, máy tính bảng hoặc máy tính/laptop
+thông thường.
+\item Hệ thống nên có khả năng mở rộng để sử dụng trong nhiều nhà hàng trong tương lai.
+\item Hiện tại, số giao dịch là khoảng 50 đơn hàng mỗi ngày.
+\end{itemize}
+
+\subsection{Công nghệ sử dụng}
+\begin{itemize}
+\item \textbf{Frontend}: Next.js - Framework React mạnh mẽ cho phép phát triển giao diện người dùng hiện đại và tối ưu hóa hiệu suất.
+\item \textbf{Backend}: NestJS - Framework Node.js được xây dựng trên Express, hỗ trợ TypeScript và kiến trúc module.
+\item \textbf{Cơ sở dữ liệu}: MongoDB - Cơ sở dữ liệu NoSQL linh hoạt.
+\item \textbf{Containerization}: Docker - Đảm bảo môi trường phát triển và triển khai nhất quán.
+\item \textbf{Quản lý mã nguồn}: Git - Hệ thống kiểm soát phiên bản.
+\end{itemize}
+\section{Kiến trúc hệ thống}
+    \subsection{Tổng quan kiến trúc}
     
-    \subsection{11111111}
+    Dự án được phát triển với kiến trúc microservices, phân tách rõ ràng giữa frontend và backend, giúp dễ dàng mở rộng và bảo trì.
     
- \section{Phần giới thiệu 2}
-    \subsection{âsddfffggg}
-    Ý thức được sự độc hại của bụi mịn, người dân cố gắng bảo vệ bản thân bằng nhiều cách, như dùng khẩu trang, trang bị máy lọc không khí... Bạn bè, người thân của tôi vẫn thường than phiền về tình trạng ô nhiễm không khí. Lắm lúc bế tắc, họ chỉ còn biết mong mưa to một trận, để rửa trôi bụi bẩn, cho trời đất trong lành trở lại. Nhưng đây thực ra là một trong các ngộ nhận về ô nhiễm không khí. Bụi mịn trong không khí có thể được làm sạch dưới trận mưa to kéo dài khoảng 10 phút. Nhưng bụi mịn không thể giải quyết tận gốc bằng mưa. Nếu được, với lượng mưa nhiều của Việt Nam, ô nhiễm đã không trầm trọng thêm năm nay qua năm khác.
-    \subsection{11112222}
+    \subsubsection{Frontend (Next.js)}
+    \begin{itemize}
+        \item Giao diện khách hàng và nhân viên
+        \item Tối ưu hóa hiệu suất với server-side rendering và static generation
+        \item Quản lý trạng thái với Context API
+        \item Giao diện người dùng hiện đại và responsive
+    \end{itemize}
+    
+    \subsubsection{Backend (NestJS)}
+    \begin{itemize}
+        \item API RESTful xử lý logic nghiệp vụ
+        \item Kiến trúc module rõ ràng với dependency injection
+        \item Xác thực và phân quyền với JWT
+        \item Tích hợp MongoDB qua Mongoose
+        \item Xử lý email và thông báo
+    \end{itemize}
+    
+    \subsection{Mô hình dữ liệu}
+    
+    Hệ thống sử dụng các schema sau để quản lý dữ liệu:
+    
+    \begin{enumerate}
+        \item \textbf{Account}: Quản lý tài khoản người dùng
+        \item \textbf{Customer}: Quản lý thông tin khách hàng
+        \item \textbf{Table}: Quản lý bàn ăn và mã QR
+        \item \textbf{Order}: Quản lý đơn hàng
+        \item \textbf{OrderDetail}: Chi tiết đơn hàng
+        \item \textbf{Dish}: Thông tin món ăn
+        \item \textbf{Option}: Các tùy chọn cho món ăn
+        \item \textbf{OptionGroup}: Nhóm tùy chọn
+        \item \textbf{Recipe}: Công thức chế biến
+        \item \textbf{Ingredient}: Nguyên liệu
+        \item \textbf{Inventory}: Quản lý kho hàng
+    \end{enumerate}
+
+\section{Phát triển dự án}
+    \subsection{Quy trình công việc}
+    \begin{itemize}
+        \item \textbf{Task 1: Khai thác yêu cầu} - Xác định bối cảnh, yêu cầu chức năng và phi chức năng, vẽ sơ đồ use-case
+        \item \textbf{Task 2: Mô hình hóa hệ thống} - Vẽ sơ đồ hoạt động, trình tự và lớp
+        \item \textbf{Task 3: Thiết kế kiến trúc} - Mô tả phương pháp kiến trúc và vẽ sơ đồ triển khai
+        \item \textbf{Task 4: Triển khai Sprint 1} - Thiết lập kho lưu trữ, tạo tài liệu và triển khai MVP cho màn hình menu
+        \item \textbf{Task 5: Triển khai Sprint 2} - Triển khai MVP cho các màn hình chi tiết
+    \end{itemize}
+    
+    \subsection{Các chức năng đã triển khai}
+    \begin{itemize}
+        \item Quản lý tài khoản và phân quyền người dùng
+        \item Quản lý thông tin khách hàng
+        \item Quản lý bàn ăn và tạo mã QR
+        \item Quản lý đơn hàng và chi tiết đơn hàng
+        \item Quản lý thực đơn, món ăn và tùy chọn
+        \item Quản lý công thức và nguyên liệu
+        \item Quản lý kho hàng
+        \item Hỗ trợ thanh toán trực tuyến qua VNPAY
+    \end{itemize}
 
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SỐ LƯỢNG SINH VIÊN 1}
-\subsection{Xác định số lượng sinh viên: }
-\newpage
-\subsection{Vẽ biều đồ tần xuất tương đối tích lũy số sinh viên theo phân nhóm outcome các sinh viên có câu trả lời sai trong kỳ thi cuối kỳ trong các nhóm}
-\begin{itemize}
-    \item \large\bfseries\underline {Phần code R}
-    \item Phan code Python
-\end{itemize}
-\begin{enumerate}
-    \item 
-\end{enumerate}
+\section{Cấu trúc dự án}
+\subsection{Tổng quan cấu trúc}
+
+Dự án được tổ chức với cấu trúc thư mục rõ ràng và module hóa:
+
+\begin{verbatim}
+Root/
+├── .gitignore 
+├── README.md                           # Hướng dẫn dự án
+├── report.md                           # Báo cáo dự án
+│
+├── asset/                              # Ảnh và tài liệu
+│   ├── diagram/                        # Các diagram UML
+│   ├── png/
+│   └── svg/
+│
+├── backend/                            # Thư mục backend
+│   ├── src/                            # Mã nguồn backend
+│   │   ├── app.controller.ts           # Controller cấp ứng dụng
+│   │   ├── app.module.ts               # Module chính
+│   │   ├── app.service.ts              # Service cấp ứng dụng
+│   │   ├── main.ts                     # Điểm vào ứng dụng
+│   │   ├── auth/                       # Module xác thực người dùng
+│   │   ├── decorator/                  # Custom decorators
+│   │   ├── mail/                       # Module gửi email
+│   │   ├── modules/                    # Các module nghiệp vụ
+│   │   └── Util/                       # Tiện ích và helper
+│   ├── test/                           # Thư mục test
+│   ├── .env.example                    # File mẫu cấu hình môi trường
+│   ├── .env                            # Cấu hình môi trường
+│   ├── docker-compose.yml              # Cấu hình Docker
+│   └── package.json                    # Cấu hình Node.js
+│
+├── frontend/                           # Thư mục frontend
+│   ├── public/                         # Tài nguyên tĩnh
+│   ├── src/                            # Mã nguồn frontend
+│   │   ├── app/                        # Các trang ứng dụng
+│   │   ├── components/                 # Components tái sử dụng
+│   │   ├── context/                    # Context và quản lý trạng thái
+│   │   └── lib/                        # Thư viện và tiện ích
+│   └── package.json                    # Cấu hình Node.js
+│
+└── report/                             # Báo cáo
+    ├── Assignment_report.tex           # File báo cáo
+    └── references.bib                  # Tài liệu tham khảo
+\end{verbatim}
+
+\subsection{Cấu trúc Backend}
+
+Backend được tổ chức theo kiến trúc module của NestJS, với mỗi đối tượng nghiệp vụ được đóng gói trong một module riêng biệt, bao gồm:
 
 \begin{enumerate}
-    \item Toi di hoc va {\color{red}di lam cho cong } ty
-    \item  abcd
-    \item efg
+    \item \textbf{Module}: Quản lý các dependencies và providers
+    \item \textbf{Controller}: Xử lý các request HTTP
+    \item \textbf{Service}: Xử lý logic nghiệp vụ
+    \item \textbf{DTO (Data Transfer Objects)}: Định nghĩa cấu trúc dữ liệu cho input/output
+    \item \textbf{Schema}: Định nghĩa cấu trúc dữ liệu MongoDB
 \end{enumerate}
 
-\begin{itemize}
-  \item This is my first point
-  \item Another point I want to make 
-  \item[!] A point to exclaim something!
-  \item[$\blacksquare$] Make the point fair and square.
-  \item[NOTE] This entry has no bullet
-  \item[] A blank label?
-\end{itemize}
+\subsection{Cấu trúc Frontend}
+
+Frontend sử dụng Next.js với App Router, tổ chức theo cấu trúc:
+
+\begin{enumerate}
+    \item \textbf{app/}: Chứa các trang và routes
+    \item \textbf{components/}: Components tái sử dụng
+    \item \textbf{context/}: Quản lý trạng thái toàn cục
+    \item \textbf{lib/}: Các tiện ích và helper functions
+\end{enumerate}
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- \section{Phần 4 Hiện thi các kết quả Kiểm thử}
-    \subsection{Test case1}
-        \subsubsection{abc}
-    \begin{itemize}
-         \item kiểm tra 1
-        \item  kiểm tra 2
-        \item   kiểm tra 3
-    \end{itemize}
-       
+ \section{Triển khai dự án}
+    \subsection{Hướng dẫn cài đặt và triển khai}
+        \subsubsection{Yêu cầu hệ thống}
+        \begin{itemize}
+             \item Node.js phiên bản mới nhất
+            \item Docker và Docker Compose
+            \item Windows Subsystem for Linux (WSL2)
+            \item Git
+        \end{itemize}
+        
+        \subsubsection{Các bước cài đặt}
+        \begin{enumerate}
+            \item Clone repository:
+            \begin{verbatim}
+                git clone <repository-url>
+                cd cnpmProject
+            \end{verbatim}
+            
+            \item Cài đặt dependencies Frontend:
+            \begin{verbatim}
+                cd frontend
+                npm install
+                npm run dev
+            \end{verbatim}
+            
+            \item Cài đặt dependencies Backend:
+            \begin{verbatim}
+                cd ../backend
+                npm install
+                npm run dev
+            \end{verbatim}
+            
+            \item Cấu hình Docker cho MongoDB:
+            \begin{verbatim}
+                cd backend
+                docker compose -p restaurant-mongodb up -d
+            \end{verbatim}
+        \end{enumerate}
 
-    \subsection{Test case2}
-    \subsection{Test case3}
-    \subsection{Test case cho phần 4}
-    \subsubsection{test}
-    asdfsdfsafsafdsfsadfsdafsdagasdgdsgsadgsadgsag
-    agsadgsagadsgsagdsgsdgsdgsadgsgsdgdsgsdgsdgsagasgsdg
-    safgdsfsdagsdgdsagdsgsagsagdsgsdgsagsasgsgsda
+    \subsection{Tính năng và luồng hoạt động}
+        \subsubsection{Xác thực và phân quyền}
+        \begin{itemize}
+            \item Đăng ký và xác thực tài khoản qua email
+            \item Đăng nhập với JWT authentication
+            \item Phân quyền theo vai trò (role-based authorization)
+        \end{itemize}
+        
+        \subsubsection{Quản lý đơn hàng}
+        \begin{itemize}
+            \item Khách hàng quét mã QR của bàn để đặt món
+            \item Hệ thống tạo đơn hàng và chi tiết đơn hàng
+            \item Nhân viên nhận và xử lý đơn hàng
+            \item Kiểm tra tình trạng đơn hàng real-time
+        \end{itemize}
+        
+        \subsubsection{Quản lý thực đơn}
+        \begin{itemize}
+            \item Thêm, sửa, xóa món ăn và tùy chọn
+            \item Quản lý công thức và nguyên liệu
+            \item Cập nhật trạng thái món (còn/hết)
+        \end{itemize}
+        
+        \subsubsection{Thanh toán}
+        \begin{itemize}
+            \item Thanh toán trực tiếp tại nhà hàng
+            \item Thanh toán trực tuyến qua VNPAY
+            \item Xuất hóa đơn và gửi qua email
+        \end{itemize}
+
+    \subsection{Kỹ thuật triển khai}
+        \subsubsection{Validation và Error Handling}
+        \begin{itemize}
+            \item Sử dụng ValidationPipe trong NestJS để kiểm tra dữ liệu đầu vào
+            \item Xử lý lỗi với HTTP exceptions
+            \item Bảo mật với bcrypt cho mật khẩu
+        \end{itemize}
+        
+        \subsubsection{Kết nối cơ sở dữ liệu}
+        \begin{itemize}
+            \item Sử dụng Mongoose để kết nối với MongoDB
+            \item Thiết lập schemas với định nghĩa kiểu dữ liệu TypeScript
+            \item Quản lý quan hệ giữa các collections
+        \end{itemize}
    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Kết luận và hướng phát triển}
+    \subsection{Kết luận}
+    Hệ thống quản lý nhà hàng đã được triển khai thành công với kiến trúc hiện đại, đáp ứng được các yêu cầu nghiệp vụ cơ bản. Việc sử dụng các công nghệ như Next.js, NestJS và MongoDB đã mang lại hiệu suất cao và trải nghiệm người dùng tốt.
+    
+    Dự án đã hoàn thành tất cả các Task từ 1-5, bao gồm:
+    \begin{itemize}
+        \item Khai thác yêu cầu và xác định phạm vi dự án
+        \item Mô hình hóa hệ thống với các sơ đồ UML
+        \item Thiết kế kiến trúc phù hợp cho hệ thống
+        \item Triển khai MVP cho các màn hình menu và chi tiết món ăn
+        \item Triển khai các tính năng chính của hệ thống
+    \end{itemize}
+    
+    \subsection{Hướng phát triển tương lai}
+    Các hướng phát triển tiếp theo cho dự án bao gồm:
+    \begin{itemize}
+        \item Tích hợp phân tích dữ liệu và báo cáo thống kê
+        \item Phát triển ứng dụng di động đồng bộ với web
+        \item Tích hợp thêm các cổng thanh toán khác
+        \item Hệ thống đánh giá và phản hồi từ khách hàng
+        \item Tự động hóa quy trình kiểm tra và cảnh báo tồn kho
+    \end{itemize}
+
 \begin{thebibliography}{80}
 
-\bibitem{CVX}
-CVX Introduction
-``\textbf{link: http://cvxr.com/cvx/doc/intro.html/}'',
-\textit{What is CVX}, lần truy cập cuối: 15/04/2017.
+\bibitem{YT}
+``\textbf{Restaurant Management System Guide}'',
+\textit{Youtube Video Reference}, 
+\textbf{link: https://www.youtube.com/watch?v=5Ul\_rUuoUZE},
+lần truy cập cuối: 01/05/2024.
 
-\bibitem{AAB}
-CVX Introduction2
-``\textbf{link: http://cvxr.com/cvx/doc/intro.html/}'',
-\textit{What is CVX}, lần truy cập cuối: 15/04/2017.
+\bibitem{NEXT}
+Next.js Documentation,
+``\textbf{link: https://nextjs.org/docs}'',
+\textit{The React Framework for the Web},
+lần truy cập cuối: 03/05/2024.
+
+\bibitem{NEST}
+NestJS Documentation,
+``\textbf{link: https://docs.nestjs.com/}'',
+\textit{A progressive Node.js framework},
+lần truy cập cuối: 03/05/2024.
+
+\bibitem{MONGO}
+MongoDB Documentation,
+``\textbf{link: https://www.mongodb.com/docs/}'',
+\textit{MongoDB Documentation},
+lần truy cập cuối: 03/05/2024.
+
+\bibitem{DOCKER}
+Docker Documentation,
+``\textbf{link: https://docs.docker.com/}'',
+\textit{Docker Documentation},
+lần truy cập cuối: 03/05/2024.
 
 \end{thebibliography}
 \end{document}

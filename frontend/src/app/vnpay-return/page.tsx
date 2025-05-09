@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 export default function VnPayReturn() {
   const searchParams = useSearchParams();
 
-  const vnp_Amount = searchParams.get("vnp_Amount");
+  const vnp_Amount = searchParams.get("vnp_Amount"); // total
   const vnp_BankCode = searchParams.get("vnp_BankCode");
   const vnp_BankTranNo = searchParams.get("vnp_BankTranNo");
   const vnp_CardType = searchParams.get("vnp_CardType");
@@ -14,7 +14,7 @@ export default function VnPayReturn() {
   const vnp_TmnCode = searchParams.get("vnp_TmnCode");
   const vnp_TransactionNo = searchParams.get("vnp_TransactionNo");
   const vnp_TransactionStatus = searchParams.get("vnp_TransactionStatus");
-  const vnp_TxnRef = searchParams.get("vnp_TxnRef");
+  const vnp_TxnRef = searchParams.get("vnp_TxnRef"); // order id
 
   const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
 
