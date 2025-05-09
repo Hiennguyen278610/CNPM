@@ -4,8 +4,8 @@ interface CartItemProps {
     dishImage: string;
     dishQuantity: number;
     dishOptions: {
-        id: number;
-        label: string;
+        id: string;
+        name: string;
         price: number;
     }[];
     onIncrement:() => void;
@@ -40,7 +40,7 @@ export default function CartItem({ dishName, dishPrice, dishImage, dishQuantity,
                     className="text-sml text-gray-400">
                         Add : {dishOptions.length === 0 ? "None" : dishOptions.map((option, index) => (
                             <span key={index}>
-                                {option.label}
+                                {option.name}
                                 {index < dishOptions.length - 1 && ", "}
                             </span>
                         ))}

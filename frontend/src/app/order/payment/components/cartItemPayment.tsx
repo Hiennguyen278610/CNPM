@@ -3,8 +3,8 @@ interface CartItemProps {
   dishPrice: number;
   dishQuantity: number;
   dishOptions: {
-    id: number;
-    label: string;
+    id: string;
+    name: string;
     price: number;
   }[];
 }
@@ -30,7 +30,7 @@ export default function CartItemPayment({
             ? "None"
             : dishOptions.map((option, index) => (
                 <span key={index}>
-                  {option.label}
+                  {option.name}
                   {index < dishOptions.length - 1 && ", "}
                 </span>
               ))}
