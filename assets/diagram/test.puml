@@ -1,130 +1,53 @@
 @startuml
-class User {
-    -loginId: string
-    -password: string
-    -email: string
-    +GetUserDetails(userID): User
+' Chỉ định kiểu sơ đồ là triển khai
+skinparam componentStyle rectangle
+
+
+node "Client (Khách hàng)" {
+  component "Trình duyệt\n(Website đặt món)" as Browser
 }
 
-class Customer extends User {
-    -wishlist: List<Product>
+
+
+
+node "Web Server\n(Hệ thống xử lý)" {
+  component "Xử lý đăng nhập"
+  component "Xử lý đơn hàng"
+  component "Xử lý thanh toán"
+  component "Hiển thị menu"
+  component "API phản hồi"
 }
 
-class Administrator extends User {
-    +AddProduct(): void
-    +EditProduct(): void
+
+node "Database" {
+  database "CSDL Người dùng"
+  database "CSDL Món ăn"
+  database "CSDL Đơn hàng"
 }
 
-class Guest
 
-class Product {
-    -productID: int
-    -productName: string
-    -description: string
-    -price: decimal
-    -quantity: int
-    -image: image
-    -category: Category
-    -brand: Brand
-    -seller: Seller
-    -rating: decimal
-    +GetImage(productID): image
-    +GetPrice(productID): decimal
+node "Bếp" {
+  component "Màn hình nhận đơn"
 }
 
-class ShoppingCart {
-    -productList: List<Product>
-    +GetCartItems(customerID): List<Product>
-}
 
-enum OrderStatus {
-    Ordered,
-    Processing,
-    Confirmed,
-    Shipped
-}
+' Kết nối các thành phần
+Browser --> "Xử lý đăng nhập"
+Browser --> "Hiển thị menu"
+Browser --> "Xử lý đơn hàng"
+Browser --> "Xử lý thanh toán"
+Browser --> "API phản hồi"
 
-enum Payment {
-    Paypal,
-    Creditcard
-}
 
-class Order extends PaymentClass {
-    -orderId: bigint
-    -orderDate: datetime
-    -shipped_Date: datetime
-    -ship_to: Address
-    -total: decimal
-    -productList: List<Product>
-    +GetOrderDetails(orderId): Order
-    -status: OrderStatus
-    -payment: Payment
-}
 
-abstract class PaymentClass {
-    +CapturePayment(): void
-    +ProcessPayment(): void
-}
 
-class UserAccount {
-    -id: string
-    -address: Address[]
-    -phone: Phone[]
-    -email: string
-    -orders: Order[]
-    +GetCustomer2Address(customerId): Address
-}
+"Xử lý đăng nhập" --> "CSDL Người dùng"
+"Hiển thị menu" --> "CSDL Món ăn"
+"Xử lý đơn hàng" --> "CSDL Đơn hàng"
+"Xử lý thanh toán" --> "CSDL Đơn hàng"
+"API phản hồi" --> "CSDL Người dùng"
 
-class Address {
-    -HouseNo: string
-    -RoadL: string
-    -City: string
-    -State: string
-}
 
-enum CustomerStatus {
-    Active,
-    Blocked
-}
-
-class Seller {
-    -sellerId: int
-    -name: string
-    -rating: decimal
-    +GetSellerDetails(sellerId): Seller
-}
-
-class Category {
-    -categoryId: int
-    -categoryName: string
-}
-
-class Brand {
-    -brandId: int
-    -brandName: string
-}
-
-class Phone {
-    -phoneNumber: string
-    -type: string
-}
-User <|-- Customer
-User <|-- Administrator
-
-Customer o-- ShoppingCart : has
-Order o-- Product : includes
-
-UserAccount *-- Address : has-a
-Customer *-- Address : lives at
-
-Product --> Category : belongs to
-Product --> Brand : of
-Product --> Seller : sold by
-Order --> Address : ships to
-
-Order ..> OrderStatus : depends on
-Order ..> Payment : uses
-Customer ..> CustomerStatus
-Administrator ..> Product : manages
-
+"Xử lý đơn hàng" --> "Màn hình nhận đơn"
+"Xử lý thanh toán" --> "Màn hình nhận đơn"
 @enduml

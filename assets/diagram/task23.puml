@@ -11,7 +11,7 @@ class Account {
     status: string
     verifyCode: string
     verifyTime: int
-    + Account(accountID: id, username: name, password: pwd, phone: phone, email: mail, accountType: type, role: role, status: status, verifyCode: code, verifyTime: time)
+    + Account(accountID: id, username: name, password: pwd,...)
 }
 
 class Customer {
