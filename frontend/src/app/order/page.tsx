@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MenuLeftHead from "@/app/order/components/menuLeftHead";
 import GridProduct from "@/app/order/components/gridProduct";
@@ -20,21 +20,32 @@ export default function OrderLayout() {
     deleteItem,
     getTotalPrice,
     getTotalQuantity,
-  } = useCart(); 
+  } = useCart();
 
-  const [selectedType, setSelectedType] = useState ('All')
+  const [selectedType, setSelectedType] = useState('All');
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [isBottomCartOpen, setIsBottomCartOpen] = useState(false);
+
+  // Responsive check
+  useEffect(() => {
+    const checkScreen = () => setIsDesktop(window.innerWidth >= 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+
+    //Clean up function
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-row">
+    <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row relative">
       {/* Left Content */}
-      <div className="w-[65%] h-full bg-transparent flex flex-col">
+      <div className="w-full md:w-[65%] h-full bg-transparent flex flex-col">
         <MenuLeftHead onClick={() => router.push('/')} />
-
-        <div className="w-full h-9/10 bg-transparent overflow-y-scroll ">
+        <div className="w-full flex-1 bg-transparent overflow-y-scroll">
           <MenuSlider onSelectType={setSelectedType} />
           <div className="w-full h-1/12 flex-nesw gap-4 !p-2">
             <fieldset className="w-full">
-              <legend className="text-center text-2xl text-primary px-2 select-none">Menu</legend>     
+              <legend className="text-center text-2xl text-primary px-2 select-none">Menu</legend>
               <div className="h-px bg-dark flex-1"></div>
             </fieldset>
           </div>
@@ -42,25 +53,78 @@ export default function OrderLayout() {
         </div>
       </div>
 
-      {/* Right Cart */}
-      <div className="w-[35%] h-full bg-white flex flex-col">
-        <MenuRightHead cartItems={getTotalQuantity()} />
-        <CartList 
-          items={cartItems}
-          onIncrement={increaseItem}
-          onDecrement={decreaseItem}
-          onDelete={deleteItem}
-        />
-        <CartFooter
-          onClick={() => 
-            { if (cartItems.length === 0) {
-              alert("Giỏ hàng trống!");
-              return;
-            } 
-              router.push('/order/payment')}}
-          totalPrice={getTotalPrice()}
-        />
-      </div>
+      {/* Right Cart (desktop) */}
+      {isDesktop && (
+        <div className="w-full md:w-[35%] h-1/4 md:h-full bg-white flex flex-col z-40">
+          <MenuRightHead cartItems={getTotalQuantity()} />
+          <CartList
+            items={cartItems}
+            onIncrement={increaseItem}
+            onDecrement={decreaseItem}
+            onDelete={deleteItem}
+          />
+          <CartFooter
+            onClick={() => {
+              if (cartItems.length === 0) {
+                alert("Giỏ hàng trống!");
+                return;
+              }
+              router.push('/order/payment');
+            }}
+            totalPrice={getTotalPrice()}
+          />
+        </div>
+      )}
+
+      {/* Bottom Bar (mobile) */}
+      {!isDesktop && (
+        <div className="fixed bottom-0 w-full z-50">
+          <button
+            className="bg-accent text-white w-full !px-3 flex justify-between items-center text-lg rounded-md hover:bg-red-800"
+            onClick={() => setIsBottomCartOpen(true)}
+          >
+            <span>Your Cart • {getTotalQuantity()} items</span>
+            <span>${getTotalPrice().toFixed(2)}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Overlay + Bottom Sheet Cart (mobile) */}
+      {isBottomCartOpen && !isDesktop && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setIsBottomCartOpen(false)}
+          ></div>
+
+          {/* Bottom Sheet */}
+          <div className="fixed bottom-0 w-full bg-white rounded-t-2xl shadow-xl z-50 max-h-[80%] flex flex-col animate-slide-up">
+            <div className="flex justify-between items-center !p-4 border-b">
+              <h2 className="text-xl font-bold">Your Cart</h2>
+              <button onClick={() => setIsBottomCartOpen(false)} className="text-gray-500 text-2xl">&times;</button>
+            </div>
+            <div className="flex-1 overflow-y-auto !px-4">
+              <CartList
+                items={cartItems}
+                onIncrement={increaseItem}
+                onDecrement={decreaseItem}
+                onDelete={deleteItem}
+              />
+            </div>
+            <CartFooter
+              onClick={() => {
+                if (cartItems.length === 0) {
+                  alert("Giỏ hàng trống!");
+                  return;
+                }
+                router.push('/order/payment');
+              }}
+              totalPrice={getTotalPrice()}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }

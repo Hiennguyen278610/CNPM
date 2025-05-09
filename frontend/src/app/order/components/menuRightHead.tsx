@@ -9,8 +9,8 @@ export default function MenuRightHead({cartItems} : cartQuantity) {
                 <span className="material-symbols-outlined !p-1 text-accent !text-5xl">shopping_cart</span>
                 <p className="text-accent text-2xl">Your cart ({cartItems})</p>
             </div>
-            <div className="w-max h-full bg-secondary flex-nesw !p-4 rounded-3xl">
-                <p className="text-xl select-none">Dine in</p>
+            <div className="w-max h-full bg-secondary flex-nesw !p-4 rounded-3xl md:!p-4 items-center a" >
+                <p className="text-sm md:text-xs md:self-center select-none self-center">Dine in</p>
             </div>
         </div>
     );
