@@ -1,4 +1,5 @@
 import React from "react";
+import { v4 as uuidv4 } from "uuid";
 
 const cartList = [
   { dishName: "Chocolate Lava Cake", dishPrice: 159.99, dishQuantity: 2 },
@@ -24,10 +25,10 @@ export default function MenuFooterListPayment() {
   const handleCancel = () => {
     alert(`Hủy bỏ đơn hàng!`);
   };
-  const handlePayNow = async () => {
-    
+  const handlePayNow = () => {
+    const orderId = uuidv4();
+    window.location.href = `http://localhost:8080/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
-
   return (
     <div className="w-full h-1/5 !p-2 gap-4 !py-5">
       <div className="w-full md:w-auto text-center md:text-left bg-white shadow-md rounded-lg border !p-4 ">

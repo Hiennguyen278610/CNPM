@@ -18,7 +18,7 @@ export class VnpayServices {
       vnp_Amount: total * 26000, // Số tiền thanh toán (đơn vị: đồng)
       vnp_IpAddr: '13.160.92.202',
       vnp_TxnRef: orderId,
-      vnp_OrderInfo: 'Thanh toan don hang {orderId}',
+      vnp_OrderInfo: 'Thanh toan don hang ' + orderId + ' tai VNPAY',
       vnp_OrderType: ProductCode.Other,
       vnp_ReturnUrl: 'http://localhost:3000/vnpay-return',
       vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
