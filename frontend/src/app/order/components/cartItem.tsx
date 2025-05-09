@@ -15,7 +15,6 @@ interface CartItemProps {
 
 export default function CartItem({ dishName, dishPrice, dishImage, dishQuantity, dishOptions=[],
      onIncrement, onDecrement, onDelete }: CartItemProps) {
-    console.log(dishOptions)
     return (
         <div className="cart-item h-auto flex flex-r">
             <div className="w-1/5 aspect-square select-none">

@@ -1,34 +1,28 @@
 import React from "react";
-
-const cartList = [
-  { dishName: "Chocolate Lava Cake", dishPrice: 159.99, dishQuantity: 2 },
-  { dishName: "Seafood Paella", dishPrice: 199.99, dishQuantity: 1 },
-  { dishName: "Grilled Salmon", dishPrice: 249.99, dishQuantity: 1 },
-  { dishName: "Lobster Bisque", dishPrice: 299.99, dishQuantity: 1 },
-  { dishName: "Crab Cakes", dishPrice: 349.99, dishQuantity: 1 },
-  { dishName: "Shrimp Scampi", dishPrice: 399.99, dishQuantity: 1 },
-  { dishName: "Tuna Tartare", dishPrice: 449.99, dishQuantity: 1 },
-];
+import { v4 as uuidv4 } from "uuid";
+import { useCart } from "@/context/CartContext";
 
 export default function MenuFooterListPayment() {
-  const discount = 0; // Giả sử không có giảm giá
-  const subTotal = cartList.reduce(
-    (sum, item) => sum + item.dishPrice * item.dishQuantity,
-    0
-  );
+  const { cartItems, getTotalPrice } = useCart();
+  
+  const subTotal = getTotalPrice();
+  const discount = 0;
   const total = subTotal - discount;
 
   const handleApplyPromo = () => {
     alert(`Chức năng này chưa được triển khai!`);
-    // Nếu muốn set discount thì thêm logic ở đây
   };
   const handleCancel = () => {
     alert(`Hủy bỏ đơn hàng!`);
   };
   const handlePayNow = () => {
-    alert(`Thanh toán đơn hàng!`);
+    const orderId = uuidv4();
+    if (cartItems.length === 0) {
+      alert("Giỏ hàng trống!");
+      return;
+    }
+    window.location.href = `http://localhost:8080/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
-
   return (
     <div className="w-full h-1/5 !p-2 gap-4 !py-5">
       <div className="w-full md:w-auto text-center md:text-left bg-white shadow-md rounded-lg border !p-4 ">
