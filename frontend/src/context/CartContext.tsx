@@ -68,8 +68,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
           
         const getTotalPrice = () => {
             return cartItems.reduce((sum, dish) => {
-            const optionsPrice = dish.options?.reduce((optSum: number, option: any) => optSum + option.price, 0) || 0;
-            return sum + (dish.dishPrice + optionsPrice) * dish.quantity;
+            return sum + dish.dishPrice * dish.quantity;
             }, 0);
         };
 
