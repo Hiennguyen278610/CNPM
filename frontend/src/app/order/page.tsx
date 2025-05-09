@@ -156,7 +156,7 @@ export default function OrderLayout() {
     const itemsForCartList = cartItems.reduce((acc, item) => {
         const existing = acc.find(i =>
             i.dish._id === item.dish._id &&
-            i.dishOptions.map(opt => opt.id).sort().join() === item.selectedOptions.map(opt => opt._id || opt.optionName).sort().join()
+            i.dishOptions.map((opt: { id: any; }) => opt.id).sort().join() === item.selectedOptions.map(opt => opt._id || opt.optionName).sort().join()
         );
         if (existing) {
             existing.quantity += item.quantity;

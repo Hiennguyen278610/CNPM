@@ -17,7 +17,7 @@ interface OptionProps {
 interface OptionItem {
   id: string;
   name: string;
-  price: number; // từ backend đang là string
+  price: number; // from backend
 }
 
 export default function OptionPage({
@@ -151,6 +151,9 @@ export default function OptionPage({
                 <div className='flex justify-center items-center !mb-4'> 
                   <input type='text' placeholder='Note to the kitchen' className='bg-blue-50 w-full !p-2.5 rounded-md' />
                 </div>
+              ))
+            </div>
+          </div>
 
                 <div className='flex justify-between items-center'>
                   <h1 className='text-xl'>Total : </h1>
@@ -194,7 +197,5 @@ export default function OptionPage({
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 }
