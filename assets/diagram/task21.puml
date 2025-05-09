@@ -1,0 +1,67 @@
+@startuml
+|Nhân viên|
+start
+
+|Khách hàng|
+:Quét mã QR;
+:Truy cập website;
+
+:Đăng nhập;
+
+|Hệ thống|
+:Hiển thị thông tin đăng nhập;
+:Kiểm tra thông tin đăng nhập;
+
+if (Thông tin đúng?) then (Đúng)
+  :Cập nhật danh sách món;
+  :Hiển thị món;
+else (Sai)
+  |Khách hàng|
+  :Đăng nhập lại;
+endif
+
+|Khách hàng|
+:Đặt bàn;
+:Xem menu;
+:Đặt món;
+
+|Nhân viên|
+:Tư vấn khách hàng;
+
+|Hệ thống|
+:Xử lý đơn hàng;
+
+|Khách hàng|
+:Thanh toán;
+
+|Hệ thống|
+:Xử lý thanh toán;
+
+if (Thanh toán thành công?) then (Thành công)
+  :Ghi nhận đơn hàng;
+  :Ghi nhận giao dịch;
+
+  |Bếp|
+  :Nhận đơn hàng;
+
+  |Khách hàng|
+  :Nhận món;
+else (Thất bại)
+  stop
+endif
+
+:Phản hồi khách hàng;
+
+|Hệ thống|
+:Ghi nhận phản hồi;
+
+|Nhân viên|
+:Giải đáp phản hồi;
+
+if (Phản hồi xong?) then (Đã xong)
+  stop
+else (Chưa xong)
+  :Phản hồi khách hàng;
+endif
+
+@enduml

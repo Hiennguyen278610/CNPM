@@ -24,6 +24,7 @@
 \usepackage{setspace}
 \usepackage{epsfig}
 \usepackage{tikz}
+\usepackage{float}
 \usepackage{listings}
 \usetikzlibrary{arrows,snakes,backgrounds}
 \usepackage{hyperref}
@@ -60,7 +61,7 @@
 		\tiny \bf 
 	\end{tabular}  }
 \fancyfoot{} % clear all footer fields
-\fancyfoot[L]{\scriptsize \ttfamily Bài tập lớn môn Công Nghệ Phần Mềm - Niên khóa 2024-2025}
+\fancyfoot[L]{\scriptsize \ttfamily Bài tập môn Công Nghệ Phần Mềm - Niên khóa 2024-2025}
 \fancyfoot[R]{\scriptsize \ttfamily Trang {\thepage}/\pageref{LastPage}}
 \renewcommand{\headrulewidth}{0.3pt}
 \renewcommand{\footrulewidth}{0.3pt}
@@ -144,10 +145,13 @@ KHOA CÔNG NGHỆ THÔNG TIN
 \begin{table}[h]
 \begin{tabular}{rrl}
 \hspace{5 cm} & GVHD: &Từ Lãng Phiêu\\
+\hspace{5 cm} & NHÓM: &2\\
 & SV: & Nguyễn Thanh Hiền - 3123560024 \\
 & & Nhan Chí Phong - 3123560062 \\
 & & Hoàng Đình Phú Quý - 3123560074 \\
+& & Nguyễn Việt Hoàng - 3122560022 \\
 & & Nguyễn Thành An - 3122410003 \\
+
 \end{tabular}
 \vspace{1.5 cm}
 \end{table}
@@ -174,44 +178,128 @@ KHOA CÔNG NGHỆ THÔNG TIN
 
 Ứng dụng web quản lý nhà hàng là một hệ thống toàn diện được phát triển nhằm quản lý hiệu quả các hoạt động của nhà hàng, từ quản lý thực đơn, đặt bàn, xử lý đơn hàng đến quản lý nguyên liệu và kho hàng. Hệ thống được xây dựng với kiến trúc phân tách rõ ràng giữa front-end và back-end.
 
-\subsection{Hệ thống quản lý bán hàng}
+\subsection{Bối cảnh của dự án}
+Hiện nay, các nhà hàng đang sử dụng máy POS truyền thống để quản lý giao dịch và hoạt động hàng ngày. Tuy nhiên, chủ doanh nghiệp mong muốn nâng cao hiệu quả kinh doanh bằng cách cải tiến hệ thống hiện tại, bổ sung các chức năng mới để tối ưu trải nghiệm khách hàng và quy trình vận hành.
 
-POS (Point of Sale) là một hệ thống quản lý bán hàng được thiết kế đặc biệt cho các nhà hàng, quán cà
-phê, quán bar, và các cơ sở kinh doanh ăn uống khác. Hệ thống này đóng vai trò trung tâm trong việc
-quản lý giao dịch và hoạt động hàng ngày của một nhà hàng. Tại điểm bán hàng, người bán sẽ tính toán
-số tiền mà khách hàng phải trả, thông báo số tiền đó, có thể chuẩn bị hóa đơn cho khách hàng, và chỉ ra
-các lựa chọn để khách hàng thực hiện thanh toán. Trong kinh doanh nhà hàng, hệ thống POS thường
-bao gồm đặt bàn, đặt món ăn, cảnh báo, thanh toán, xử lý thẻ tín dụng và quản lý khách hàng. Các hệ
-thống như vậy được kỳ vọng sẽ tăng cường trong việc kinh doanh, giảm lãng phí và cơ hội để mở rộng
-quy mô kinh doanh lớn hơn. Hơn nữa, các hệ thống này nên hỗ trợ tùy chọn mang đi. Khách hàng có
-nhiều nhà hàng và cần phát triển một hệ thống POS dựa trên web linh hoạt, triển khai dòng chảy kinh
-doanh hiện tại như mô tả trong Hình 1. (Máy POS hiện tại có thể được thay thế bằng giải pháp dựa trên
-web này).
-
-\subsection{Yêu cầu hệ thống}
-
-Các chủ nhà hàng yêu cầu một số điều kiện đặc biệt cho hệ thống mới:
+\subsection{Các bên liên quan chính}
 \begin{itemize}
-\item Hệ thống nên cho phép không có tiếp xúc trực tiếp giữa Nhân viên và Khách hàng nghĩa là hệ
-thống sẽ được thiết kế để tránh việc nhân viên nhà hàng phải gặp mặt hoặc tiếp xúc trực tiếp với khách
-hàng. Thay vào đó, khách hàng có thể thực hiện các yêu cầu hoặc thao tác như đặt món, thanh toán, đặt
-bàn thông qua một nền tảng trực tuyến (ví dụ: qua điện thoại, máy tính bảng hoặc mã QR).
-\item Hệ thống được triển khai sử dụng công nghệ Web và mã QR, để khách hàng không cần phải cài
-đặt ứng dụng.
-\item Hệ thống có thể sử dụng được trên các thiết bị di động, máy tính bảng hoặc máy tính/laptop
-thông thường.
-\item Hệ thống nên có khả năng mở rộng để sử dụng trong nhiều nhà hàng trong tương lai.
-\item Hiện tại, số giao dịch là khoảng 50 đơn hàng mỗi ngày.
+    \item \textbf{Chủ nhà hàng}: Người đưa ra quyết định và yêu cầu hệ thống, mong muốn vận hành có quy trình chặt chẽ và có khả năng mở rộng trong tương lai.
+    \item \textbf{Khách hàng}: Sử dụng hệ thống đặt món bằng cách quét QR dẫn đến một giao diện được triển khai web, không cần giao tiếp với nhân viên.
+    \item \textbf{Nhân viên}: Quản lý đơn hàng, chuẩn bị món, kiểm tra và xác nhận thanh toán của khách.
+    \item \textbf{Nhóm phát triển phần mềm}: Xây dựng và triển khai hệ thống theo yêu cầu.
 \end{itemize}
 
-\subsection{Công nghệ sử dụng}
+\subsection{Kỳ vọng sẽ được thực hiện}
 \begin{itemize}
-\item \textbf{Frontend}: Next.js - Framework React mạnh mẽ cho phép phát triển giao diện người dùng hiện đại và tối ưu hóa hiệu suất.
-\item \textbf{Backend}: NestJS - Framework Node.js được xây dựng trên Express, hỗ trợ TypeScript và kiến trúc module.
-\item \textbf{Cơ sở dữ liệu}: MongoDB - Cơ sở dữ liệu NoSQL linh hoạt.
-\item \textbf{Containerization}: Docker - Đảm bảo môi trường phát triển và triển khai nhất quán.
-\item \textbf{Quản lý mã nguồn}: Git - Hệ thống kiểm soát phiên bản.
+    \item Khách hàng thao tác quét QR, được điều hướng đến một trang web (không cần khách hàng tốn công cài đặt phần mềm vào điện thoại) nơi đó khách hàng gửi yêu cầu đặt món, không cần trao đổi với nhân viên.
+    \item Nhà hàng sẽ được mở rộng trong tương lai nên cần phần mềm tối ưu khả năng giao dịch và xử lý đơn hàng.
+    \item Thay thế POS truyền thống bằng hệ thống thao tác trên web, hỗ trợ đặt hàng, thanh toán, quản lý đơn hàng.
+    \item Tối ưu hóa quy trình đặt hàng và đảm bảo quy trình làm việc chuyên nghiệp, trong trường hợp này lỗi thiếu sót đặt nhầm món và hay quên từ nhân viên phục vụ sẽ được khắc phục, cũng như giảm thiểu thời gian ghi nhận lại đơn hàng của khách trong trường hợp họ đi đông người và gọi quá nhiều món. Phù hợp khi khách hàng đi đông người và cần đặt rất nhiều món.
 \end{itemize}
+
+\subsection{Phạm vi của dự án}
+\begin{itemize}
+    \item Xây dựng hệ thống thao tác đặt món, đặt bàn, thanh toán trên web từ mã QR.
+    \item Tích hợp quản lý menu, thông báo đơn hàng đến bếp và thanh toán qua nhiều hình thức.
+    \item Có tiềm năng mở rộng dự án.
+    \item Thiết kế các giao diện dành riêng trên mobile và web cho từng đối tượng người dùng tương ứng.
+\end{itemize}
+
+\subsection{Yêu cầu chức năng}
+\begin{itemize}
+\item \textbf{Quản lý khách hàng:}
+  \begin{itemize}
+    \item Thêm xem sửa xóa thông tin khách hàng.
+    \item Phân loại khách hàng truy cập. (Từ website, qua QR tại quán)
+    \item Lưu trữ lịch sử mua hàng của khách hàng.
+    \item Tạo chương trình khách hàng thân thiết.
+  \end{itemize}
+
+\item \textbf{Quản lý nguyên liệu:}
+  \begin{itemize}
+    \item Thêm sửa xóa tạo nguyên liệu.
+    \item Quản lý nhập nguyên liệu.
+  \end{itemize}
+
+\item \textbf{Quản lý món:} 
+  \begin{itemize}
+    \item Thêm, sửa, xóa các món, món ăn kèm/gia vị.
+    \item Quản lý danh mục món ăn.
+    \item Tìm kiếm và lọc món theo nhiều tiêu chí.
+  \end{itemize}
+
+\item \textbf{Quản lý đơn hàng:}
+  \begin{itemize}
+    \item Tạo đơn hàng, sửa đơn hàng.
+    \item Xem danh sách đơn hàng, theo dõi trạng thái đơn hàng.
+    \item Xóa đơn hàng chưa xác nhận thanh toán.
+  \end{itemize}
+
+\item \textbf{Quản lý đặt bàn:}
+  \begin{itemize}
+    \item Tạo lịch đặt bàn, khung giờ đặt và chi nhánh tùy theo lựa chọn khách hàng.
+    \item Kiểm tra số bàn trống, xem vị trí bàn.
+    \item Xem menu tham khảo.
+    \item Ràng buộc yêu cầu đặt bàn. (Đặt trước 1 ngày và trong tuần)
+  \end{itemize}
+
+\item \textbf{Quản lý thanh toán:}
+  \begin{itemize}
+    \item Hỗ trợ thanh toán trực tuyến (tài khoản ngân hàng, ví điện tử, tiền mặt).
+    \item Tính toán tổng tiền và giảm giá.
+    \item Xuất hóa đơn điện tử.
+  \end{itemize}
+ 
+\item \textbf{Quản lý người dùng:}
+  \begin{itemize}
+    \item Đăng ký, đăng nhập cho người dùng.
+    \item Phân quyền cho các vai trò (quản trị viên, nhân viên, khách hàng).
+  \end{itemize}
+
+\item \textbf{Quản lý doanh thu:}
+  \begin{itemize}
+    \item Tạo báo cáo doanh thu theo ngày/tháng.
+    \item Thống kê lượt đặt bàn, đặt món.
+    \item Hệ thống phân tích xu hướng món ăn bán chạy.
+  \end{itemize}
+\end{itemize}
+
+\subsection{Yêu cầu phi chức năng}
+\begin{itemize}
+\item \textbf{Hiệu năng:}
+  \begin{itemize}
+    \item Thời gian tải trang ≤ 3 giây.
+    \item Xử lý tối đa 100 giao dịch đồng thời.
+    \item Tốc độ phản hồi < 1 giây cho mỗi thao tác.
+  \end{itemize}
+  
+\item \textbf{Bảo mật:}
+  \begin{itemize}
+    \item Mã hóa dữ liệu nhạy cảm (tài khoản, giao dịch).
+    \item Xác thực hai yếu tố cho thanh toán.
+    \item Quản lý quyền truy cập chặt chẽ.
+  \end{itemize}
+  
+\item \textbf{Độ tin cậy:}
+  \begin{itemize}
+    \item Sao lưu dữ liệu tự động, đảm bảo không mất dữ liệu.
+    \item Hoạt động ổn định trong khung giờ 8h–22h.
+  \end{itemize}
+  
+\item \textbf{Yêu cầu về tổ chức phần mềm:}
+  \begin{itemize}
+    \item Phần mềm có khả năng mở rộng trong tương lai
+    \item Giao diện thân thiện, dễ sử dụng cho cả khách hàng và nhân viên.
+    \item Hệ thống cần dễ dàng bảo trì và cập nhật mà không làm gián đoạn dịch vụ.
+  \end{itemize}
+  
+\item \textbf{Yêu cầu ngoại cảnh:}
+  \begin{itemize}
+    \item Đảm bảo bảo mật thông tin khách hàng, nhân viên, quản lý.
+    \item Tuân thủ quy định về thanh toán điện tử và bảo vệ dữ liệu cá nhân.
+  \end{itemize}
+\end{itemize}
+
 \section{Kiến trúc hệ thống}
     \subsection{Tổng quan kiến trúc}
     
@@ -252,15 +340,103 @@ thông thường.
         \item \textbf{Inventory}: Quản lý kho hàng
     \end{enumerate}
 
+\newpage
 \section{Phát triển dự án}
-    \subsection{Quy trình công việc}
+    \subsection{Các sơ đồ của hệ thống}
     \begin{itemize}
-        \item \textbf{Task 1: Khai thác yêu cầu} - Xác định bối cảnh, yêu cầu chức năng và phi chức năng, vẽ sơ đồ use-case
-        \item \textbf{Task 2: Mô hình hóa hệ thống} - Vẽ sơ đồ hoạt động, trình tự và lớp
-        \item \textbf{Task 3: Thiết kế kiến trúc} - Mô tả phương pháp kiến trúc và vẽ sơ đồ triển khai
-        \item \textbf{Task 4: Triển khai Sprint 1} - Thiết lập kho lưu trữ, tạo tài liệu và triển khai MVP cho màn hình menu
-        \item \textbf{Task 5: Triển khai Sprint 2} - Triển khai MVP cho các màn hình chi tiết
-    \end{itemize}
+        \subsubsection{Task 1.3 - Use case}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.8\textwidth]{task13.png}
+            \caption{Sơ đồ Use Case của hệ thống}
+            \label{fig:task13}
+        \end{figure}
+        \item Đặc tả use case:
+        
+        \begin{table}[H]
+            \centering
+            \begin{tabular}{|p{3cm}|p{12cm}|}
+                \hline
+                \textbf{Tên use case} & Đặt bàn \\
+                \hline
+                \textbf{Tóm tắt} & Khách hàng truy cập website, đăng nhập (hoặc đăng ký nếu chưa có tài khoản) và thực hiện thao tác đặt bàn theo chính sách (đặt trước 1 ngày, chỉ trong tuần). Hệ thống ghi nhận yêu cầu đặt bàn và gửi thông báo cho hệ thống đặt bàn. Hệ thống đặt bàn sau đó kiểm tra thông tin đặt bàn, xác nhận và cập nhật trạng thái đặt bàn trên hệ thống. \\
+                \hline
+                \textbf{Tác nhân} & Khách hàng, hệ thống đặt bàn \\
+                \hline
+                \textbf{Tiền điều kiện} & 
+                \begin{itemize}
+                    \item Khách hàng đã có tài khoản
+                    \item Đặt bàn: đặt trước 1 ngày, chỉ cho ngày trong tuần.
+                \end{itemize} \\
+                \hline
+                \textbf{Hậu điều kiện} & 
+                \begin{itemize}
+                    \item Yêu cầu đặt bàn đã được ghi nhận và xử lý thành công trên hệ thống.
+                    \item Hệ thống đặt bàn có danh sách các đặt bàn đã được xác nhận để chuẩn bị phục vụ khách hàng vào ngày đã đặt.
+                \end{itemize} \\
+                \hline
+                \textbf{Luồng chính} & 
+                1. Khách hàng:
+                \begin{itemize}
+                    \item Truy cập website qua link có sẵn.
+                    \item Đăng nhập hoặc đăng ký tài khoản với thông tin cần thiết.
+                    \item Chọn chức năng "Đặt bàn".
+                    \item Nhập thông tin đặt bàn: ngày, giờ, số lượng khách, chi nhánh.
+                    \item Xác nhận thông tin và gửi yêu cầu đặt bàn.
+                \end{itemize}
+                
+                2. Hệ thống:
+                \begin{itemize}
+                    \item Kiểm tra tính hợp lệ của thông tin đặt bàn (đủ thông tin, tuân thủ chính sách đặt trước 1 ngày và trong tuần).
+                    \item Ghi nhận yêu cầu và chuyển thông tin đặt bàn tới nhân viên quản lý.
+                \end{itemize}
+                
+                3. Hệ thống đặt bàn:
+                \begin{itemize}
+                    \item Nhận thông báo về yêu cầu đặt bàn từ hệ thống.
+                    \item Kiểm tra thông tin đặt bàn, xác minh lịch trình và khả năng phục vụ của quán.
+                    \item Xác nhận yêu cầu đặt bàn (hoặc liên hệ khách hàng nếu cần điều chỉnh/chốt lại chi tiết).
+                    \item Cập nhật trạng thái đặt bàn trên hệ thống và gửi xác nhận cuối cùng tới khách hàng.
+                \end{itemize} \\
+                \hline
+                \textbf{Luồng thay thế} & 
+                1. Lỗi đăng nhập/đăng ký: Nếu khách hàng nhập sai thông tin hoặc gặp lỗi trong quá trình đăng nhập, hệ thống sẽ thông báo lỗi và yêu cầu nhập lại thông tin.
+                
+                2. Yêu cầu đặt bàn không hợp lệ: Nếu khách hàng cố gắng đặt bàn vào ngày không thuộc chính sách (ví dụ: hôm nay hoặc cuối tuần), hệ thống sẽ hiển thị thông báo lỗi và hướng dẫn khách hàng chọn ngày hợp lệ.
+                
+                3. Thông tin đặt bàn cần xác nhận thêm: Nếu hệ thống đặt bàn phát hiện có yêu cầu đặc biệt (ví dụ: số lượng khách quá đông so với sức chứa quán hoặc yêu cầu đặt chỗ riêng biệt), nó sẽ không chấp nhận yêu cầu và gửi cảnh báo để điều chỉnh thông tin trước khi xác nhận. \\
+                \hline
+            \end{tabular}
+            \label{tab:usecase-table}
+        \end{table}
+        \subsubsection{Task 2.1 - Sơ đồ hoạt động (Activity diagram)}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{task21.png}
+            \caption{Sơ đồ hoạt động của hệ thống}
+            \label{fig:task21}
+        \end{figure}
+        \subsubsection{Task 2.2 - Sơ đồ trình tự (Sequence diagram)}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{task22.png}
+            \caption{Sơ đồ trình tự của hệ thống}
+            \label{fig:task22}
+        \end{figure}
+        \subsubsection{Task 2.3 - Sơ đồ lớp (Class diagram)}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{task23.png}
+            \caption{Sơ đồ lớp của hệ thống}
+            \label{fig:task23}
+        \end{figure}
+        \subsubsection{Task 3.2 - Sơ đồ triển khai (Class diagram)}
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.9\textwidth]{task32.png}
+            \caption{Sơ đồ triển khai của hệ thống}
+            \label{fig:task32}
+        \end{figure}
     
     \subsection{Các chức năng đã triển khai}
     \begin{itemize}
@@ -278,6 +454,15 @@ thông thường.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Cấu trúc dự án}
+\begin{itemize}
+    \item Cấu trúc được dùng trong dự án là một implementation của mẫu thiết kế "Repository Pattern" và kiến trúc MVC (Model-View-Controller) mà NestJS áp dụng. Khi thực thi lệnh nest g resource <tên module> --no-spec trên terminal, NestJS tự động tạo ra một cấu trúc module đầy đủ theo RESTful API.
+    \item Luồng thông tin trong cấu trúc này:
+Controller: Tiếp nhận HTTP request từ client
+DTO (Data Transfer Object): Xác thực và chuyển đổi dữ liệu đầu vào
+Service: Xử lý logic nghiệp vụ
+Schema: Đại diện cho dữ liệu trong cơ sở dữ liệu
+    \item Luồng xử lý: Request → Controller → Service → Schema → Database và ngược lại.
+\end{itemize}
 \subsection{Tổng quan cấu trúc}
 
 Dự án được tổ chức với cấu trúc thư mục rõ ràng và module hóa:
@@ -291,7 +476,6 @@ Root/
 ├── asset/                              # Ảnh và tài liệu
 │   ├── diagram/                        # Các diagram UML
 │   ├── png/
-│   └── svg/
 │
 ├── backend/                            # Thư mục backend
 │   ├── src/                            # Mã nguồn backend
@@ -346,9 +530,89 @@ Frontend sử dụng Next.js với App Router, tổ chức theo cấu trúc:
     \item \textbf{context/}: Quản lý trạng thái toàn cục
     \item \textbf{lib/}: Các tiện ích và helper functions
 \end{enumerate}
+
+\subsection{Kho lưu trữ trực tuyến}
+Dự án được lưu trữ và phát triển trên GitHub tại địa chỉ: \url{https://github.com/Hiennguyen278610/CNPM/commits/main/}. 
+Kho lưu trữ này chứa toàn bộ mã nguồn của dự án, bao gồm cả phần frontend và backend, cũng như tài liệu thiết kế và các tài nguyên liên quan.
+
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Giao diện dự án}
+    \subsection{Giao diện được thiết kế}
+    
+    Giao diện ban đầu của dự án được thiết kế trên nền tảng Figma với liên kết: \url{https://www.figma.com/file/restaurant-ordering-system}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaHome.png}
+        \caption{Giao diện trang chủ - Hiển thị thông tin chào mừng và danh mục món ăn phổ biến}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaLogin.png}
+        \caption{Giao diện đăng nhập - Cho phép người dùng đăng nhập với email và mật khẩu}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaRegister.png}
+        \caption{Giao diện đăng ký - Cho phép người dùng đăng ký tài khoản mới với thông tin cá nhân}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaMenu.png}
+        \caption{Giao diện thực đơn - Hiển thị danh sách các món ăn theo từng danh mục}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaOrderDetail.png}
+        \caption{Giao diện chi tiết đơn hàng - Hiển thị thông tin chi tiết về đơn hàng đã đặt}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaPayment.png}
+        \caption{Giao diện thanh toán - Cho phép người dùng lựa chọn phương thức thanh toán và hoàn tất đơn hàng}
+    \end{figure}
+    
+    \subsection{Giao diện được triển khai}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{home.png}
+        \caption{Giao diện trang chủ - Hiển thị thông tin chào mừng và danh mục món ăn phổ biến}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{login.png}
+        \caption{Giao diện đăng nhập - Cho phép người dùng đăng nhập với email và mật khẩu}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{register.png}
+        \caption{Giao diện đăng ký - Cho phép người dùng đăng ký tài khoản mới với thông tin cá nhân}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{figmaMenu.png}
+        \caption{Giao diện thực đơn - Hiển thị danh sách các món ăn theo từng danh mục}
+    \end{figure}
+    
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{payment.png}
+        \caption{Giao diện thanh toán - Cho phép người dùng lựa chọn phương thức thanh toán và hoàn tất đơn hàng}
+    \end{figure}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  \section{Triển khai dự án}
     \subsection{Hướng dẫn cài đặt và triển khai}
         \subsubsection{Yêu cầu hệ thống}
@@ -393,7 +657,6 @@ Frontend sử dụng Next.js với App Router, tổ chức theo cấu trúc:
         \begin{itemize}
             \item Đăng ký và xác thực tài khoản qua email
             \item Đăng nhập với JWT authentication
-            \item Phân quyền theo vai trò (role-based authorization)
         \end{itemize}
         
         \subsubsection{Quản lý đơn hàng}
@@ -415,7 +678,6 @@ Frontend sử dụng Next.js với App Router, tổ chức theo cấu trúc:
         \begin{itemize}
             \item Thanh toán trực tiếp tại nhà hàng
             \item Thanh toán trực tuyến qua VNPAY
-            \item Xuất hóa đơn và gửi qua email
         \end{itemize}
 
     \subsection{Kỹ thuật triển khai}
@@ -452,11 +714,14 @@ Frontend sử dụng Next.js với App Router, tổ chức theo cấu trúc:
     Các hướng phát triển tiếp theo cho dự án bao gồm:
     \begin{itemize}
         \item Tích hợp phân tích dữ liệu và báo cáo thống kê
+        \item Tích hợp công cụ quản lý nhà hàng đầy đủ và nâng cao
         \item Phát triển ứng dụng di động đồng bộ với web
         \item Tích hợp thêm các cổng thanh toán khác
         \item Hệ thống đánh giá và phản hồi từ khách hàng
         \item Tự động hóa quy trình kiểm tra và cảnh báo tồn kho
     \end{itemize}
+
+\newpage
 
 \begin{thebibliography}{80}
 
@@ -489,6 +754,31 @@ Docker Documentation,
 ``\textbf{link: https://docs.docker.com/}'',
 \textit{Docker Documentation},
 lần truy cập cuối: 03/05/2024.
+
+\bibitem{REACTJS}
+React Documentation,
+``\textbf{link: https://react.dev/reference/react}'',
+\textit{A JavaScript library for building user interfaces},
+lần truy cập cuối: 05/05/2024.
+
+\bibitem{TAILWIND}
+Tailwind CSS Documentation,
+``\textbf{link: https://tailwindcss.com/docs}'',
+\textit{A utility-first CSS framework},
+lần truy cập cuối: 05/05/2024.
+
+\bibitem{NPM}
+npm Documentation,
+``\textbf{link: https://docs.npmjs.com/}'',
+\textit{The world's largest software registry},
+lần truy cập cuối: 05/05/2024.
+
+\bibitem{SWIPER}
+Swiper Documentation,
+``\textbf{link: https://swiperjs.com/get-started}'',
+\textit{The Most Modern Mobile Touch Slider},
+lần truy cập cuối: 05/05/2024.
+
 
 \end{thebibliography}
 \end{document}
