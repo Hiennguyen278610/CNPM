@@ -21,6 +21,8 @@ export default function OrderLayout() {
     getTotalPrice,
     getTotalQuantity,
   } = useCart();
+  const table = JSON.parse(localStorage.getItem("table") || '{}');
+  const tableNameLocal = table.tableName || "Bàn số 0";
 
   const [selectedType, setSelectedType] = useState('All');
   const [isDesktop, setIsDesktop] = useState(true);
@@ -56,7 +58,7 @@ export default function OrderLayout() {
       {/* Right Cart (desktop) */}
       {isDesktop && (
         <div className="w-full md:w-[35%] h-1/4 md:h-full bg-white flex flex-col z-40">
-          <MenuRightHead cartItems={getTotalQuantity()} />
+          <MenuRightHead cartItems={getTotalQuantity()} tableName={tableNameLocal} />
           <CartList
             items={cartItems}
             onIncrement={increaseItem}
@@ -101,8 +103,18 @@ export default function OrderLayout() {
           {/* Bottom Sheet */}
           <div className="fixed bottom-0 w-full bg-white rounded-t-2xl shadow-xl z-50 max-h-[80%] flex flex-col animate-slide-up">
             <div className="flex justify-between items-center !p-4 border-b">
-              <h2 className="text-xl font-bold">Your Cart</h2>
-              <button onClick={() => setIsBottomCartOpen(false)} className="text-gray-500 text-2xl">&times;</button>
+              <div className="flex flex-row justify-center items-center">
+                <h2 className="text-xl font-bold !mr-3">Your Cart</h2>
+                <div className="w-max h-full bg-secondary flex flex-row justify-center items-center !p-2 rounded-3xl">
+                  <p className="text-md select-none md:text-xs">{tableNameLocal}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsBottomCartOpen(false)} 
+                className="text-gray-500 text-2xl hover:text-gray-900"
+              >
+                &times;
+              </button>
             </div>
             <div className="flex-1 overflow-y-auto !px-4">
               <CartList

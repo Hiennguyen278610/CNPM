@@ -8,9 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TableService {
-  constructor(
-    @InjectModel('Table') private tableModel: Model<Table>,
-  ) {}
+  constructor(@InjectModel('Table') private tableModel: Model<Table>) {}
   create(createTableDto: CreateTableDto) {
     const { tableName } = createTableDto; // Destructure the DTO to get the properties
     const qrToken = uuidv4(); // Generate a unique token using uuid
@@ -21,26 +19,20 @@ export class TableService {
     });
   }
 
-
   findAll() {
     return this.tableModel.find();
   }
   async findByQrToken(qrToken: string) {
     const table = await this.tableModel.findOne({ qrToken });
-    const qrUrl = `https://quickchart.io/qr?text=${qrToken}`;
-    return { table, qrUrl };
+    return table;
   }
 
-  findOne(id: number) {
-
-    return `This action returns a #${id} table`;
+  findOne(qrToken: string) {
+    return this.tableModel.findOne({ qrToken });
   }
-
-  update(id: number, updateTableDto: UpdateTableDto) {
-    return `This action updates a #${id} table`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} table`;
+  update(id: string, updateTableDto: UpdateTableDto) {
+    return this.tableModel.findByIdAndUpdate(id, updateTableDto, {
+      new: true,
+    });
   }
 }
