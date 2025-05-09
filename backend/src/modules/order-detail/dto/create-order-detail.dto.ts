@@ -1,5 +1,4 @@
-// src/modules/order-detail/dto/create-order-detail.dto.ts
-import { IsInt, IsMongoId, IsNotEmpty, Min } from 'class-validator';
+import { IsInt, IsMongoId, IsNotEmpty, Min, IsArray, IsOptional } from 'class-validator';
 
 export class CreateOrderDetailDto {
   @IsNotEmpty({ message: 'Order ID is required' })
@@ -14,4 +13,9 @@ export class CreateOrderDetailDto {
   @IsInt({ message: 'Quantity must be an integer' })
   @Min(1, { message: 'Quantity must be at least 1' })
   quantity: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  options?: string[];
 }

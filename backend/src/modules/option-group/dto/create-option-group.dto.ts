@@ -1,15 +1,16 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString, IsArray } from 'class-validator';
 
 export class CreateOptionGroupDto {
     @IsNotEmpty()
-    @IsNumber()
-    dishID : number
+    @IsMongoId()
+    dishID: string;
 
     @IsNotEmpty()
-    @IsNumber()
-    optionID : number
+    @IsArray()
+    @IsMongoId({ each: true })
+    optionID: string[];
 
     @IsNotEmpty()
     @IsString()
-    optionGroupName : string
+    optionGroupName: string;
 }
