@@ -1,15 +1,8 @@
+import { useCart } from "@/context/CartContext";
 import CartItemPayment from "./cartItemPayment";
-const cartList = [
-  { dishName: "Chocolate Lava Cake", dishPrice: 159.99, dishQuantity: 2 },
-  { dishName: "Seafood Paella", dishPrice: 199.99, dishQuantity: 1 },
-  { dishName: "Grilled Salmon", dishPrice: 249.99, dishQuantity: 1 },
-  { dishName: "Lobster Bisque", dishPrice: 299.99, dishQuantity: 1 },
-  { dishName: "Crab Cakes", dishPrice: 349.99, dishQuantity: 1 },
-  { dishName: "Shrimp Scampi", dishPrice: 399.99, dishQuantity: 1 },
-  { dishName: "Tuna Tartare", dishPrice: 449.99, dishQuantity: 1 },
-];
 
 export default function CartListPayment() {
+  const { cartItems } = useCart();
   return (
     <div className="w-full h-13/20 overflow-y-scroll !p-2 flex flex-col gap-4">
       <div className="w-full h-1/10 flex items-center !p-2">
@@ -20,12 +13,13 @@ export default function CartListPayment() {
         <div className="flex-1 h-px bg-dark"></div>
       </div>
       <div className="w-full h-full overflow-y-scroll !p-2 flex flex-col gap-4">
-        {cartList.map((dish, index) => (
+        {cartItems.map((dish: any, index: number) => (
           <CartItemPayment
             key={index}
             dishName={dish.dishName}
             dishPrice={dish.dishPrice}
-            dishQuantity={dish.dishQuantity}
+            dishQuantity={dish.quantity}
+            dishOptions={dish.dishOptions}
           />
         ))}
       </div>
