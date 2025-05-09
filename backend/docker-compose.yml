@@ -1,15 +1,12 @@
+version: "3.8"
 services:
   mongodb:
     image: mongo:5.0.15
+    container_name: cnpm-mongodb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}  # Lấy từ .env
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}  # Lấy từ .env
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "${MONGO_PORT}:27017"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - mongodb_data_container:/data/db
-
-volumes:
-  mongodb_data_container:
-    # docker compose -p dbname-mongodb-4rn up -d
-    # Chạy lệnh dưới terminal trong backend. Chỗ dbname muốn đặt gì đặt, ví dụ: docker compose -p hyannguyen-mongodb-4rn up -d

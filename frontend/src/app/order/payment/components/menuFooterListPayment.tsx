@@ -20,13 +20,12 @@ export default function MenuFooterListPayment() {
 
   const handleApplyPromo = () => {
     alert(`Chức năng này chưa được triển khai!`);
-    // Nếu muốn set discount thì thêm logic ở đây
   };
   const handleCancel = () => {
     alert(`Hủy bỏ đơn hàng!`);
   };
-  const handlePayNow = () => {
-    alert(`Thanh toán đơn hàng!`);
+  const handlePayNow = async () => {
+    
   };
 
   return (

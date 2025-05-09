@@ -1,7 +1,9 @@
-interface CometoPayment {
-    onClick?: () => void;
-}
-export default function CartFooter({ onClick }: CometoPayment) {
+
+type CartFooterProps = {
+    total: number;
+    onClick: () => void;
+  };
+export default function CartFooter( { total, onClick }: CartFooterProps) {
     return (
         <div className="w-full h-1/5 !p-2">
             <div className="w-full h-1/2">
@@ -11,7 +13,7 @@ export default function CartFooter({ onClick }: CometoPayment) {
                 </div>
                 <div className="w-full h-2/3 flex justify-between text-primary select-none">
                     <p className="text-2xl">Total: </p>
-                    <p className="text-accent text-2xl">$123.14</p>
+                    <p className="text-accent text-2xl">${total}</p>
                 </div>
             </div>
             <div className="w[-full h-1/2 !p-2 flex-nesw">
