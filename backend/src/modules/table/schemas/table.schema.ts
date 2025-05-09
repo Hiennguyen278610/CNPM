@@ -6,6 +6,8 @@ export type TableDocument = HydratedDocument<Table>;
 @Schema({timestamps: true})
 export class Table {
     @Prop()
+    id: string;
+    @Prop()
     tableName: string;
     @Prop()
     qrToken: string;

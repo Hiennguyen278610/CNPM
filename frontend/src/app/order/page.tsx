@@ -20,7 +20,9 @@ export default function OrderLayout() {
     deleteItem,
     getTotalPrice,
     getTotalQuantity,
-  } = useCart(); 
+  } = useCart();
+  const table = JSON.parse(localStorage.getItem("table") || '{}');
+  const tableNameLocal = table.tableName || "Bàn số 0";
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-row">
@@ -40,7 +42,7 @@ export default function OrderLayout() {
 
       {/* Right Cart */}
       <div className="w-[35%] h-full bg-white flex flex-col">
-        <MenuRightHead cartItems={getTotalQuantity()} />
+        <MenuRightHead cartItems={getTotalQuantity()} tableName={tableNameLocal} />
         <CartList 
           items={cartItems}
           onIncrement={increaseItem}
