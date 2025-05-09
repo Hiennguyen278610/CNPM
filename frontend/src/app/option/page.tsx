@@ -1,13 +1,6 @@
 'use client';
-import React, { useState } from 'react';
-
-const seasonings = [
-    {id:1,label:"Spicy", price:0.0},
-    {id:2,label:"Cheese", price: 0.2},
-    {id:3,label:"Egg", price: 0.3},
-    {id:4,label:"Sausage", price: 0.8},
-    {id:5,label:"Baecon", price: 0.5}
-]
+import React, {useEffect, useState } from 'react';
+import axios from 'axios';
 
 
 interface OptionProps {
@@ -17,6 +10,12 @@ interface OptionProps {
   show:boolean;
   onClose: () => void
   onAddToCart: (item:any) => void
+}
+
+interface OptionItem {
+  id: string;
+  name: string;
+  price: number; // từ backend đang là string
 }
 
 export default function OptionPage({
@@ -30,9 +29,19 @@ export default function OptionPage({
 
   if(!show) return null;
   const [totalPrice, setTotalPrice] = useState(dishPrice);
-  const [checked, setChecked] = useState<number[]>([]);
+  const [checked, setChecked] = useState<string[]>([]);
+  const [options, setOptions] = useState<OptionItem[]>([]);
 
-  const handleCheck = (id:number ,seasoningPrice: number) => {
+   useEffect(() => {
+    axios
+      .get('http://localhost:3000/backend/api/option')
+      .then((res) => setOptions(res.data))
+      .catch((err) => console.error('Error fetching options:', err));
+  }, []);
+
+  
+
+  const handleCheck = (id:string ,seasoningPrice: number) => {
     const isCheck = checked.includes(id)
 
     if(isCheck){
@@ -69,11 +78,11 @@ export default function OptionPage({
                         />
                         <div className="flex flex-col flex-grow">
                             <div className="flex justify-between items-start">
-                                <h2 className="text-2xl font-semibold text-gray-800">{dishName}</h2>
-                                <span className="text-lg font-semibold text-gray-700">${dishPrice}</span>
+                                <h2 className="text-xl font-semibold text-gray-800 !mr-5">{dishName}</h2>
+                                <span className="text-xl text-black">${dishPrice}</span>
                             </div>
                             <p className="text-sm text-gray-600 !mt-6">
-                                Hambuger so harm for you, let anti hambuger, please hambuger so boring, hambuger áo so hot
+                                Optional accompaniments to make your meal become more delicious
                             </p>
                         </div>
                     </div>
@@ -83,7 +92,7 @@ export default function OptionPage({
                         <h1 className="text-lg font-semibold !mb-4">Seasonings</h1>
 
                         <div className="flex flex-col">
-                            {seasonings.map((seasoning, index) => (
+                            {options.map((seasoning, index) => (
                             <div key={index} className="flex justify-between items-center">
                                 <div className="flex items-center !my-1.5">
                                     <input 
@@ -91,7 +100,7 @@ export default function OptionPage({
                                       checked={checked.includes(seasoning.id)}
                                       onChange={()=>handleCheck(seasoning.id ,seasoning.price)}
                                     />
-                                    <span className="!ml-2">{seasoning.label}</span>
+                                    <span className="!ml-2">{seasoning.name}</span>
                                 </div>
                                 <span className="text-sm text-black">${seasoning.price}</span>
                             </div>
@@ -120,7 +129,7 @@ export default function OptionPage({
                             <button 
                               className='bg-red-500 text-white rounded-2xl w-[160px] !py-1 !ml-1 hover:bg-red-800 transition'
                               onClick={() => {
-                                const selectedOptions = checked.map(id => seasonings.find(s => s.id === id));
+                                const selectedOptions = checked.map(id => options.find(s => s.id === id));
                                 onAddToCart({
                                   dishName,
                                   dishPrice: totalPrice,
