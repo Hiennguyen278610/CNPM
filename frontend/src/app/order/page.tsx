@@ -48,7 +48,12 @@ export default function OrderLayout() {
           onDelete={deleteItem}
         />
         <CartFooter
-          onClick={() => router.push('/order/payment')}
+          onClick={() => 
+            { if (cartItems.length === 0) {
+              alert("Giỏ hàng trống!");
+              return;
+            } 
+              router.push('/order/payment')}}
           totalPrice={getTotalPrice()}
         />
       </div>

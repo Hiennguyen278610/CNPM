@@ -1,22 +1,12 @@
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-
-const cartList = [
-  { dishName: "Chocolate Lava Cake", dishPrice: 159.99, dishQuantity: 2 },
-  { dishName: "Seafood Paella", dishPrice: 199.99, dishQuantity: 1 },
-  { dishName: "Grilled Salmon", dishPrice: 249.99, dishQuantity: 1 },
-  { dishName: "Lobster Bisque", dishPrice: 299.99, dishQuantity: 1 },
-  { dishName: "Crab Cakes", dishPrice: 349.99, dishQuantity: 1 },
-  { dishName: "Shrimp Scampi", dishPrice: 399.99, dishQuantity: 1 },
-  { dishName: "Tuna Tartare", dishPrice: 449.99, dishQuantity: 1 },
-];
+import { useCart } from "@/context/CartContext";
 
 export default function MenuFooterListPayment() {
-  const discount = 0; // Giả sử không có giảm giá
-  const subTotal = cartList.reduce(
-    (sum, item) => sum + item.dishPrice * item.dishQuantity,
-    0
-  );
+  const { cartItems, getTotalPrice } = useCart();
+  
+  const subTotal = getTotalPrice();
+  const discount = 0;
   const total = subTotal - discount;
 
   const handleApplyPromo = () => {
@@ -27,6 +17,10 @@ export default function MenuFooterListPayment() {
   };
   const handlePayNow = () => {
     const orderId = uuidv4();
+    if (cartItems.length === 0) {
+      alert("Giỏ hàng trống!");
+      return;
+    }
     window.location.href = `http://localhost:8080/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
   return (
