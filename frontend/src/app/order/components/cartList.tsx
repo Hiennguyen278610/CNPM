@@ -7,10 +7,11 @@ interface CartListProps {
         dishImage: string;
         quantity: number;
         dishOptions: {
-            id: number;
-            label: string;
+            id: string;
+            name: string;
             price: number;
         }[];
+        dishType: string;
     }[];
     onIncrement: (index:number) => void;
     onDecrement: (index:number) => void;
@@ -28,6 +29,7 @@ export default function CartList({ items, onIncrement, onDecrement, onDelete }: 
                     dishImage={dish.dishImage}
                     dishQuantity={dish.quantity}
                     dishOptions={dish.dishOptions}
+                    dishType={dish.dishType}
                     onIncrement={() => onIncrement(index)}
                     onDecrement={() => onDecrement(index)}
                     onDelete={() => onDelete(dish) }

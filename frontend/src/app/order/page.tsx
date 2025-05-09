@@ -1,5 +1,5 @@
 'use client';
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import MenuLeftHead from "@/app/order/components/menuLeftHead";
 import GridProduct from "@/app/order/components/gridProduct";
@@ -24,6 +24,8 @@ export default function OrderLayout() {
   const table = JSON.parse(localStorage.getItem("table") || '{}');
   const tableNameLocal = table.tableName || "Bàn số 0";
 
+  const [selectedType, setSelectedType] = useState ('All')
+
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-row">
       {/* Left Content */}
@@ -31,12 +33,14 @@ export default function OrderLayout() {
         <MenuLeftHead onClick={() => router.push('/')} />
 
         <div className="w-full h-9/10 bg-transparent overflow-y-scroll ">
-          <MenuSlider />
+          <MenuSlider onSelectType={setSelectedType} />
           <div className="w-full h-1/12 flex-nesw gap-4 !p-2">
-            <legend className="text-center !text-2xl text-primary px-2 select-none">Sea Food</legend>
-            <div className="h-px bg-dark flex-1"></div>
+            <fieldset className="w-full">
+              <legend className="text-center text-2xl text-primary px-2 select-none">Menu</legend>     
+              <div className="h-px bg-dark flex-1"></div>
+            </fieldset>
           </div>
-          <GridProduct onAddToCart={addToCart} />
+          <GridProduct onAddToCart={addToCart} dishTypeFiltered={selectedType} />
         </div>
       </div>
 

@@ -2,7 +2,7 @@ interface OrderItemProps {
     dishName: string;
     dishPrice: number;
     dishImage: string;
-    onShowOption: () => void;
+    onShowOption?: () => void;
 }
 
 function OrderItem( { dishName, dishPrice, dishImage, onShowOption }: OrderItemProps) {
@@ -23,7 +23,7 @@ function OrderItem( { dishName, dishPrice, dishImage, onShowOption }: OrderItemP
                 <div className="w-full h-1/2 flex flex-row justify-between items-center">   
                     <span className="text-lg text-accent">${dishPrice.toFixed(2)}</span>
                     <span 
-                        className="material-symbols-outlined !p-1 bg-accent text-light !text-3xl rounded-lg hoverBtn"
+                        className="material-symbols-outlined !p-1 bg-accent text-light !text-1xl rounded-lg hoverBtn"
                         onClick={onShowOption}
                     >
                         shopping_cart

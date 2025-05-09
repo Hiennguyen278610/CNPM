@@ -20,6 +20,7 @@ export default function CartListPayment() {
             dishPrice={dish.dishPrice}
             dishQuantity={dish.quantity}
             dishOptions={dish.dishOptions}
+            dishType={dish.dishType}
           />
         ))}
       </div>
