@@ -15,7 +15,6 @@ import { OrderDetailModule } from '@/modules/order-detail/order-detail.module';
 import { RecipeModule } from '@/modules/recipe/recipe.module';
 import { TableModule } from '@/modules/table/table.module';
 import { AuthModule } from '@/auth/auth.module';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { Vnpay } from './modules/vnpay/vnpay.module';

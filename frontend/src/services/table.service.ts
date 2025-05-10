@@ -19,3 +19,19 @@ export function getTableByQrToken(qrToken: string): Promise<Table> {
     },
   }).then((res) => res.json());
 }
+export function createCustomer(){
+  return fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/customer/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+}
+export function deleteCustomer(id: string){
+  return fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/customer/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => res.json());
+}

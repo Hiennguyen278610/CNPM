@@ -16,7 +16,7 @@ export default function OrderLayout() {
     const [update, setUpdate] = useState(0);
     const [selectedType, setSelectedType] = useState('All');
 
-    const table = JSON.parse(localStorage.getItem('table') || '{}');
+    const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
     const tableNameLocal = table.tableName || 'Bàn số 0';
 
     const cartItems = cartService.getCart();
@@ -33,7 +33,7 @@ export default function OrderLayout() {
             setUpdate(u => u + 1);
         } catch (err) {
             console.error('Error adding to cart:', err);
-            alert(`Lỗi khi thêm món vào giỏ hàng: ${err.message}`);
+            alert(`Lỗi khi thêm món vào giỏ hàng: err`);
         }
     };
 
@@ -82,8 +82,7 @@ export default function OrderLayout() {
                 orderStatus: 0,
                 totalPrice: cartService.getTotal(),
             };
-
-            const orderRes = await fetch('http://localhost:3001/backend/api/order', {
+            const orderRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderBody),
@@ -119,7 +118,7 @@ export default function OrderLayout() {
 
                 console.log('Gửi order-detail với payload:', detailBody);
                 try {
-                    const detailRes = await fetch('http://localhost:3001/backend/api/order-detail', {
+                    const detailRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order-detail`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(detailBody),
@@ -181,7 +180,13 @@ export default function OrderLayout() {
     return (
         <div className="h-screen w-screen bg-[#f7f8fa] flex flex-row items-stretch overflow-hidden p-2">
             <div className="w-[65%] h-full flex flex-col bg-white rounded-2xl shadow-lg mr-3 p-4">
-                <MenuLeftHead onClick={() => router.push('/')} />
+                <MenuLeftHead onClick={() => {
+                  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                  if (user) {
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('currentTable');
+                  }
+                  router.push('/')}} />
                 <div className="w-full flex-1 flex flex-col overflow-y-auto">
                     <MenuSlider onSelectType={setSelectedType} />
                     <div className="flex items-center gap-4 py-2">

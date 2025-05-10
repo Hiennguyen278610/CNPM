@@ -8,6 +8,7 @@ import aqp from 'api-query-params';
 
 @Injectable()
 export class CustomerService {
+
   constructor(@InjectModel(Customer.name) private customerModel: Model<Customer>) {}
 
   create(createCustomerDto: CreateCustomerDto) {

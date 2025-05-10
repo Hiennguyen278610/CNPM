@@ -1,16 +1,18 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
+import { IsOptional } from "class-validator";
 import {HydratedDocument} from "mongoose";
-import {IsNotEmpty} from "class-validator";
-
 export type CustomerDocument = HydratedDocument<Customer>;
 
 @Schema({timestamps: true})
 export class Customer {
-    @Prop()
+    @IsOptional()
+    @Prop({required: false, default: null})
     accountId: string;
-    @Prop()
+    @IsOptional()
+    @Prop({required: false, default: null})
     name: string;
-    @Prop()
+    @IsOptional()
+    @Prop({required: false, default: null})  
     phone: string;
 }
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

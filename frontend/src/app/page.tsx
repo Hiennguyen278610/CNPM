@@ -5,7 +5,7 @@ import "@/app/globals.css";
 import NavButton from "@/components/navButton";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import { getTableByQrToken } from "@/services/table.service";
+import { getTableByQrToken, createCustomer } from "@/services/table.service";
 
 export default function Home() {
   const router = useRouter();
@@ -31,11 +31,13 @@ export default function Home() {
             <NavButton
               label="Come to order"
               spanName="shopping_cart"
-              onClick={async() => {
+              onClick={async () => {
                 if (qrToken) {
                   const table = await getTableByQrToken(qrToken);
-                  localStorage.setItem("table", JSON.stringify(table));
+                  localStorage.setItem("currentTable", JSON.stringify(table));
                   if (table) {
+                    const user = await createCustomer();
+                    localStorage.setItem("currentUser", JSON.stringify(user));
                     router.push(`/order/`);
                   } else {
                     alert("Table not found");
@@ -47,7 +49,7 @@ export default function Home() {
             />
             <NavButton
               label="Login"
-              spanName="person"
+              spanName="person"  
               onClick={() => router.push("/auth/login")}
             />
           </div>
