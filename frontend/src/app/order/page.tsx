@@ -83,7 +83,7 @@ export default function OrderLayout() {
                 totalPrice: cartService.getTotal(),
             };
 
-            const orderRes = await fetch('http://localhost:5000/backend/api/order', {
+            const orderRes = await fetch('http://localhost:3001/backend/api/order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderBody),
@@ -119,7 +119,7 @@ export default function OrderLayout() {
 
                 console.log('Gửi order-detail với payload:', detailBody);
                 try {
-                    const detailRes = await fetch('http://localhost:5000/backend/api/order-detail', {
+                    const detailRes = await fetch('http://localhost:3001/backend/api/order-detail', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(detailBody),
