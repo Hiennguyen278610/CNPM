@@ -11,8 +11,8 @@ export default function MenuRightHead({cartItems, tableName} : cartQuantity) {
                 <span className="material-symbols-outlined !p-1 text-accent !text-5xl">shopping_cart</span>
                 <p className="text-accent text-2xl">Your cart ({cartItems})</p>
             </div>
-            <div className="w-max h-full bg-secondary flex-nesw !p-4 rounded-3xl">
-                <p className="text-xl select-none">{tableName}</p>
+            <div className="w-max h-full bg-secondary flex flex-row justify-center items-center !p-4 rounded-3xl">
+                <p className="text-md select-none md:text-xs">{tableName}</p>
             </div>
         </div>
     );

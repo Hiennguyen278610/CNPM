@@ -17,6 +17,8 @@ export default function VnPayReturn() {
   const vnp_TxnRef = searchParams.get("vnp_TxnRef"); // order id
 
   const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
+  
+  const tableData = JSON.parse(localStorage.getItem("table") || "{}");
 
   // Format số tiền (chia cho 100 vì VNPAY trả về số tiền nhân 100)
   const formattedAmount = vnp_Amount ? parseInt(vnp_Amount) / 100 : 0;
@@ -120,7 +122,7 @@ export default function VnPayReturn() {
 
         <div className="!mt-6 flex justify-center">
           <button
-            onClick={() => (window.location.href = "/")}
+            onClick={() => (window.location.href = `/?q=${tableData.qrToken}`)}
             className="!px-6 !py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Quay về trang chủ
