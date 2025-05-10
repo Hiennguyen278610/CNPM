@@ -1,8 +1,10 @@
-import { IsNotEmpty, IsPhoneNumber } from "class-validator";
+import {IsOptional } from "class-validator";
 
 export class CreateCustomerDto {
-    customerId: string;
+    @IsOptional()
     accountId: string;
+    @IsOptional()
     name: string;
+    @IsOptional()
     phone: string;
 }

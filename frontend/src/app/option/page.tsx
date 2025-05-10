@@ -33,7 +33,7 @@ export default function OptionPage({
 
   useEffect(() => {
     axios
-      .get('http://localhost:3000/backend/api/option')
+      .get(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/option`)
       .then((res) => setOptions(res.data))
       .catch((err) => console.error('Error fetching options:', err));
   }, []);
