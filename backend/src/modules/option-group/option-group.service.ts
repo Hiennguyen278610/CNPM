@@ -27,6 +27,20 @@ export class OptionGroupService {
     return optionGroup;
   }
 
+  async findByDishId(dishId: string): Promise<OptionGroupDocument[]> {
+    console.log('Finding options for dish:', dishId);
+    const result = await this.optionGroupModel
+      .find({ dishID: dishId })
+      .populate({
+        path: 'optionID',
+        select: 'optionName optionPrice'
+      })
+      .lean()
+      .exec();
+    console.log('Found options:', JSON.stringify(result, null, 2));
+    return result;
+  }
+
   async update(id: string, updateOptionGroupDto: UpdateOptionGroupDto): Promise<OptionGroupDocument> {
     const updated = await this.optionGroupModel.findByIdAndUpdate(id, updateOptionGroupDto, { new: true }).exec();
     if (!updated) throw new NotFoundException('OptionGroup not found');

@@ -1,26 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
-export type OptionGroupDocument = OptionGroup & Document
+export type OptionGroupDocument = OptionGroup & Document;
 
 @Schema()
 export class OptionGroup {
     @IsNotEmpty()
-    @IsNumber()
-    @Prop({required: true})
-    dishID: number;
+    @IsMongoId()
+    @Prop({ required: true })
+    dishID: string;
 
     @IsNotEmpty()
-    @IsNumber()
-    @Prop({required: true})
-    optionID: number;
+    @IsMongoId({ each: true })
+    @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Option' }])
+    optionID: string[];
 
     @IsNotEmpty()
     @IsString()
-    @Prop({required: true})
-    optionGroupName: string;    
+    @Prop({ required: true })
+    optionGroupName: string;
 }
 
 export const OptionGroupSchema = SchemaFactory.createForClass(OptionGroup);
-

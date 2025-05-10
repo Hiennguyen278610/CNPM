@@ -14,6 +14,8 @@ export class Dish {
 
   @Prop()
   dishImg: string;
+  @Prop()
+  dishType: string;
 }
 
 export const DishSchema = SchemaFactory.createForClass(Dish);

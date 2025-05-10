@@ -11,8 +11,8 @@ import {
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
-import {Public} from '@/decorator/customize';
-
+import { Public } from '@/decorator/customize';
+@Public()
 @Controller('customer')
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}
