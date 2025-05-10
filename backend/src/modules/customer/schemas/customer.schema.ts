@@ -1,16 +1,16 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {HydratedDocument} from "mongoose";
-import {IsNotEmpty} from "class-validator";
-
 export type CustomerDocument = HydratedDocument<Customer>;
 
 @Schema({timestamps: true})
 export class Customer {
-    @Prop()
+    @Prop({required: true})
+    customerId: string;
+    @Prop({required: false})
     accountId: string;
-    @Prop()
+    @Prop({required: false})
     name: string;
-    @Prop()
+    @Prop({required: false})  
     phone: string;
 }
 export const CustomerSchema = SchemaFactory.createForClass(Customer);

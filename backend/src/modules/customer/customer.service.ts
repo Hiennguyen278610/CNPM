@@ -5,13 +5,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Customer } from './schemas/customer.schema';
 import { Model } from 'mongoose';
 import aqp from 'api-query-params';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class CustomerService {
+
   constructor(@InjectModel(Customer.name) private customerModel: Model<Customer>) {}
 
   create(createCustomerDto: CreateCustomerDto) {
-    return this.customerModel.create(createCustomerDto);
+    const customerId = uuidv4(); // Generate a unique customerId using uuid
+    const { accountId, name, phone } = createCustomerDto; // Destructure the DTO to get the properties
+    const newCustomer = {
+      customerId,
+      accountId,
+      name,
+      phone,
+    };
+    return this.customerModel.create(newCustomer);
   }
   async findAll(query: string, current: number, pageSize: number) {
     const {filter, sort} = aqp(query);
