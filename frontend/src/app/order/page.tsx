@@ -82,7 +82,6 @@ export default function OrderLayout() {
                 orderStatus: 0,
                 totalPrice: cartService.getTotal(),
             };
-
             const orderRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
