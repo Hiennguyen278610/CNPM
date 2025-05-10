@@ -2,7 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { OptionGroupService } from './option-group.service';
 import { CreateOptionGroupDto } from './dto/create-option-group.dto';
 import { UpdateOptionGroupDto } from './dto/update-option-group.dto';
+import { Public } from '@/decorator/customize';
 
+@Public()
 @Controller('option-group')
 export class OptionGroupController {
   constructor(private readonly optionGroupService: OptionGroupService) {}
@@ -15,6 +17,11 @@ export class OptionGroupController {
   @Get()
   findAll() {
     return this.optionGroupService.findAll();
+  }
+
+  @Get('dish/:dishId')
+  findByDishId(@Param('dishId') dishId: string) {
+    return this.optionGroupService.findByDishId(dishId);
   }
 
   @Get(':id')

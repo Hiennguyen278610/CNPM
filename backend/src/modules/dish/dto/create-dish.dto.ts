@@ -12,4 +12,8 @@ export class CreateDishDto {
   @IsString()
   @IsOptional()
   dishImg?: string;
+
+  @IsString()
+  @IsOptional()
+  dishType?: string;
 }

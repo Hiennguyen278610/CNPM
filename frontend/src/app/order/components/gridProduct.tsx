@@ -1,115 +1,109 @@
 'use client';
-import { useState } from "react";
-import OrderItem from "@/app/order/components/orderItem";
-import OptionPage from "@/app/option/page";
-import { useCart } from "@/context/CartContext";
 
-interface gridProductsList{
-  dishTypeFiltered: string
-  onAddToCart: (item: any) => void;
+import { useEffect, useState } from 'react';
+import { Dish, dishService } from '../services/dish.service';
+import OrderItem from '@/app/order/components/orderItem';
+import OptionPage from '@/app/option/page';
+import { useCart } from '@/context/CartContext';
+
+interface GridProductProps {
+    onAddToCart: (item: any) => void;
+    selectedType?: string;
 }
 
-
-const menuList = [
-  {
-    dishType : "Soda",
-    List: [
-      { dishName: "Strawberry Soda", dishPrice: 159.99, dishImage: "../product/cake4.png", dishType :"Soda"},
-      { dishName: "Guava Soda", dishPrice: 189.50, dishImage: "../product/cake4.png", dishType :"Soda" },
-      { dishName: "Lemon Soda", dishPrice: 145.75, dishImage: "../product/cake4.png", dishType :"Soda" },
-      { dishName: "Grape Soda", dishPrice: 212.25, dishImage: "../product/cake4.png", dishType :"Soda" },
-      { dishName: "Raspberry Soda", dishPrice: 212.25, dishImage: "../product/cake4.png", dishType :"Soda" },
-    ]
-  },
-
-  {
-    dishType : "Grilled",
-    List: [
-      { dishName: "Beef Steak", dishPrice: 159.99, dishImage: "../product/cake3.png", dishType :"Grilled"},
-      { dishName: "Omelete dish", dishPrice: 189.50, dishImage: "../product/cake3.png", dishType :"Grilled" },
-      { dishName: "Grill set 1", dishPrice: 145.75, dishImage: "../product/cake3.png", dishType :"Grilled" },
-      { dishName: "Grill set 2", dishPrice: 212.25, dishImage: "../product/cake3.png", dishType :"Grilled" },
-    ]
-  },
-
-  {
-    dishType: "FastFood",
-    List: [
-      { dishName: "Hamburger ", dishPrice: 159.99, dishImage: "../product/cake1.png", dishType: "FastFood" },
-      { dishName: "Taco cake", dishPrice: 189.50, dishImage: "../product/cake1.png", dishType: "FastFood"  },
-      { dishName: "Pizza Company", dishPrice: 145.75, dishImage: "../product/cake1.png", dishType: "FastFood" },
-      { dishName: "Chicken pizza", dishPrice: 212.25, dishImage: "../product/cake1.png", dishType: "FastFood" },
-    ]
-  },
-
-  {
-    dishType: "Soup",
-    List: [
-      { dishName: "Sanuki Udon", dishPrice: 159.99, dishImage: "../product/cake2.png", dishType :"Soup" },
-      { dishName: "Soy Sauce Ramen", dishPrice: 189.50, dishImage: "../product/cake2.png", dishType :"Soup"},
-      { dishName: "Suki Ramen", dishPrice: 145.75, dishImage: "../product/cake2.png", dishType :"Soup" },
-      { dishName: "Shoyu Ramen", dishPrice: 212.25, dishImage: "../product/cake2.png", dishType :"Soup" },
-    ]
-  }
-]
-
-export default function GridProduct({onAddToCart, dishTypeFiltered}: gridProductsList ) {
-  const {addToCart}= useCart()
-  const handleShowOption = (dish: any) => {
-  if (dish.dishType === "Soda") {
-    addToCart(dish); 
-  } else {
-    setSelectedDish(dish);
-    setShowOption(true); 
-  }
-};
-
-  const [showOption, setShowOption] = useState(false);
-  const [selectedDish, setSelectedDish] = useState<{
-    dishName: string;
-    dishPrice: number;
-    dishImage: string;
+interface MenuCategory {
     dishType: string;
-  } | null>(null);
+    List: Dish[];
+}
 
-  const filteredList = dishTypeFiltered === "All" ? menuList : menuList.filter((item) => item.dishType === dishTypeFiltered)
+export default function GridProduct({ onAddToCart, selectedType }: GridProductProps) {
+    const { addToCart } = useCart();
+    const [menuList, setMenuList] = useState<MenuCategory[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [showOption, setShowOption] = useState(false);
+    const [selectedDish, setSelectedDish] = useState<Dish | null>(null);
 
-  return (
-    <>
-      {filteredList.map((item) => (
-        <div key={item.dishType} className="w-full !mb-6">
-          <div className="flex items-center w-full !my-2 !px-2">
-            <span className="text-2xl font-semibold text-black whitespace-nowrap !mr-4">
-              {item.dishType}
-            </span>
-            <hr className="flex-grow border-t border-gray-400" />
-          </div>
-          <div className="w-full h-auto p-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-            {item.List.map((dish, index) => (
-              <OrderItem
-                key={index}
-                dishName={dish.dishName}
-                dishPrice={dish.dishPrice}
-                dishImage={dish.dishImage}
-                onShowOption={() => {
-                  handleShowOption(dish)
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    
-      {showOption && selectedDish && (
-        <OptionPage
-          show={showOption}
-          onClose={() => setShowOption(false)}
-          dishName={selectedDish.dishName}
-          dishPrice={selectedDish.dishPrice}
-          dishImage={selectedDish.dishImage}
-          onAddToCart={onAddToCart}
-        />
-      )}
-    </>
-  );
+    useEffect(() => {
+        const fetchDishes = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const dishes = await dishService.getAllDishes();
+                console.log('Raw dishes from API:', dishes); // Log dữ liệu thô từ API
+                // Lọc các món có _id hợp lệ
+                const validDishes = dishes.filter(dish => dish._id && /^[0-9a-fA-F]{24}$/.test(dish._id));
+                console.log('Valid dishes after filtering:', validDishes); // Log danh sách hợp lệ
+                const groupedDishes = validDishes.reduce((acc, dish) => {
+                    const category = acc.find(item => item.dishType === dish.dishType);
+                    if (category) {
+                        category.List.push(dish);
+                    } else {
+                        acc.push({ dishType: dish.dishType, List: [dish] });
+                    }
+                    return acc;
+                }, [] as MenuCategory[]);
+                setMenuList(groupedDishes);
+            } catch (err: any) {
+                console.error('Lỗi khi lấy món ăn:', err);
+                setError(`Không thể tải danh sách món ăn: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDishes();
+    }, []);
+
+    const handleShowOption = (dish: Dish) => {
+        console.log('Selected dish for options:', dish); // Log món được chọn
+        if (!dish._id || !/^[0-9a-fA-F]{24}$/.test(dish._id)) {
+            console.error('Cannot show options: invalid dish _id', dish);
+            alert(`Không thể thêm món "${dish.dishName}" vì ID không hợp lệ: ${dish._id}`);
+            return;
+        }
+        setSelectedDish(dish);
+        setShowOption(true);
+    };
+
+    const filteredList =
+        selectedType && selectedType !== 'All'
+            ? menuList.filter(item => item.dishType === selectedType)
+            : menuList;
+
+    // Gộp tất cả món ăn thành một danh sách phẳng
+    const allDishes = filteredList.flatMap(item => item.List);
+
+    if (loading) return <div className="p-4">Đang tải...</div>;
+    if (error) return <div className="p-4 text-red-500">{error}</div>;
+    if (filteredList.length === 0) return <div className="p-4">Không có món ăn nào trong danh mục này</div>;
+
+    return (
+        <>
+            {/* Xóa tiêu đề dư thừa, chỉ hiển thị lưới món ăn */}
+            <div className="w-full h-auto p-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {allDishes.map(dish => (
+                    <OrderItem
+                        key={dish._id || dish.dishName}
+                        dishName={dish.dishName}
+                        dishPrice={dish.dishPrice}
+                        dishImg={dish.dishImg || 'placeholder.png'}
+                        onShowOption={() => handleShowOption(dish)}
+                    />
+                ))}
+            </div>
+
+            {showOption && selectedDish && (
+                <OptionPage
+                    dishId={selectedDish._id}
+                    show={showOption}
+                    onClose={() => setShowOption(false)}
+                    dishName={selectedDish.dishName}
+                    dishPrice={selectedDish.dishPrice}
+                    dishImage={selectedDish.dishImg || 'placeholder.png'}
+                    _id={selectedDish._id}
+                    onAddToCart={onAddToCart}
+                />
+            )}
+        </>
+    );
 }

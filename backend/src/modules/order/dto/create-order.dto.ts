@@ -1,10 +1,19 @@
-// src/modules/order/dto/create-order.dto.ts
-import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class CreateOrderDto {
-  @IsOptional()
-  orderStatus?: number;
-  @IsOptional()
-  totalPrice?: number;
+  @IsMongoId()
+  @IsNotEmpty()
+  customerID: string;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  tableID: string;
+
+  @IsNotEmpty()
+  orderStatus: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0.01, { message: 'Total price must be greater than 0' })
+  totalPrice: number;
 }
-//test push

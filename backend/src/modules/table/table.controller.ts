@@ -10,6 +10,8 @@ import {
 import { TableService } from './table.service';
 import { CreateTableDto } from './dto/create-table.dto';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { Public } from '@/decorator/customize';
+@Public()
 
 @Controller('table')
 export class TableController {

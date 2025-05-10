@@ -18,6 +18,9 @@ export class OrderDetail {
   @IsNotEmpty()
   @Prop({ required: true })
   quantity: number;
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Option' }], default: [] })
+  options: Types.ObjectId[];
 }
 
 export const OrderDetailSchema = SchemaFactory.createForClass(OrderDetail);
