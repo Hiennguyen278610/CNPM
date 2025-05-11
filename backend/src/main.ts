@@ -8,7 +8,6 @@ async function bootstrap() {
   app.use(cors());
   const configService = app.get(ConfigService);
   const port = configService.get('PORT') || process.env.NEXT_PUBLIC_PORT_BACK_END;
-  
   // Enable CORS
   app.enableCors({
     origin: 'http://localhost:3000',

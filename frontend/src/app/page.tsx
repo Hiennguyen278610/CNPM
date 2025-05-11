@@ -17,17 +17,17 @@ export default function Home() {
       {/* Header*/}
       <header className="w-full h-1/2 bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-6xl font-bold text-primary">
+          <h1 className="text-4xl md:text-6xl font-bold text-primary">
             Welcome to Seafood
           </h1>
-          <p className="text-3xl mt-4 text-primary">Please choose an option:</p>
+          <p className="text-2xl md:text-3xl mt-4 text-primary">Please choose an option:</p>
         </div>
       </header>
 
       {/* Container*/}
       <div className="absolute inset-0 flex items-center justify-center z-10">
-        <div className="w-3/10 h-4/15 bg-transparent shadow-lg flex items-center justify-center">
-          <div className="flex flex-1 w-full h-full gap-6">
+        <div className="w-max h-max md:w-3/10 md:h-4/15 bg-transparent shadow-lg flex items-center justify-center">
+          <div className="flex w-full h-full gap-6">
             <NavButton
               label="Come to order"
               spanName="shopping_cart"
