@@ -53,6 +53,18 @@ nextjs-portal {
   @apply border-2 border-accent rounded-lg hover:bg-accent hover:text-light cursor-pointer ;
 }
 
+.loginBtn {
+  @apply bg-accent hover:bg-red-700 text-white font-bold text-lg rounded-xl !p-4 cursor-pointer;
+}
+
+.inputStyle {
+  @apply w-full rounded-xl !p-4 bg-secondary;
+}
+
+.registerOpt {
+  @apply w-1/2 font-bold text-lg rounded-xl !p-4;
+}
+
 @layer utilities {
   .animate-slide-up {
     animation: slideUp 0.3s ease-out forwards;

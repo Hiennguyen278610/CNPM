@@ -1,33 +1,26 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import {DeviconGoogle} from '../components/logoGoogle';
 import AuthHeader from '../components/authHeader';
+import LegendCenter from '@/components/lgendCenter';
+import GoogleOpt from '@/app/auth/components/googleOpt';
+import LocalOpt from '@/app/auth/components/localOpt';
 
 export default function LoginPage() {
     const router = useRouter();
     return (
-        <div className="w-full h-full rounded-xl flex-nesw flex-col">
+        <div className="w-full h-full rounded-xl flex flex-col justify-between">
             <AuthHeader onBack={() => router.push('/')} authtitle="Login your account" authslogan="20% Off Your First Ride – Why Not?" />
-            <div className="w-full h-4/5 bg-transparent !p-5 flex-nesw">
+            <div className="w-full h-4/5 bg-transparent md:!p-5 flex-nesw">
                 <div className='w-full h-full flex-nesw'>
-                    <form action="" className='w-full h-max flex-nesw flex-col !p-5 gap-4 text-center'>
-                            <input type="text" placeholder="Username" className="w-full rounded-xl !p-4 bg-secondary" />
-                            <input type="password" placeholder="Password" className="w-full rounded-xl !p-4 bg-secondary" />
-                            <button type="submit" className="w-full bg-accent hover:bg-red-700 text-white font-bold text-lg rounded-xl !p-4 no-select cursor-pointer">Login</button>
-                            <div className="w-full flex-nesw gap-4">
-                                <div className="h-px bg-dark flex-1"></div>
-                                <legend className="text-center !text-sm text-gray-500 px-2">or</legend>
-                                <div className="h-px bg-dark flex-1"></div>
-                            </div>
+                    <form action="" className='w-full h-max flex-nesw flex-col !p-5 gap-4'>
+                            <input type="text" placeholder="Username" className="inputStyle" />
+                            <input type="password" placeholder="Password" className="inputStyle" />
+                            <button type="submit" className="w-full loginBtn no-select">Login</button>
+                            <LegendCenter title="Or" />
                             <div className='flex flex-row w-full gap-4'>
-                                <button type="button" className="w-full bg-light hover:bg-secondary text-dark font-bold text-lg rounded-xl !p-4 
-                                cursor-pointer flex-nesw flex-row gap-2 border-1 border-dark hoverBtn">
-                                    <span className='w-max h-max'><DeviconGoogle/></span>
-                                    <span className='w-max'>Login with Google</span>
-                                </button>    
-                                <button type="button" className="w-full bg-accent hover:bg-red-700 text-white font-bold text-lg rounded-xl !p-4
-                                hoverBtn" onClick={() => router.push('/auth/register')}> Register</button>
+                                <GoogleOpt title="Login with Google" onClick={() => router.push('/')} />
+                                <LocalOpt title="Register" onClick={() => router.push('/auth/register')} />
                             </div>
                     </form>
                 </div>
