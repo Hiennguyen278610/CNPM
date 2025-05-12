@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+actor customer as "Customer"
+actor clerk as "Clerk"
+actor Kitchen as "Kitchen"
+
+rectangle "Đặt món qua QR" {
+  customer -- (Xem menu)
+  customer -- (Chọn món và số lượng)
+  note right of (Chọn món và số lượng)
+    Hệ thống kiểm tra tình trạng sẵn có
+    của món ăn (dựa trên nguyên liệu).
+    Khách hàng chỉ có thể chọn món còn hàng.
+  end note
+  customer -- (Gửi đơn đặt món)
+  customer -- (Thanh toán đơn hàng)
+  customer -- (Xem trạng thái đơn hàng)
+
+  (Gửi đơn đặt món) ..> (Xác nhận đơn hàng) : <<include>>
+  clerk -- (Xác nhận đơn hàng)
+  (Xác nhận đơn hàng) ..> (Nhận thông báo tại bếp) : <<include>>
+  Kitchen -- (Nhận thông báo tại bếp)
+  Kitchen -- (Chuẩn bị món ăn)
+  Kitchen -- (Cập nhật trạng thái món ăn)
+  (Chuẩn bị món ăn) ..> (Cập nhật trạng thái món ăn) : <<include>>
+  (Cập nhật trạng thái món ăn) ..> (Xem trạng thái đơn hàng) : <<include>>
+}
+@enduml

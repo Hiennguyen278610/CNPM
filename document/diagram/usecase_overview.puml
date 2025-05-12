@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+actor customer as "Customer"
+actor clerk as "Clerk"
+actor pos as "Point-of-sale terminal"
+actor Kitchen as "Kitchen"
+
+rectangle "Hệ thống quản lý nhà hàng" {
+  customer -- (Quét mã QR và đặt món)
+  customer -- (Đăng ký/Đăng nhập tài khoản)
+  customer -- (Xem menu và chọn món)
+  customer -- (Đặt bàn)
+  customer -- (Thanh toán đơn hàng)
+  customer -- (Xem lịch sử đơn hàng)
+
+  clerk -- (Xác nhận đơn hàng)
+  clerk -- (Quản lý khách hàng)
+  clerk -- (Quản lý món ăn)
+  clerk -- (Quản lý nguyên liệu)
+  clerk -- (Quản lý kho hàng)
+  clerk -- (Quản lý đặt bàn)
+  clerk -- (Quản lý thanh toán)
+  clerk -- (Quản lý doanh thu)
+
+  pos -- (Tiếp nhận và xử lý thanh toán)
+  pos -- (Xuất hóa đơn điện tử)
+
+  Kitchen -- (Nhận thông báo đơn hàng mới)
+  Kitchen -- (Chuẩn bị món ăn)
+  Kitchen -- (Cập nhật trạng thái món ăn)
+
+  (Quét mã QR và đặt món) ..> (Xác nhận đơn hàng) : <<include>>
+  (Đặt bàn) ..> (Quản lý đặt bàn) : <<include>>
+  (Thanh toán đơn hàng) ..> (Tiếp nhận và xử lý thanh toán) : <<include>>
+  (Tiếp nhận và xử lý thanh toán) ..> (Xuất hóa đơn điện tử) : <<include>>
+  (Xác nhận đơn hàng) ..> (Nhận thông báo đơn hàng mới) : <<include>>
+  (Nhận thông báo đơn hàng mới) ..> (Chuẩn bị món ăn) : <<include>>
+  (Chuẩn bị món ăn) ..> (Cập nhật trạng thái món ăn) : <<include>>
+}
+@enduml
