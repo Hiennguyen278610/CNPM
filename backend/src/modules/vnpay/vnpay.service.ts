@@ -20,7 +20,7 @@ export class VnpayServices {
       vnp_TxnRef: orderId,
       vnp_OrderInfo: 'Thanh toan don hang ' + orderId + ' tai VNPAY',
       vnp_OrderType: ProductCode.Other,
-      vnp_ReturnUrl: 'http://localhost:3000/vnpay-return',
+      vnp_ReturnUrl: `http://${process.env.IPURL}:3000/vnpay-return`,
       vnp_Locale: VnpLocale.VN, // 'vn' hoặc 'en'
       vnp_CreateDate: dateFormat(new Date()), // tùy chọn, mặc định là thời gian hiện tại
       vnp_ExpireDate: dateFormat(tomorrow), // tùy chọn

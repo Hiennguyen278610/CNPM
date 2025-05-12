@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useCart } from "@/context/CartContext";
@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 export default function MenuFooterListPayment() {
   const router = useRouter();
   const { cartItems, getTotalPrice } = useCart();
-  
+
   const subTotal = getTotalPrice();
   const discount = 0;
   const total = subTotal - discount;
@@ -25,7 +25,8 @@ export default function MenuFooterListPayment() {
       alert("Giỏ hàng trống!");
       return;
     }
-    window.location.href = `http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
+    // window.location.href = `http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
+    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
   return (
     <div className="w-full h-1/5 !p-2 gap-4 !py-5">
