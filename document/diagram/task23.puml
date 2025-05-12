@@ -1,5 +1,5 @@
 @startuml
-
+left to right direction
 class Account {
     + accountID: int
     username: string
@@ -11,7 +11,10 @@ class Account {
     status: string
     verifyCode: string
     verifyTime: int
-    + Account(accountID: id, username: name, password: pwd,...)
+    + add()
+    + update()
+    + login()
+    + register()
 }
 
 class Customer {
@@ -19,62 +22,82 @@ class Customer {
     accountID: int
     customerName: string
     phone: string
-    + Customer(customerID: id, accountID: id, customerName: name, phone: phone)
+    + add()
+    + update()
+    + delete()
 }
 
 class Table {
     + tableID: int
     tableName: string
     qrToken: string
-    + Table(tableID: id, tableName: name, qrToken: token)
+        + add()
+        + update()
+        + delete()
 }
 
 class Order {
     + orderID: int
     customerID: int
     tableID: int
-    + Order(orderID: id, customerID: id, tableID: id)
+    + add()
+    + update()
+    + delete()
+    + totalOrder()
 }
 
 class OrderDetail {
     + orderID: int
     + dishID: int
     quantity: int
-    + OrderDetail(orderID: id, dishID: id, quantity: qty)
+    + add()
+    + update()
+    + delete()
+    + subTotalOrder()
 }
 
 class Option {
     + optionID: int
     dishName: string
     dishPrice: decimal
-    + Option(optionID: id, dishName: name, dishPrice: price)
+    + add()
+    + update()
+    + delete()
 }
 
 class OptionGroup {
     + dishID: int
     + optionID: int
     + optionGroupName: string
-    + optionGroup(dishID: id, optionID: id, optionGroupName: name)
+    + add()
+    + update()
+    + delete()
 }
 
 class Dish {
     + dishID: int
     + dishName: string
     + dishPrice: double
-    Dish(dishID: id, dishName: name, dishPrice: price)
+    + add()
+    + update()
+    + delete()
 }
 
 class Recipe {
     + dishID: int
     + IngredientsID: int
     + quantity: int
-    + Recipe (dishID: id, IngredientsID: id, quantity: quantity)
+    + add()
+    + update()
+    + delete()
 }
 
 class Ingredient {
     + ingredientID: int
     + integrientName: string
-    + Ingredient(ingredientID: id, integrientName: name, unit: unit)
+    + add()
+    + update()
+    + delete()
 }
 
 class Inventory {
