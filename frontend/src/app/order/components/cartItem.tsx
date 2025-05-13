@@ -31,18 +31,20 @@ export default function CartItem({
 
     return (
         <div className="cart-item h-auto flex flex-row">
-            <div className="w-1/5 aspect-square select-none">
-                <div className="w-full h-full relative overflow-hidden">
-                    <img
-                        src={imageSrc}
-                        alt={dishName || 'Dish Image'}
-                        className="absolute inset-0 w-full h-full object-cover object-center z-0"
+            <div className="w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5 aspect-square select-none">
+                <div className="relative w-full h-full overflow-hidden">
+                    <img 
+                    src={dishImage}
+                    alt="Dish Image"
+                    className="w-full h-full object-cover object-center"
                     />
                 </div>
             </div>
+
+
             <div className="w-4/5 h-full flex flex-col !p-2">
                 <div className="w-full h-1/3 text-xl select-none flex justify-between items-center">
-                    <p>{dishName || 'Unknown Dish'}</p>
+                    <p className="text-sm lg:text-xl">{dishName || 'Unknown Dish'}</p>
                     <span
                         className="material-symbols-outlined text-red-500 text-2xl cursor-pointer transition-all duration-200 ease-in-out hover:text-red-700 hover:scale-110"
                         onClick={onDelete}
