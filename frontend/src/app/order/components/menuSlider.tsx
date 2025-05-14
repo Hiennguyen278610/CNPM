@@ -62,7 +62,7 @@ export default function MenuSlider({ onSelectType }: MenuSliderProps) {
             FastFood: 'fastfood',
             Soup: 'ramen_dining',
             Grilled: 'kebab_dining',
-            Juice: 'grocery',
+            Drink: 'grocery',
             // Thêm các ánh xạ khác nếu cần
         };
         return iconMap[type] || 'restaurant_menu'; // Icon mặc định
@@ -74,11 +74,22 @@ export default function MenuSlider({ onSelectType }: MenuSliderProps) {
         <div className="w-full h-2/10 flex flex-col items-center justify-center md:flex-wrap">
             <Swiper
                 spaceBetween={20}
-                slidesPerView={6}
+                slidesPerView={2}
                 pagination={{ clickable: true }}
                 scrollbar={{ draggable: false }}
                 loop={false}
                 className="w-[95%] h-full !p-2"
+                breakpoints={{
+                    640: {
+                        slidesPerView: 3, // ≥ sm
+                    },
+                    768: {
+                        slidesPerView: 4, // ≥ md
+                    },
+                    1024: {
+                        slidesPerView: 6, // ≥ lg
+                    },
+                }}
             >
                 {menuSliderData.map((item, index) => (
                     <SwiperSlide
