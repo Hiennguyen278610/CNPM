@@ -99,7 +99,7 @@ export default function OrderLayout() {
             //     headers: { 'Content-Type': 'application/json' },
             //     body: JSON.stringify(orderBody),
             // });
-            const orderRes = await fetch(`${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order`, {
+            const orderRes = await fetch(`http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderBody),
@@ -140,7 +140,7 @@ export default function OrderLayout() {
                     //     headers: { 'Content-Type': 'application/json' },
                     //     body: JSON.stringify(detailBody),
                     // });
-                    const detailRes = await fetch(`${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order-detail`, {
+                    const detailRes = await fetch(`http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order-detail`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(detailBody),

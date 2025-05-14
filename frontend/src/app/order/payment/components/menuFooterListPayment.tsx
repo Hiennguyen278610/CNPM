@@ -26,7 +26,7 @@ export default function MenuFooterListPayment() {
       return;
     }
     // window.location.href = `http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
-    window.location.href = `${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
+    window.location.href = `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
   return (
     <div className="w-full h-1/5 !p-2 gap-4 !py-5">
