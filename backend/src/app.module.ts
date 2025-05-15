@@ -61,7 +61,7 @@ import { Vnpay } from './modules/vnpay/vnpay.module';
         // preview: true,
         template: {
           dir: process.cwd() + '/src/mail/templates/',
-          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          adapter: new HandlebarsAdapter(), 
           options: {
             strict: true,
           },

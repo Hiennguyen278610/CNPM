@@ -1,11 +1,11 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbo",
-    "build": "next build",
-    "start": "next start",
+  "private": true,  "scripts": {
+    "update-ip": "node scripts/setup-ip.js",
+    "dev": "npm run update-ip && next dev --turbo",
+    "build": "npm run update-ip && next build",
+    "start": "npm run update-ip && next start",
     "lint": "next lint"
   },
   "dependencies": {

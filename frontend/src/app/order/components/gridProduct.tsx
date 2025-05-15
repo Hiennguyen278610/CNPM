@@ -79,31 +79,44 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
 
     return (
         <>
-            {/* Xóa tiêu đề dư thừa, chỉ hiển thị lưới món ăn */}
-            <div className="w-full h-auto p-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {allDishes.map(dish => (
+        {filteredList.map((item) => (
+            <div key={item.dishType} className="w-full !mb-6">
+                {/* Tiêu đề loại món ăn */}
+                <div className="flex items-center w-full !my-2 !px-2">
+                <span className="text-2xl font-semibold text-black whitespace-nowrap !mr-4">
+                    {item.dishType}
+                </span>
+                <hr className="flex-grow border-t border-gray-400" />
+                </div>
+
+                {/* Grid các món ăn trong loại đó */}
+                <div className="w-full h-auto p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {item.List.map((dish) => (
                     <OrderItem
-                        key={dish._id || dish.dishName}
-                        dishName={dish.dishName}
-                        dishPrice={dish.dishPrice}
-                        dishImg={dish.dishImg || 'placeholder.png'}
-                        onShowOption={() => handleShowOption(dish)}
+                    key={dish._id || dish.dishName}
+                    dishName={dish.dishName}
+                    dishPrice={dish.dishPrice}
+                    dishImg={dish.dishImg || 'placeholder.png'}
+                    onShowOption={() => handleShowOption(dish)}
                     />
                 ))}
+                </div>
             </div>
+            ))}
 
+            {/* Hiển thị form chọn option */}
             {showOption && selectedDish && (
-                <OptionPage
-                    dishId={selectedDish._id}
-                    show={showOption}
-                    onClose={() => setShowOption(false)}
-                    dishName={selectedDish.dishName}
-                    dishPrice={selectedDish.dishPrice}
-                    dishImage={selectedDish.dishImg || 'placeholder.png'}
-                    _id={selectedDish._id}
-                    onAddToCart={onAddToCart}
-                />
-            )}
+            <OptionPage
+                dishId={selectedDish._id}
+                show={showOption}
+                onClose={() => setShowOption(false)}
+                dishName={selectedDish.dishName}
+                dishPrice={selectedDish.dishPrice}
+                dishImage={selectedDish.dishImg || 'placeholder.png'}
+                _id={selectedDish._id}
+                onAddToCart={onAddToCart}
+            />
+        )}
         </>
     );
 }

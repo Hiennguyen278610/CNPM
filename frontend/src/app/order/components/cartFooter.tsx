@@ -12,7 +12,7 @@ export default function CartFooter({totalPrice, onClick }: CometoPayment) {
                 </div>
             </div>
             <div className="w[-full h-1/2 !p-2 flex-nesw">
-                <button className="bg-accent rounded-2xl w-full h-full text-light hoverBtn" 
+                <button className="bg-accent rounded-2xl !p-3 md:!p-1 w-full h-full text-light hoverBtn" 
                 onClick={onClick}>Order</button>
             </div>
         </div>
