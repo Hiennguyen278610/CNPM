@@ -8,12 +8,16 @@ import { useCart } from "@/context/CartContext";
 export default function Payment() {
   const router = useRouter();
   return (
-    <div className="h-screen w-screen overflow-hidden flex flex-row justify-center">
-      <div className="w-[18%] h-full bg-transparent flex flex-col">
+    <div className="min-h-screen w-full flex flex-col md:flex-row justify-center bg-gray-50 md:!px-10">
+      {/* Sidebar */}
+      <div className="w-full md:w-[18%] h-auto md:h-screen bg-transparent flex flex-col">
         <MenuLeftHeadPayment onClick={() => router.push("/order")} />
       </div>
-      <div className="w-[68%] h-full bg-white flex flex-col">
-        <CartListPayment />
+      {/* Main content */}
+      <div className="w-full md:w-[68%] flex-1 h-auto md:h-screen bg-white flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <CartListPayment />
+        </div>
         <MenuFooterListPayment />
       </div>
     </div>
