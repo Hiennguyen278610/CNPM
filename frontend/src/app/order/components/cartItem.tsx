@@ -53,12 +53,12 @@ export default function CartItem({
                     </span>
                 </div>
                 <span className="text-sm text-gray-400">
-                    Add:{' '}
+                    Option:{' '}
                     {dishOptions.length === 0
                         ? 'None'
                         : dishOptions.map((option, index) => (
                               <span key={index}>
-                                  {option.label || 'Unknown Option'}
+                                  {option.label || 'Unknown Option'}                          
                                   {index < dishOptions.length - 1 && ', '}
                               </span>
                           ))}
