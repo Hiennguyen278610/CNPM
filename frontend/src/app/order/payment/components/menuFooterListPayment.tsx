@@ -1,14 +1,21 @@
 "use client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useCart } from "@/context/CartContext";
+// import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 
 export default function MenuFooterListPayment() {
   const router = useRouter();
-  const { cartItems, getTotalPrice } = useCart();
+  // const { cartItems, getTotalPrice } = useCart();
 
-  const subTotal = getTotalPrice();
+  // const subTotal = getTotalPrice();
+
+  const cartItemsString = localStorage.getItem("orderItems");
+  const cartItems = cartItemsString ? JSON.parse(cartItemsString) : [];
+  
+  // Tính tổng tiền từ dữ liệu trong localStorage
+  const subTotal = cartItems.reduce((sum: number, item: any) => sum + item.totalPrice, 0);
+
   const discount = 0;
   const total = subTotal - discount;
 

@@ -165,6 +165,7 @@ export default function OrderLayout() {
             if (failedItems.length > 0) {
                 alert(`Có lỗi khi tạo order-detail:\n${failedItems.join('\n')}`);
             } else {
+                localStorage.setItem('orderItems', JSON.stringify(cartItems));
                 cartService.clearCart();
                 setUpdate(u => u + 1);
                 router.push('/order/payment');
@@ -198,6 +199,7 @@ export default function OrderLayout() {
         }
         return acc;
     }, [] as any[]);
+    const tableData = JSON.parse(localStorage.getItem("currentTable") || "{}");
 
     return (
         <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row relative">
@@ -208,7 +210,8 @@ export default function OrderLayout() {
                     localStorage.removeItem('currentUser');
                     localStorage.removeItem('currentTable');
                   }
-                  router.push('/')}} />
+                  router.push(`/?q=${tableData.qrToken}`);
+                }} />
                 <div className="w-full flex-1 flex flex-col overflow-y-auto">
                     <MenuSlider onSelectType={setSelectedType} />
                     <fieldset className="w-full">
@@ -238,7 +241,7 @@ export default function OrderLayout() {
             {!isDesktop && (
                 <div className="fixed bottom-0 w-full z-50">
                 <button
-                    className="bg-accent text-white w-full !px-3 flex justify-between items-center text-lg rounded-md hover:bg-red-800"
+                    className="bg-accent text-white w-full !p-4 flex justify-between items-center text-lg rounded-xl hover:bg-red-800"
                     onClick={() => setIsBottomCartOpen(true)}
                 >
                     <span>Your Cart • {cartQuantity} items</span>
