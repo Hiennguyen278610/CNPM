@@ -18,7 +18,7 @@ export default function VnPayReturn() {
 
   const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
   
-  const tableData = JSON.parse(localStorage.getItem("table") || "{}");
+  const tableData = JSON.parse(localStorage.getItem("currentTable") || "{}");
 
   // Format số tiền (chia cho 100 vì VNPAY trả về số tiền nhân 100)
   const formattedAmount = vnp_Amount ? parseInt(vnp_Amount) / 100 : 0;

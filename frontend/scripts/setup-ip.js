@@ -1,14 +1,10 @@
 const fs = require('fs');
 const os = require('os');
+const path = require('path');
 
-/**
- * Lấy địa chỉ IPv4 nội bộ của máy chủ
- * @returns {string} Địa chỉ IPv4
- */
 function getLocalIPv4() {
   const nets = os.networkInterfaces();
   
-  // Ưu tiên tìm Wi-Fi adapter trước
   if (nets['Wi-Fi']) {
     for (const net of nets['Wi-Fi']) {
       if (net.family === 'IPv4' && !net.internal) {
@@ -17,32 +13,15 @@ function getLocalIPv4() {
       }
     }
   }
-  
-  // Nếu không tìm thấy Wi-Fi, tìm các adapter khác
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name] || []) {
-      // Chỉ lấy địa chỉ IPv4 không phải loopback và thuộc mạng nội bộ
-      if (net.family === 'IPv4' && !net.internal) {
-        if (net.address.startsWith('192.168.') || 
-            net.address.startsWith('10.') || 
-            net.address.startsWith('172.')) {
-          console.log(`Sử dụng địa chỉ IPv4 từ adapter: ${name}`);
-          return net.address;
-        }
-      }
-    }
-  }
   return 'localhost';
 }
 
-// Lấy địa chỉ IPv4 nội bộ
-const ipv4 = getLocalIPv4();
-console.log(`Đã phát hiện địa chỉ IPv4 nội bộ: ${ipv4}`);
+console.log('Địa chỉ IPv4 sugoi:', getLocalIPv4());
+let envPath = path.join(__dirname, '..', '.env');
+let readEnv = fs.readFileSync(envPath, 'utf8');
+const isExists = readEnv.match(/^NEXT_PUBLIC_IPURL=.*$/m);
 
-try {
-  // Cập nhật file .env.local với địa chỉ IP mới
-  fs.writeFileSync('d:\\Workspace\\cnpmProject\\frontend\\.env.local', `IPURL=${ipv4}`, { flag: 'w' });
-  console.log('Đã cập nhật file .env.local với địa chỉ IP hiện tại');
-} catch (error) {
-  console.error('Lỗi khi cập nhật file .env.local:', error);
-}
+if (isExists) readEnv = readEnv.replace(/^NEXT_PUBLIC_IPURL=.*$/m, `NEXT_PUBLIC_IPURL=${getLocalIPv4()}`);
+else readEnv += `\nNEXT_PUBLIC_IPURL=${getLocalIPv4()}`;
+
+fs.writeFileSync(envPath, readEnv, 'utf8');
