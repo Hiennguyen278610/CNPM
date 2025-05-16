@@ -55,6 +55,6 @@ export class RecipeService {
     }
   }
   findRecipeByDishId(dishID: string) {
-    return this.recipeModel.findOne({dishID});
+    return this.recipeModel.find({dishID});
   }
 }
