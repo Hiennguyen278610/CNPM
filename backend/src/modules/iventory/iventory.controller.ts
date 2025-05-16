@@ -12,10 +12,18 @@ import {
   HttpStatus,
   Logger,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 
 import { Public } from '@/decorator/customize';
-import { IsNotEmpty, IsArray, ValidateNested, IsMongoId, IsNumber, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsArray,
+  ValidateNested,
+  IsMongoId,
+  IsNumber,
+  Min,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateInventoryDto } from './dto/create-iventory.dto';
 import { UpdateInventoryDto } from './dto/update-iventory.dto';
@@ -56,6 +64,10 @@ export class InventoryController {
   async findAll() {
     return this.inventoryService.findAll();
   }
+  @Get('find-by-ingredient')
+  findByDishId(@Query('ingredientID') ingredientID: string) {
+    return this.inventoryService.findByIngredientID(ingredientID);
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
@@ -64,7 +76,10 @@ export class InventoryController {
 
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateInventoryDto: UpdateInventoryDto,
+  ) {
     return this.inventoryService.update(id, updateInventoryDto);
   }
 
@@ -77,12 +92,19 @@ export class InventoryController {
   @Post('deduct')
   @UsePipes(new ValidationPipe({ transform: true }))
   async deductInventory(@Body() deductInventoryDto: DeductInventoryDto) {
-    this.logger.log(`Received deduct inventory request: ${JSON.stringify(deductInventoryDto)}`);
+    this.logger.log(
+      `Received deduct inventory request: ${JSON.stringify(deductInventoryDto)}`,
+    );
     try {
-      await this.inventoryService.deductInventoryForOrder(deductInventoryDto.items);
+      await this.inventoryService.deductInventoryForOrder(
+        deductInventoryDto.items,
+      );
       return { success: true, message: 'Đã cập nhật kho thành công' };
     } catch (error) {
-      this.logger.error(`Error in deductInventory: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error in deductInventory: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException(error.message || 'Không thể cập nhật kho');
     }
   }
