@@ -10,7 +10,7 @@ import CartList from '@/app/order/components/cartList';
 import CartFooter from '@/app/order/components/cartFooter';
 import '@/app/globals.css';
 import { cartService } from '@/app/order/services/cart.service';
-import { CartItemProps, useCart } from '@/context/CartContext';   
+import { CartItemProps, useCart } from '@/context/CartContext';
 
 export default function OrderLayout() {
   const [isDesktop, setIsDesktop] = useState(true);
@@ -64,15 +64,16 @@ export default function OrderLayout() {
         deleteItem(index);
     };
 
-    const handleOrder = async () => {
-        if (!cartItems.length) {
-            alert('Cart is empty or total value is invalid!');
-            return;
-        }
-
-    const customerID = '681ce5d685a510c2b8897dd9';
-    const tableID = '681ce60f85a510c2b8897ddb';
-
+  const handleOrder = async () => {
+    const cartItems = cartService.getCart();
+    if (!cartItems.length || cartService.getTotal() <= 0) {
+      alert('Giỏ hàng trống hoặc tổng giá trị không hợp lệ!');
+      return;
+    }
+    const customer = localStorage.getItem('currentUser');
+    const table = localStorage.getItem('currentTable');
+    const customerID = customer ? JSON.parse(customer)._id : null;
+    const tableID = table ? JSON.parse(table)._id : null;
     try {
       // Bước 1: Tạo đơn hàng
       const orderBody = {
@@ -260,8 +261,8 @@ export default function OrderLayout() {
                         <p className="text-md select-none md:text-xs">{tableNameLocal}</p>
                         </div>
                     </div>
-                    <button 
-                        onClick={() => setIsBottomCartOpen(false)} 
+                    <button
+                        onClick={() => setIsBottomCartOpen(false)}
                         className="text-gray-500 text-2xl hover:text-gray-900"
                     >
                         &times;

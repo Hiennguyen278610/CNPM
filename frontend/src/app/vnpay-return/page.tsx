@@ -1,5 +1,8 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+import { getOrderByCustomerIdAndTableId, updateOrder } from "@/services/order.service";
+import { useEffect } from "react";
+
 
 export default function VnPayReturn() {
   const searchParams = useSearchParams();
@@ -17,7 +20,7 @@ export default function VnPayReturn() {
   const vnp_TxnRef = searchParams.get("vnp_TxnRef"); // order id
 
   const isSuccess = vnp_ResponseCode === "00" && vnp_TransactionStatus === "00";
-  
+
   const tableData = JSON.parse(localStorage.getItem("currentTable") || "{}");
 
   // Format số tiền (chia cho 100 vì VNPAY trả về số tiền nhân 100)
@@ -36,6 +39,19 @@ export default function VnPayReturn() {
 
     return `${hour}:${minute}:${second} ${day}/${month}/${year} `;
   };
+  useEffect(() => {
+    const fetchOrder = async () => {
+      if (isSuccess) {
+        const customer = localStorage.getItem("currentUser");
+        const table = localStorage.getItem("currentTable");
+        const customerID = customer ? JSON.parse(customer)._id : null;
+        const tableID = table ? JSON.parse(table)._id : null;
+        const order = await getOrderByCustomerIdAndTableId(customerID, tableID);
+        await updateOrder(order._id, 1);
+      }
+    };
+    fetchOrder();
+  }, [isSuccess]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[100vh] bg-gray-100 !p-4">

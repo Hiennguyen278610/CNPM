@@ -33,13 +33,12 @@ async function bootstrap() {
   
   
   app.useGlobalPipes(
-    new ValidationPipe({
+    new ValidationPipe({ 
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
   );
   app.setGlobalPrefix('backend/api', {exclude: ['']});
   await app.listen(port, '0.0.0.0');
-  console.log(`Application is running on: http://localhost:${port}/backend/api`);
 }
 bootstrap();

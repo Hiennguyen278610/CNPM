@@ -5,22 +5,35 @@ import { Order, OrderDocument } from './schemas/order.schema';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import aqp from 'api-query-params';
-import { OrderDetail, OrderDetailDocument } from '../order-detail/schemas/order-detail.schema';
+import {
+  OrderDetail,
+  OrderDetailDocument,
+} from '../order-detail/schemas/order-detail.schema';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(OrderDetail.name) private readonly orderDetailModel: Model<OrderDetailDocument>,
+    @InjectModel(OrderDetail.name)
+    private readonly orderDetailModel: Model<OrderDetailDocument>,
     @InjectModel(Order.name) private readonly orderModel: Model<OrderDocument>,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto): Promise<{ success: boolean; id: string }> {
+  async create(
+    createOrderDto: CreateOrderDto,
+  ): Promise<{ success: boolean; id: string }> {
     try {
       console.log('Dữ liệu order:', createOrderDto);
       const { customerID, tableID, orderStatus, totalPrice } = createOrderDto;
 
-      if (!customerID || !tableID || orderStatus === undefined || totalPrice <= 0) {
-        throw new BadRequestException('Dữ liệu không hợp lệ hoặc totalPrice không hợp lệ');
+      if (
+        !customerID ||
+        !tableID ||
+        orderStatus === undefined ||
+        totalPrice <= 0
+      ) {
+        throw new BadRequestException(
+          'Dữ liệu không hợp lệ hoặc totalPrice không hợp lệ',
+        );
       }
 
       const order = await this.orderModel.create(createOrderDto);
@@ -56,11 +69,17 @@ export class OrderService {
   }
 
   async findOne(id: string) {
-    const order = await this.orderModel.findById(id).populate('customerID').populate('tableID');
+    const order = await this.orderModel
+      .findById(id)
+      .populate('customerID')
+      .populate('tableID');
     if (!order) {
       throw new BadRequestException('Order not found');
     }
     return order;
+  }
+  findByCustomerAndTable(customerID: string, tableID: string) {
+    return this.orderModel.findOne({ customerID, tableID });
   }
 
   async update(id: string, updateOrderDto: UpdateOrderDto) {
@@ -111,8 +130,10 @@ export class OrderService {
       throw new BadRequestException('Đơn hàng không tồn tại');
     }
 
-    return { success: true, id: updatedOrder._id.toString(), orderStatus: updatedOrder.orderStatus };
+    return {
+      success: true,
+      id: updatedOrder._id.toString(),
+      orderStatus: updatedOrder.orderStatus,
+    };
   }
-
-
 }
