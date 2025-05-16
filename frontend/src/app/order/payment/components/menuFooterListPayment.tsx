@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
 import { get } from "axios";
+import { getOrderByCustomerIdAndTableId } from "@/services/order.service";
 
 export default function MenuFooterListPayment() {
   const router = useRouter();
@@ -19,8 +20,13 @@ export default function MenuFooterListPayment() {
     alert(`Hủy bỏ đơn hàng!`);
     router.push("/order");
   };
-  const handlePayNow = () => {
-    const orderId = uuidv4();
+  const handlePayNow = async () => {
+    const customer = localStorage.getItem('currentUser')
+    const table = localStorage.getItem('currentTable')
+    const customerID = customer ? JSON.parse(customer)._id : null
+    const tableId = table ? JSON.parse(table)._id : null
+    const order = await getOrderByCustomerIdAndTableId(customerID, tableId);
+    const orderId = order._id
     if (cartItems.length === 0) {
       alert("Giỏ hàng trống!");
       return;

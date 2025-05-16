@@ -1,10 +1,19 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { getOrderByCustomerIdAndTableId, updateOrder } from "@/services/order.service";
+import {
+  getOrderByCustomerIdAndTableId,
+  updateOrder,
+} from "@/services/order.service";
 import { useEffect } from "react";
-
+import { useCart } from "@/context/CartContext";
+import {
+  getRecipe,
+  getInventory,
+  updateInventory,
+} from "@/services/inventory.service";
 
 export default function VnPayReturn() {
+  const { cartItems } = useCart();
   const searchParams = useSearchParams();
 
   const vnp_Amount = searchParams.get("vnp_Amount"); // total
@@ -39,20 +48,44 @@ export default function VnPayReturn() {
 
     return `${hour}:${minute}:${second} ${day}/${month}/${year} `;
   };
+  async function handleCartInventory(cart: any[]) {
+    for (const cartItem of cart) {
+      const dishID = cartItem.dish._id;
+      const quantity = cartItem.quantity;
+
+      // Lấy công thức (các nguyên liệu) cho món ăn này
+      const recipes = await getRecipe(dishID);
+      console.log(recipes)
+      // Duyệt từng nguyên liệu trong công thức
+      for (const recipe of recipes) {
+        // Lấy tồn kho hiện tại của nguyên liệu
+        const inventory = await getInventory(recipe.ingredientID);
+        if (!inventory) continue;
+
+        // Tính số lượng cần trừ
+        const newQty = inventory.qty - recipe.amountRequired * quantity;
+        console.log("So luong moi: " + newQty)
+
+        // Cập nhật tồn kho mới
+        await updateInventory(inventory._id, newQty);
+      }
+    }
+  }
   useEffect(() => {
     const fetchOrder = async () => {
       if (isSuccess) {
         const customer = localStorage.getItem("currentUser");
         const table = localStorage.getItem("currentTable");
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
         const customerID = customer ? JSON.parse(customer)._id : null;
         const tableID = table ? JSON.parse(table)._id : null;
         const order = await getOrderByCustomerIdAndTableId(customerID, tableID);
         await updateOrder(order._id, 1);
+        await handleCartInventory(cart);
       }
     };
     fetchOrder();
   }, [isSuccess]);
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[100vh] bg-gray-100 !p-4">
       <div className="bg-white shadow-xl rounded-2xl !p-6 w-full max-w-3xl">
