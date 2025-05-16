@@ -155,4 +155,8 @@ export class InventoryService {
       throw error;
     }
   }
+  
+  async  findByIngredientID(ingredientID: string){
+    return this.inventoryModel.findOne({ingredientID})
+  }
 }

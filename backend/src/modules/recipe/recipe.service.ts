@@ -54,4 +54,7 @@ export class RecipeService {
       throw new NotFoundException(`Không tìm thấy công thức với ID ${id}`);
     }
   }
+  findRecipeByDishId(dishID: string) {
+    return this.recipeModel.findOne({dishID});
+  }
 }

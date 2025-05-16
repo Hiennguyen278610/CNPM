@@ -10,6 +10,7 @@ import {
   ValidationPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -31,6 +32,11 @@ export class RecipeController {
     return this.recipeService.findAll();
   }
 
+  @Get('find-by-dish')
+  findByDishId(@Query('dishID') dishID: string) {
+    return this.recipeService.findRecipeByDishId(dishID);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.recipeService.findOne(id);
@@ -38,7 +44,10 @@ export class RecipeController {
 
   @Patch(':id')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async update(@Param('id') id: string, @Body() updateRecipeDto: UpdateRecipeDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateRecipeDto: UpdateRecipeDto,
+  ) {
     return this.recipeService.update(id, updateRecipeDto);
   }
 
