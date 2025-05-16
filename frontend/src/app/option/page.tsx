@@ -7,12 +7,16 @@ import {
   Option,
 } from "../order/services/option.service";
 
+interface Dish {
+    _id: string;
+    dishName: string;
+    dishPrice: number;
+    dishImg: string;
+    dishType: string;
+}
+
 interface OptionProps {
-  dishId: string; // Giữ dishId để khớp với logic hiện tại
-  dishName: string;
-  dishPrice: number;
-  dishImage: string;
-  show: boolean;
+  dish: Dish
   onClose: () => void;
   onAddToCart: (item: any) => void;
   _id: string; // Thêm _id để khớp với props từ GridProduct.tsx
@@ -25,22 +29,17 @@ interface OptionItem {
 }
 
 export default function OptionPage({
-  dishId,
-  dishName,
-  dishPrice,
-  dishImage,
-  show,
+  dish,
   onClose,
   onAddToCart,
-  _id, // Sử dụng _id từ props
 }: OptionProps) {
-  if (!show) return null;
+
+  const { _id: dishId, dishName, dishPrice, dishImg, dishType } = dish;
 
   const [totalPrice, setTotalPrice] = useState(dishPrice);
   const [checked, setChecked] = useState<string[]>([]);
   const [groupOptions, setGroupOptions] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(true);
-  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -55,7 +54,9 @@ export default function OptionPage({
       }
     };
     fetchOptions();
+    
   }, [dishId]);
+
 
   useEffect(() => {
     let base = Number(dishPrice) || 0;
@@ -66,8 +67,8 @@ export default function OptionPage({
           optionsPrice += Number(option.optionPrice) || 0;
       });
     });
-    setTotalPrice((base + optionsPrice) * quantity);
-  }, [checked, quantity, groupOptions, dishPrice]);
+    setTotalPrice((base + optionsPrice));
+  }, [checked]);
 
   const handleCheck = (id: string) => {
     const isCheck = checked.includes(id);
@@ -78,21 +79,30 @@ export default function OptionPage({
     }
   };
 
-  const handleQuantityChange = (newQuantity: number) => {
-    if (newQuantity > 0) {
-      setQuantity(newQuantity);
-    }
-  };
+  useEffect(() => {
+  if (!loading && groupOptions.length === 0) {
+    onAddToCart({
+      dish,
+      quantity: 1,
+      selectedOptions: [],
+      totalPrice: totalPrice,
+    });
+    onClose();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [groupOptions, loading]);
 
-  if (loading)
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-        <div className="bg-white p-4 rounded-lg">Loading options...</div>
-      </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  //       <div className="bg-white p-4 rounded-lg">Loading options...</div>
+  //     </div>
+  //   );
 
+  if(groupOptions.length === 0) return null;
   return (
-    <div className="fixed inset-0 z-50">
+    
+    <div className="fixed inset-0 z-[100]">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
 
@@ -107,7 +117,7 @@ export default function OptionPage({
               {/* Option form header */}
               <div className="flex items-start !p-3 !mt-6 bg-white shadow-sm w-full max-w-xl">
                 <img
-                  src={`/product/${dishImage}`}
+                  src={`/product/${dishImg}`}
                   alt="Hamburger"
                   className="w-24 h-24 !mr-4 object-cover rounded-md"
                 />
@@ -118,15 +128,14 @@ export default function OptionPage({
                     </h2>
                     <span className="text-xl text-black">${dishPrice}</span>
                   </div>
-                  <p className="text-sm text-gray-600 !mt-6">
-                    Optional accompaniments to make your meal become more
-                    delicious
+                  <p className="text-sm text-gray-600 !mt-3 md:block ">
+                    Please select the accompaniments to make your dish more delicious.
                   </p>
                 </div>
               </div>
 
               {/* Option form body */}
-              <div className="flex flex-col bg-white !p-3 !mt-3">
+              <div className="flex flex-col bg-white !p-4 !mt-2 md:!mt-3">
                 {groupOptions.length === 0 ? (
                   <div className="text-gray-400 italic text-center">
                     Không có lựa chọn thêm cho món này
@@ -138,24 +147,24 @@ export default function OptionPage({
                         arr.findIndex((o) => o._id === opt._id) === idx
                     );
                     return (
-                      <div key={group._id} className="mb-4">
-                        <h1 className="text-lg font-semibold !mb-2">
-                          {group.optionGroupName}
+                      <div key={group._id} className="!mb-1">
+                        <h1 className="text-lg font-semibold !mb-1">
+                          Seasonings
                         </h1>
                         <div className="flex flex-col">
-                          {uniqueOptions.map((option, index) => (
+                          {uniqueOptions.map((option) => (
                             <div
                               key={option._id}
                               className="flex justify-between items-center"
                             >
-                              <div className="flex items-center !my-1.5">
+                              <div className="flex items-center !my-1">
                                 <input
                                   type="checkbox"
                                   className="scale-125"
                                   checked={checked.includes(option._id)}
                                   onChange={() => handleCheck(option._id)}
                                 />
-                                <span className="!ml-2">
+                                <span className="!ml-2 text-sm md:text-lg">
                                   {option.optionName}
                                 </span>
                               </div>
@@ -171,57 +180,53 @@ export default function OptionPage({
                 )}
               </div>
 
-              <div className="!mt-3 !p-3 bg-white flex flex-col rounded-lg shadow-lg">
-                <div className="flex justify-center items-center !mb-4">
+              <div className="!mt-2 !p-2 bg-white flex flex-col rounded-lg shadow-lg">
+                <div className="flex justify-center items-center !mb-2">
                   <input
                     type="text"
                     placeholder="Note to the kitchen"
                     className="bg-blue-50 w-full !p-2.5 rounded-md"
                   />
                 </div>
+
+                <div className="flex justify-between items-center">
+                  <h1 className="text-xl">Total : </h1>
+                  <h3 className="text-red-600 text-xl">
+                    ${totalPrice.toFixed(2)}
+                  </h3>
+                </div>
+
+                <div className="flex flex-row justify-center item !mt-0.5 !p-1 ">
+                  <button
+                    className="bg-gray-300 text-black rounded-2xl w-[160px] !py-1 !mx-1 hover:bg-gray-400 transition"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white rounded-2xl w-[160px] !py-1 !ml-1 hover:bg-red-800 transition"
+                    onClick={() => {
+                      // Lấy đúng Option[] đã chọn
+                      const selectedOptions: Option[] = [];
+                      groupOptions.forEach((group) => {
+                        group.optionID.forEach((option) => {
+                          if (checked.includes(option._id))
+                            selectedOptions.push(option);
+                        });
+                      });
+                      onAddToCart({
+                        dish: dish,
+                        quantity:1,
+                        selectedOptions,
+                        totalPrice : totalPrice,
+                      });
+                      onClose();
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <h1 className="text-xl">Total : </h1>
-              <h3 className="text-red-600 text-2xl">
-                ${totalPrice.toFixed(2)}
-              </h3>
-            </div>
-
-            <div className="flex flex-row justify-end item !mt-2 !p-1">
-              <button
-                className="bg-gray-300 text-black rounded-2xl w-[160px] !py-1 !mx-1 hover:bg-gray-400 transition"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-red-500 text-white rounded-2xl w-[160px] !py-1 !ml-1 hover:bg-red-800 transition"
-                onClick={() => {
-                  // Lấy đúng Option[] đã chọn
-                  const selectedOptions: Option[] = [];
-                  groupOptions.forEach((group) => {
-                    group.optionID.forEach((option) => {
-                      if (checked.includes(option._id))
-                        selectedOptions.push(option);
-                    });
-                  });
-                  onAddToCart({
-                    dish: {
-                      _id: _id, // Sử dụng _id từ props thay vì dishId
-                      dishName,
-                      dishPrice,
-                      dishImg: dishImage,
-                    },
-                    quantity,
-                    selectedOptions,
-                  });
-                  onClose();
-                }}
-              >
-                Add to Cart
-              </button>
             </div>
           </div>
         </div>

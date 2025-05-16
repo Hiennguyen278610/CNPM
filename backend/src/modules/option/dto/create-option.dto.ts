@@ -8,5 +8,6 @@ export class CreateOptionDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   optionPrice: number;
 }

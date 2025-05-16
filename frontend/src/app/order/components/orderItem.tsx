@@ -1,13 +1,13 @@
 'use client';
+import { Dish } from "../services/dish.service";
 
 interface OrderItemProps {
-    dishName: string;
-    dishPrice: number;
-    dishImg: string;
+    dish: Dish;
     onShowOption?: () => void;
 }
 
-export default function OrderItem({ dishName, dishPrice, dishImg, onShowOption }: OrderItemProps) {
+export default function OrderItem({ dish , onShowOption }: OrderItemProps) {
+    const { dishName, dishPrice, dishImg } = dish;
     const imageSrc = dishImg ? `/product/${dishImg}` : '/product/placeholder.png';
 
     return (

@@ -1,23 +1,16 @@
 "use client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-// import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { get } from "axios";
 
 export default function MenuFooterListPayment() {
   const router = useRouter();
-  // const { cartItems, getTotalPrice } = useCart();
-
-  // const subTotal = getTotalPrice();
-
-  const cartItemsString = localStorage.getItem("orderItems");
-  const cartItems = cartItemsString ? JSON.parse(cartItemsString) : [];
-  
-  // Tính tổng tiền từ dữ liệu trong localStorage
-  const subTotal = cartItems.reduce((sum: number, item: any) => sum + item.totalPrice, 0);
+  const { cartItems, getTotalPrice } = useCart();
 
   const discount = 0;
-  const total = subTotal - discount;
+  const total = getTotalPrice() - discount;
 
   const handleApplyPromo = () => {
     alert(`Chức năng này chưa được triển khai!`);
@@ -40,7 +33,7 @@ export default function MenuFooterListPayment() {
       <div className="w-full md:w-auto text-center md:text-left bg-white shadow-md rounded-lg border !p-4 ">
         <div className="flex justify-between items-center text-2xl font-semibold text-gray-700 mb-2">
           <p className="px-4">Subtotal:</p>
-          <p className="px-4">{subTotal.toFixed(2)}</p>
+          <p className="px-4">{getTotalPrice().toFixed(2)}</p>
         </div>
         <div className="flex justify-between items-center text-xl font-semibold text-gray-700 mb-2">
           <p className="px-4">Voucher: </p>
