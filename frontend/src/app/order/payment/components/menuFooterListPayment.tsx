@@ -35,7 +35,7 @@ export default function MenuFooterListPayment() {
         <div className="grid grid-cols-1 md:grid-cols-3 !gap-2">
           <div className="flex justify-between md:flex-col">
             <span className="text-lg font-medium text-gray-700 !px-2">Subtotal:</span>
-            <span className="text-lg font-semibold !px-2">{subTotal.toFixed(2)}</span>
+            <span className="text-lg font-semibold !px-2">{getTotalPrice().toFixed(2)}</span>
           </div>
           
           <div className="flex justify-between md:flex-col">
