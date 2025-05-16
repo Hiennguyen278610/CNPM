@@ -83,10 +83,10 @@ export default function OrderLayout() {
       alert('Giỏ hàng trống hoặc tổng giá trị không hợp lệ!');
       return;
     }
-
-    const customerID = '681ce5d685a510c2b8897dd9';
-    const tableID = '681ce60f85a510c2b8897ddb';
-
+    const customer = localStorage.getItem('currentUser');
+    const table = localStorage.getItem('currentTable');
+    const customerID = customer ? JSON.parse(customer)._id : null;
+    const tableID = table ? JSON.parse(table)._id : null;
     try {
       // Bước 1: Tạo đơn hàng
       const orderBody = {
