@@ -153,4 +153,17 @@ export class InventoryController {
       throw new BadRequestException(error.message || 'Không thể kiểm tra tồn kho món ăn');
     }
   }
+
+  @Post('max-dish-quantity')
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getMaxDishQuantity(@Body() body: { dishId: string }) {
+    this.logger.log(`Received get max dish quantity request: ${JSON.stringify(body)}`);
+    try {
+      const maxQty = await this.inventoryService.getMaxDishQuantity(body.dishId);
+      return { success: true, maxQty };
+    } catch (error) {
+      this.logger.error(`Error in getMaxDishQuantity: ${error.message}`, error.stack);
+      throw new BadRequestException(error.message || 'Không thể kiểm tra số lượng tối đa');
+    }
+  }
 }

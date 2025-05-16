@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from 'framer-motion';
 import {
   optionService,
   GroupOption,
   Option,
 } from "../order/services/option.service";
+
+import { inventoryService } from "../order/services/inventory.service";
 
 interface Dish {
     _id: string;
@@ -40,6 +43,8 @@ export default function OptionPage({
   const [checked, setChecked] = useState<string[]>([]);
   const [groupOptions, setGroupOptions] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [maxQuantity, setMaxQuantity] = useState<number>(0);
+
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -80,17 +85,31 @@ export default function OptionPage({
   };
 
   useEffect(() => {
-  if (!loading && groupOptions.length === 0) {
+    // Fetch maxQuantity khi mở OptionPage
+    const fetchMaxQuantity = async () => {
+      try {
+        const qty = await inventoryService.getMaxDishQuantity(dish._id);
+        setMaxQuantity(qty);
+      } catch (error) {
+        setMaxQuantity(1);
+      }
+    };
+    fetchMaxQuantity();
+  }, [dish._id]);
+
+  useEffect(() => {
+  if (!loading && groupOptions.length === 0 && maxQuantity > 0) {
     onAddToCart({
       dish,
       quantity: 1,
       selectedOptions: [],
       totalPrice: totalPrice,
+      maxQuantity
     });
     onClose();
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [groupOptions, loading]);
+}, [groupOptions, loading, maxQuantity]);
 
   // if (loading)
   //   return (
@@ -102,13 +121,20 @@ export default function OptionPage({
   if(groupOptions.length === 0) return null;
   return (
     
-    <div className="fixed inset-0 z-[100]">
+    <div className="fixed inset-0 z-[100] ">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Modal content */}
       <div className="relative flex justify-center items-center w-full h-full">
         {/* Modal body */}
+        <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="bg-blue-100 rounded-lg shadow-lg"
+        >
         <div className="bg-blue-100 rounded-lg shadow-lg">
           {/* Modal inner */}
           <div>
@@ -219,6 +245,7 @@ export default function OptionPage({
                         quantity:1,
                         selectedOptions,
                         totalPrice : totalPrice,
+                        maxQuantity
                       });
                       onClose();
                     }}
@@ -230,6 +257,7 @@ export default function OptionPage({
             </div>
           </div>
         </div>
+        </motion.div>
       </div>
     </div>
   );

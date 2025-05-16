@@ -6,6 +6,8 @@ import { inventoryService } from '../services/inventory.service';
 import OrderItem from '@/app/order/components/orderItem';
 import OptionPage from '@/app/option/page';
 import { CartItemProps, useCart } from '@/context/CartContext';
+import { AnimatePresence } from 'framer-motion';
+
 
 interface ExtendedDish extends Dish {
   outOfStock: boolean;
@@ -20,6 +22,7 @@ interface GridProductProps {
   onAddToCart: (item: CartItemProps) => void;
   selectedType?: string;
 }
+
 
 export default function GridProduct({ onAddToCart, selectedType }: GridProductProps) {
   const [menuList, setMenuList] = useState<MenuCategory[]>([]);
@@ -126,6 +129,7 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
         </div>
       ))}
 
+      <AnimatePresence>
       {/* Hiển thị form chọn option */}
       {showOption && selectedDish && (
         <OptionPage
@@ -135,6 +139,7 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
           onAddToCart={onAddToCart}
         />
       )}
+      </AnimatePresence>
     </>
   );
 }

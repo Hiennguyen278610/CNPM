@@ -11,6 +11,7 @@ export interface CartItemProps {
   quantity: number;
   selectedOptions: Option[];
   totalPrice: number;
+  maxQuantity: number;
 }
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
@@ -39,8 +40,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const existedItemIndex = cartItems.findIndex(p => isSameCartItem(p, item));
 
     if (existedItemIndex !== -1) {
+      const existedItem = cartItems[existedItemIndex];
+      if (existedItem.quantity >= existedItem.maxQuantity) {
+        alert(`Max quantity in stock : ${existedItem.maxQuantity}`);
+        return;
+      }
       const updatedCart = cartItems.map((p, i) => {
         if (i === existedItemIndex) {
+      
           return {
             ...p,
             quantity: p.quantity + item.quantity, // cộng thêm số lượng đúng
@@ -59,8 +66,13 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   // Tăng số lượng
   const increaseItem = (index: number) => {
     const newItems = [...cartItems];
-    newItems[index].quantity += 1;
-    setCartItems(newItems);
+    if(newItems[index].quantity >= newItems[index].maxQuantity) {
+      alert(`Max quantity in stock : ${newItems[index].maxQuantity}`);
+    }
+    else{
+      newItems[index].quantity += 1;
+      setCartItems(newItems);
+    }
   };
 
   // Giảm số lượng

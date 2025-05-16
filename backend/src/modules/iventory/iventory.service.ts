@@ -159,4 +159,30 @@ export class InventoryService {
   async  findByIngredientID(ingredientID: string){
     return this.inventoryModel.findOne({ingredientID})
   }
+
+  async getMaxDishQuantity(dishID: string): Promise<number> {
+    this.logger.log(`Calculating max quantity for dishID: ${dishID}`);
+    try {
+      const recipes = await this.recipeModel.find({ dishID }).exec();
+      if (!recipes || recipes.length === 0) {
+        this.logger.warn(`No recipes found for dish ${dishID}`);
+        return 0;
+      }
+
+      let minQty = Infinity;
+      for (const recipe of recipes) {
+        const inventory = await this.inventoryModel.findOne({ ingredientID: recipe.ingredientID }).exec();
+        if (!inventory) {
+          minQty = 0;
+          break;
+        }
+        const possibleQty = Math.floor(inventory.qty / recipe.amountRequired);
+        if (possibleQty < minQty) minQty = possibleQty;
+      }
+      return minQty === Infinity ? 0 : minQty;
+    } catch (error) {
+      this.logger.error(`Error in getMaxDishQuantity: ${error.message}`, error.stack);
+      throw new BadRequestException(`Failed to calculate max quantity for dish ${dishID}`);
+    }
+  }
 }
