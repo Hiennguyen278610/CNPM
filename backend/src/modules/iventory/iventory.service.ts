@@ -93,4 +93,7 @@ export class InventoryService {
       throw error;
     }
   }
+  findByIngredientID(ingredientID: string){
+    return this.inventoryModel.findOne({ingredientID})
+  }
 }

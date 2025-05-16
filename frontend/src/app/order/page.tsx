@@ -65,11 +65,11 @@ export default function OrderLayout() {
     };
 
   const handleOrder = async () => {
-    const cartItems = cartService.getCart();
-    if (!cartItems.length || cartService.getTotal() <= 0) {
-      alert('Giỏ hàng trống hoặc tổng giá trị không hợp lệ!');
+    if (!cartItems.length) {
+      alert('Giỏ hàng trống!');
       return;
     }
+    localStorage.setItem('cart',JSON.stringify(cartItems))
     const customer = localStorage.getItem('currentUser');
     const table = localStorage.getItem('currentTable');
     const customerID = customer ? JSON.parse(customer)._id : null;
@@ -152,36 +152,36 @@ export default function OrderLayout() {
         return;
       }
 
-      // Bước 3: Trừ kho
-      const items = cartItems.map((item:CartItemProps) => ({
-        dishID: item.dish._id,
-        quantity: item.quantity,
-      }));
-      try {
-        const deductRes = await fetch(
-          `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/inventory/deduct`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items }),
-          },
-        );
+      // // Bước 3: Trừ kho
+      // const items = cartItems.map((item:CartItemProps) => ({
+      //   dishID: item.dish._id,
+      //   quantity: item.quantity,
+      // }));
+      // try {
+      //   const deductRes = await fetch(
+      //     `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/inventory/deduct`,
+      //     {
+      //       method: 'POST',
+      //       headers: { 'Content-Type': 'application/json' },
+      //       body: JSON.stringify({ items }),
+      //     },
+      //   );
 
-        if (!deductRes.ok) {
-          const errText = await deductRes.text();
-          alert(`Cập nhật kho thất bại! ${deductRes.status} - ${errText}`);
-          return;
-        }
+      //   if (!deductRes.ok) {
+      //     const errText = await deductRes.text();
+      //     alert(`Cập nhật kho thất bại! ${deductRes.status} - ${errText}`);
+      //     return;
+      //   }
 
-        const deductResponse = await deductRes.json();
-        if (!deductResponse.success) {
-          alert(`Cập nhật kho thất bại: ${deductResponse.message || 'Lỗi không xác định'}`);
-          return;
-        }
-      } catch (err) {
-        alert(`Lỗi khi cập nhật kho: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
-        return;
-      }
+      //   const deductResponse = await deductRes.json();
+      //   if (!deductResponse.success) {
+      //     alert(`Cập nhật kho thất bại: ${deductResponse.message || 'Lỗi không xác định'}`);
+      //     return;
+      //   }
+      // } catch (err) {
+      //   alert(`Lỗi khi cập nhật kho: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
+      //   return;
+      // }
 
       // Bước 4: Hoàn tất đơn hàng
       router.push('/order/payment');
