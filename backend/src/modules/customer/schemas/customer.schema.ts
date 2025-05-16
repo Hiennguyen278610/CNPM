@@ -9,7 +9,7 @@ export class Customer {
     @Prop({required: false, default: null})
     accountId: string;
     @IsOptional()
-    @Prop({required: false, default: null})
+    @Prop({required: false, default: "Khách vãng lai"})
     name: string;
     @IsOptional()
     @Prop({required: false, default: null})  

@@ -84,9 +84,10 @@ export default function OrderLayout() {
             return;
         }
 
-        const customerID = '681ce5d685a510c2b8897dd9';
-        const tableID = '681ce60f85a510c2b8897ddb';
-
+        const user = localStorage.getItem('currentUser') || '';
+        const table = localStorage.getItem('currentTable') || '';
+        const customerID = user ? JSON.parse(user)._id : '';
+        const tableID = table ? JSON.parse(table)._id : '';
         try {
             const orderBody = {
                 customerID,
