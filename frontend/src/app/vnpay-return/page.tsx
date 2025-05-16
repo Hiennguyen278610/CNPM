@@ -54,21 +54,18 @@ export default function VnPayReturn() {
       const quantity = cartItem.quantity;
 
       // Lấy công thức (các nguyên liệu) cho món ăn này
-      const recipes = await getRecipe(dishID);
-      console.log(recipes)
-      // Duyệt từng nguyên liệu trong công thức
-      for (const recipe of recipes) {
-        // Lấy tồn kho hiện tại của nguyên liệu
-        const inventory = await getInventory(recipe.ingredientID);
-        if (!inventory) continue;
+      const recipe = await getRecipe(dishID);
+      console.log(recipe);
+      // Lấy tồn kho hiện tại của nguyên liệu
+      const inventory = await getInventory(recipe.ingredientID);
+      if (!inventory) continue;
 
-        // Tính số lượng cần trừ
-        const newQty = inventory.qty - recipe.amountRequired * quantity;
-        console.log("So luong moi: " + newQty)
+      // Tính số lượng cần trừ
+      const newQty = inventory.qty - recipe.amountRequired * quantity;
+      console.log("So luong moi: " + newQty);
 
-        // Cập nhật tồn kho mới
-        await updateInventory(inventory._id, newQty);
-      }
+      // Cập nhật tồn kho mới
+      await updateInventory(inventory._id, newQty);
     }
   }
   useEffect(() => {
@@ -171,7 +168,12 @@ export default function VnPayReturn() {
 
         <div className="!mt-6 flex justify-center">
           <button
-            onClick={() => (window.location.href = `/?q=${tableData.qrToken}`)}
+            onClick={() => {
+              window.location.href = `/?q=${tableData.qrToken}`;
+              localStorage.removeItem("cart")
+              localStorage.removeItem("currentUser")
+              localStorage.removeItem("currentTable")
+            }}
             className="!px-6 !py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Quay về trang chủ
