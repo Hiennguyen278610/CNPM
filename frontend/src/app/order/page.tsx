@@ -10,6 +10,7 @@ import CartList from '@/app/order/components/cartList';
 import CartFooter from '@/app/order/components/cartFooter';
 import '@/app/globals.css';
 import { cartService } from '@/app/order/services/cart.service';
+import { CartItemProps, useCart } from '@/context/CartContext';   
 
 export default function OrderLayout() {
     const [isDesktop, setIsDesktop] = useState(true);
@@ -20,7 +21,7 @@ export default function OrderLayout() {
 
     // Responsive check
     useEffect(() => {
-        const checkScreen = () => setIsDesktop(window.innerWidth >= 868);
+        const checkScreen = () => setIsDesktop(window.innerWidth >= 768);
         checkScreen();
         window.addEventListener("resize", checkScreen);
 
@@ -29,58 +30,44 @@ export default function OrderLayout() {
     }, []);
 
     const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
-    const tableNameLocal = table.tableName || 'Bàn số 0';
+    const tableNameLocal = table.tableName || 'Table 0';
 
-    const cartItems = cartService.getCart();
-    const totalPrice = cartService.getTotal();
-    const cartQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
+    const { cartItems, addToCart, increaseItem, decreaseItem, deleteItem, getTotalPrice, getTotalQuantity } = useCart();
 
-    const handleAddToCart = (item: any) => {
-        const dish = item.dish || item;
-        const quantity = item.quantity || 1;
-        const selectedOptions = item.selectedOptions || [];
-        console.log('Handling add to cart:', { dish, quantity, selectedOptions });
-        try {
-            cartService.addToCart(dish, quantity, selectedOptions);
-            setUpdate(u => u + 1);
-        } catch (err) {
-            console.error('Error adding to cart:', err);
-            alert(`Lỗi khi thêm món vào giỏ hàng: err`);
+    const totalPrice = getTotalPrice()
+    const cartQuantity = getTotalQuantity();
+
+    const handleAddToCart = (item: CartItemProps) => {
+        if (!item.dish || !item.dish._id) {
+            alert('Invalid Dish!');
+            return;
         }
+        addToCart(item);
     };
 
     const handleIncrement = (index: number) => {
-        const cart = cartService.getCart();
-        if (index >= 0 && index < cart.length) {
-            cartService.updateQuantity(index, cart[index].quantity + 1);
-            setUpdate(u => u + 1);
+        if (cartItems[index].quantity >= 99) {
+            alert('Max quantity is 99!');
+            return;
         }
+        increaseItem(index)
     };
 
     const handleDecrement = (index: number) => {
-        const cart = cartService.getCart();
-        if (index >= 0 && index < cart.length) {
-            if (cart[index].quantity > 1) {
-                cartService.updateQuantity(index, cart[index].quantity - 1);
-            } else {
-                cartService.removeFromCart(index);
-            }
-            setUpdate(u => u + 1);
+        if (cartItems[index].quantity <= 1) {
+            alert('Min quantity is 1!');
         }
+        decreaseItem(index)
     };
 
     const handleDelete = (index: number) => {
-        const cart = cartService.getCart();
-        if (index >= 0 && index < cart.length) {
-            cartService.removeFromCart(index);
-            setUpdate(u => u + 1);
-        }
+        console.log('Delete item at index:', index);
+        deleteItem(index);
     };
 
     const handleOrder = async () => {
-        const cartItems = cartService.getCart();
-        if (!cartItems.length || cartService.getTotal() <= 0) {
-            alert('Giỏ hàng trống hoặc tổng giá trị không hợp lệ!');
+        if (!cartItems.length) {
+            alert('Cart is empty or total value is invalid!');
             return;
         }
 
@@ -92,7 +79,7 @@ export default function OrderLayout() {
                 customerID,
                 tableID,
                 orderStatus: 0,
-                totalPrice: cartService.getTotal(),
+                totalPrice: getTotalPrice(),
             };
             // const orderRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order`, {
             //     method: 'POST',
@@ -125,7 +112,7 @@ export default function OrderLayout() {
                     continue;
                 }
 
-                const optionsArr = item.selectedOptions.map(opt => opt._id || '').filter(id => id) || [];
+                const optionsArr = item.selectedOptions.map((opt:any) => opt._id || '').filter((id:any) => id) || [];
                 const detailBody = {
                     order: orderId,
                     dish: item.dish._id,
@@ -165,9 +152,6 @@ export default function OrderLayout() {
             if (failedItems.length > 0) {
                 alert(`Có lỗi khi tạo order-detail:\n${failedItems.join('\n')}`);
             } else {
-                localStorage.setItem('orderItems', JSON.stringify(cartItems));
-                cartService.clearCart();
-                setUpdate(u => u + 1);
                 router.push('/order/payment');
             }
         } catch (err) {
@@ -175,30 +159,6 @@ export default function OrderLayout() {
         }
     };
 
-    const itemsForCartList = cartItems.reduce((acc, item) => {
-        const existing = acc.find(i =>
-            i.dish._id === item.dish._id &&
-            i.dishOptions.map((opt: { id: any; }) => opt.id).sort().join() === item.selectedOptions.map(opt => opt._id || opt.optionName).sort().join()
-        );
-        if (existing) {
-            existing.quantity += item.quantity;
-            existing.dishPrice = item.totalPrice / item.quantity;
-        } else {
-            acc.push({
-                dish: item.dish,
-                dishName: item.dish.dishName || 'Unknown Dish',
-                dishPrice: item.totalPrice / item.quantity,
-                dishImage: item.dish.dishImg || 'placeholder.png',
-                quantity: item.quantity,
-                dishOptions: item.selectedOptions.map((opt: any, idx: number) => ({
-                    id: opt._id || opt.optionName || idx,
-                    label: opt.optionName || 'Unknown Option',
-                    price: opt.optionPrice || 0,
-                })),
-            });
-        }
-        return acc;
-    }, [] as any[]);
     const tableData = JSON.parse(localStorage.getItem("currentTable") || "{}");
 
     return (
@@ -228,7 +188,7 @@ export default function OrderLayout() {
                 <div className="w-full md:w-[35%] h-1/4 md:h-full bg-white flex flex-col z-40">
                 <MenuRightHead cartItems={cartQuantity} tableName={tableNameLocal} />
                 <CartList
-                    items={itemsForCartList}
+                    items={cartItems}
                     onIncrement={handleIncrement}
                     onDecrement={handleDecrement}
                     onDelete={handleDelete}
@@ -241,7 +201,7 @@ export default function OrderLayout() {
             {!isDesktop && (
                 <div className="fixed bottom-0 w-full z-50">
                 <button
-                    className="bg-accent text-white w-full !p-4 flex justify-between items-center text-lg rounded-xl hover:bg-red-800"
+                    className="bg-accent text-white w-full !p-2 flex justify-between items-center text-lg rounded-xl hover:bg-red-800"
                     onClick={() => setIsBottomCartOpen(true)}
                 >
                     <span>Your Cart • {cartQuantity} items</span>
@@ -277,7 +237,7 @@ export default function OrderLayout() {
                     </div>
                     <div className="flex-1 overflow-y-auto !px-4">
                     <CartList
-                        items={itemsForCartList}
+                        items={cartItems}
                         onIncrement={handleIncrement}
                         onDecrement={handleDecrement}
                         onDelete={handleDelete}

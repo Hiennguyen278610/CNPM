@@ -1,81 +1,91 @@
-'use client';
-import React, { createContext, useContext, useState } from "react";
+"use client";
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { Dish } from "@/app/order/services/dish.service";
+import { Option } from "@/app/order/services/option.service";
 
 const CartContext = createContext<any>(null);
-
 export const useCart = () => useContext(CartContext);
 
+export interface CartItemProps {
+  dish: Dish;
+  quantity: number;
+  selectedOptions: Option[];
+  totalPrice: number;
+}
+
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
+  const [cartItems, setCartItems] = useState<CartItemProps[]>([]);
+  useEffect(() => {
+  console.log("Cart items changed:", cartItems);
+}, [cartItems]);
 
-    const [cartItems, setCartItems] = useState<any[]>([]);
+  // Helper: sort and stringify options to compare
+  const normalizeOptions = (options: Option[]) =>
+    JSON.stringify(
+      [...options].sort((a, b) => a._id.localeCompare(b._id))
+    );
 
-    
-        //Hàm kiểm tra xem dish (gồm các options) đã tồn tại trong Cart chưa :
-        function isSameCartItem(a: any, b: any) {
-            return (
-              a.dishName === b.dishName &&
-              a.dishImage === b.dishImage &&
-              JSON.stringify(a.options) === JSON.stringify(b.options) 
-            );
-          }
-    
-          //Xử lý thêm vào giỏ hàng 
-        const addToCart = (item: any) => {
-            console.log(item.options);
-            const existingItemIndex = cartItems.findIndex(p => isSameCartItem(p, item));
-            
-            if (existingItemIndex !== -1) {
-                const updatedCart = cartItems.map((p, i) => {
-                  if (i === existingItemIndex) {
-                    return { 
-                      ...p, 
-                      quantity: p.quantity + 1, 
-                      dishOptions: item.options 
-                    };
-                  }
-                  return p;
-                });
-              setCartItems(updatedCart);
-            } else {
-              setCartItems([...cartItems, { ...item, quantity: 1, dishOptions: item.options }]);
-            }
+  // Kiểm tra item giống nhau: same dish ID + same selected options
+  function isSameCartItem(a: CartItemProps, b: CartItemProps) {
+    if (!a.dish || !b.dish) return false;
+    return (
+      a.dish._id === b.dish._id &&
+      normalizeOptions(a.selectedOptions) === normalizeOptions(b.selectedOptions)
+    );
+  }
+
+  // Thêm món vào giỏ hàng
+  const addToCart = (item: CartItemProps) => {
+    const existedItemIndex = cartItems.findIndex(p => isSameCartItem(p, item));
+
+    if (existedItemIndex !== -1) {
+      const updatedCart = cartItems.map((p, i) => {
+        if (i === existedItemIndex) {
+          return {
+            ...p,
+            quantity: p.quantity + item.quantity, // cộng thêm số lượng đúng
+            selectedOptions: item.selectedOptions,
+            totalPrice: item.totalPrice, // cập nhật totalPrice nếu option khác
           };
-    
-          //Hàm xử lý nút tăng số lượng :
-        const increaseItem = (index: number) => {
-            const newItems = [...cartItems];
-            newItems[index].quantity += 1;
-            setCartItems(newItems);
-          };
-          
-          //Hàm xử lý nút giảm số lượng :
-        const decreaseItem = (index: number) => {
-            const newItems = [...cartItems];
-            if (newItems[index].quantity > 1) {
-              newItems[index].quantity -= 1;
-              setCartItems(newItems);
-            }
-          };
-          
-    
-          //Hàm xử lý xóa món khỏi giỏ hàng :
-        const deleteItem = (item:any) => {
-            const updatedCart = cartItems.filter( cartItem => {
-                return !isSameCartItem(item, cartItem)
-            })
-            setCartItems(updatedCart)
-          }
-          
-        const getTotalPrice = () => {
-          return cartItems.reduce((sum, dish) => {
-            return sum + dish.dishPrice * dish.quantity;
-          }, 0);
-        };
+        }
+        return p;
+      });
+      setCartItems(updatedCart);
+    } else {
+      setCartItems([...cartItems, { ...item }]);
+    }
+  };
 
-        const getTotalQuantity = () => {
-            return cartItems.reduce((total, dish) => total + dish.quantity, 0);
-        };
+  // Tăng số lượng
+  const increaseItem = (index: number) => {
+    const newItems = [...cartItems];
+    newItems[index].quantity += 1;
+    setCartItems(newItems);
+  };
 
+  // Giảm số lượng
+  const decreaseItem = (index: number) => {
+    const newItems = [...cartItems];
+    if (newItems[index].quantity > 1) {
+      newItems[index].quantity -= 1;
+      setCartItems(newItems);
+    }
+  };
+
+  // Xoá món
+  const deleteItem = (index: number) => {
+    setCartItems(items => items.filter((_, i) => i !== index));
+  };
+
+  // Tổng giá
+  const getTotalPrice = () => {
+    return cartItems.reduce((sum, item) => sum + item.totalPrice * item.quantity, 0);
+  };
+
+  // Tổng số lượng
+  const getTotalQuantity = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
 
   return (
     <CartContext.Provider
@@ -86,7 +96,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         decreaseItem,
         deleteItem,
         getTotalPrice,
-        getTotalQuantity
+        getTotalQuantity,
       }}
     >
       {children}
