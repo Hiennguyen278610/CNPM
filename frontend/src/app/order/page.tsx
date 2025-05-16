@@ -10,7 +10,7 @@ import CartList from '@/app/order/components/cartList';
 import CartFooter from '@/app/order/components/cartFooter';
 import '@/app/globals.css';
 import { cartService } from '@/app/order/services/cart.service';
-import { CartItemProps, useCart } from '@/context/CartContext';
+import { CartItemProps, useCart } from '@/context/CartContext';   
 
 export default function OrderLayout() {
   const [isDesktop, setIsDesktop] = useState(true);
@@ -261,8 +261,8 @@ export default function OrderLayout() {
                         <p className="text-md select-none md:text-xs">{tableNameLocal}</p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setIsBottomCartOpen(false)}
+                    <button 
+                        onClick={() => setIsBottomCartOpen(false)} 
                         className="text-gray-500 text-2xl hover:text-gray-900"
                     >
                         &times;
