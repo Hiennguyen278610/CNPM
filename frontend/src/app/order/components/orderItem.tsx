@@ -11,10 +11,10 @@ export default function OrderItem({ dish, onShowOption }: OrderItemProps) {
   const imageSrc = dishImg ? `/product/${dishImg}` : '/product/placeholder.png';
 
   return (
-    <div className="border-2 !p-2 !m-1 rounded-2xl flex flex-col select-none hover:border-accent hover:border-3 border-secondary relative">
+    <div className="border-2 !p-2 !m-1 rounded-2xl flex flex-col select-none hover:border-accent hover:border-3 border-secondary relative overflow-hidden">
       {/* Overlay "Hết hàng" */}
       {outOfStock && (
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-50">
           <span className="text-red-700 text-2xl font-bold rotate-10" style={{ textShadow: '0 0 2px white, 0 0 2px white' }}>
             OUT OF STOCK
           </span>

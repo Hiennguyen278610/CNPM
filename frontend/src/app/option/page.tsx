@@ -8,6 +8,8 @@ import {
   Option,
 } from "../order/services/option.service";
 
+import { inventoryService } from "../order/services/inventory.service";
+
 interface Dish {
     _id: string;
     dishName: string;
@@ -41,6 +43,8 @@ export default function OptionPage({
   const [checked, setChecked] = useState<string[]>([]);
   const [groupOptions, setGroupOptions] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [maxQuantity, setMaxQuantity] = useState<number>(0);
+
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -81,17 +85,31 @@ export default function OptionPage({
   };
 
   useEffect(() => {
-  if (!loading && groupOptions.length === 0) {
+    // Fetch maxQuantity khi mở OptionPage
+    const fetchMaxQuantity = async () => {
+      try {
+        const qty = await inventoryService.getMaxDishQuantity(dish._id);
+        setMaxQuantity(qty);
+      } catch (error) {
+        setMaxQuantity(1);
+      }
+    };
+    fetchMaxQuantity();
+  }, [dish._id]);
+
+  useEffect(() => {
+  if (!loading && groupOptions.length === 0 && maxQuantity > 0) {
     onAddToCart({
       dish,
       quantity: 1,
       selectedOptions: [],
       totalPrice: totalPrice,
+      maxQuantity
     });
     onClose();
   }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [groupOptions, loading]);
+}, [groupOptions, loading, maxQuantity]);
 
   // if (loading)
   //   return (
@@ -227,6 +245,7 @@ export default function OptionPage({
                         quantity:1,
                         selectedOptions,
                         totalPrice : totalPrice,
+                        maxQuantity
                       });
                       onClose();
                     }}

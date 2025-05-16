@@ -129,6 +129,7 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
         </div>
       ))}
 
+      <AnimatePresence>
       {/* Hiển thị form chọn option */}
       {showOption && selectedDish && (
         <OptionPage
@@ -138,6 +139,7 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
           onAddToCart={onAddToCart}
         />
       )}
+      </AnimatePresence>
     </>
   );
 }
