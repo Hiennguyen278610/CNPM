@@ -5,6 +5,8 @@ import { Dish, dishService } from '../services/dish.service';
 import OrderItem from '@/app/order/components/orderItem';
 import OptionPage from '@/app/option/page';
 import { CartItemProps, useCart } from '@/context/CartContext';
+import { AnimatePresence } from 'framer-motion';
+
 
 interface GridProductProps {
     onAddToCart: (item: CartItemProps) => void;
@@ -15,6 +17,7 @@ interface MenuCategory {
     dishType: string;
     List: Dish[];
 }
+
 
 export default function GridProduct({ onAddToCart, selectedType }: GridProductProps) {
     const [menuList, setMenuList] = useState<MenuCategory[]>([]);
@@ -97,11 +100,15 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
                     onShowOption={() => handleShowOption(dish)}
                     />
                 ))}
+
                 </div>
             </div>
             ))}
 
+            
+
             {/* Hiển thị form chọn option */}
+            <AnimatePresence>
             {showOption && selectedDish && (
             <OptionPage
                 dish={selectedDish}
@@ -109,7 +116,9 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
                 onClose={() => setShowOption(false)}
                 onAddToCart={onAddToCart}
             />
-        )}
+            )}
+            </AnimatePresence>
+
         </>
     );
 }

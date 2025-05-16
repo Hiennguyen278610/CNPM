@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { motion } from 'framer-motion';
 import {
   optionService,
   GroupOption,
@@ -102,13 +103,20 @@ export default function OptionPage({
   if(groupOptions.length === 0) return null;
   return (
     
-    <div className="fixed inset-0 z-[100]">
+    <div className="fixed inset-0 z-[100] ">
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
 
       {/* Modal content */}
       <div className="relative flex justify-center items-center w-full h-full">
         {/* Modal body */}
+        <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="bg-blue-100 rounded-lg shadow-lg"
+        >
         <div className="bg-blue-100 rounded-lg shadow-lg">
           {/* Modal inner */}
           <div>
@@ -230,6 +238,7 @@ export default function OptionPage({
             </div>
           </div>
         </div>
+        </motion.div>
       </div>
     </div>
   );
