@@ -16,7 +16,6 @@ export default function OrderLayout() {
   const [isDesktop, setIsDesktop] = useState(true);
   const [isBottomCartOpen, setIsBottomCartOpen] = useState(false);
   const router = useRouter();
-  const [update, setUpdate] = useState(0);
   const [selectedType, setSelectedType] = useState('All');
 
     // Responsive check
@@ -80,7 +79,7 @@ export default function OrderLayout() {
         customerID,
         tableID,
         orderStatus: 0,
-        totalPrice: cartService.getTotal(),
+        totalPrice: getTotalPrice(),
       };
       const orderRes = await fetch(
         `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order`,
@@ -184,9 +183,6 @@ export default function OrderLayout() {
       }
 
       // Bước 4: Hoàn tất đơn hàng
-      localStorage.setItem('orderItems', JSON.stringify(cartItems));
-      cartService.clearCart();
-      setUpdate(u => u + 1);
       router.push('/order/payment');
     } catch (err) {
       alert(`Lỗi khi đặt hàng: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
