@@ -6,8 +6,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AccountModule } from '@/modules/account/account.module';
 import { CustomerModule } from '@/modules/customer/customer.module';
 import { DishModule } from '@/modules/dish/dish.module';
-import { IngredientsModule } from '@/modules/ingredients/ingredients.module';
-import { IventoryModule } from '@/modules/iventory/iventory.module';
+import { IngredientModule } from '@/modules/ingredients/ingredients.module';
+import { InventoryModule } from '@/modules/iventory/iventory.module';
 import { OptionModule } from '@/modules/option/option.module';
 import { OptionGroupModule } from '@/modules/option-group/option-group.module';
 import { OrderModule } from '@/modules/order/order.module';
@@ -25,8 +25,8 @@ import { Vnpay } from './modules/vnpay/vnpay.module';
     AccountModule,
     CustomerModule,
     DishModule,
-    IngredientsModule,
-    IventoryModule,
+    IngredientModule,
+    InventoryModule,
     OptionModule,
     OptionGroupModule,
     OrderModule,

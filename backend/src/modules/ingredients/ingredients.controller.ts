@@ -1,34 +1,50 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { IngredientsService } from './ingredients.service';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+  ValidationPipe,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
 import { UpdateIngredientDto } from './dto/update-ingredient.dto';
-
-@Controller('ingredients')
-export class IngredientsController {
-  constructor(private readonly ingredientsService: IngredientsService) {}
+import { IngredientService } from './ingredients.service';
+import { Public } from '@/decorator/customize';
+@Public()
+@Controller('ingredient')
+export class IngredientController {
+  constructor(private readonly ingredientService: IngredientService) {}
 
   @Post()
-  create(@Body() createIngredientDto: CreateIngredientDto) {
-    return this.ingredientsService.create(createIngredientDto);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async create(@Body() createIngredientDto: CreateIngredientDto) {
+    return this.ingredientService.create(createIngredientDto);
   }
 
   @Get()
-  findAll() {
-    return this.ingredientsService.findAll();
+  async findAll() {
+    return this.ingredientService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ingredientsService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.ingredientService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateIngredientDto: UpdateIngredientDto) {
-    return this.ingredientsService.update(+id, updateIngredientDto);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async update(@Param('id') id: string, @Body() updateIngredientDto: UpdateIngredientDto) {
+    return this.ingredientService.update(id, updateIngredientDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ingredientsService.remove(+id);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id') id: string) {
+    await this.ingredientService.remove(id);
   }
 }
