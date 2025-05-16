@@ -1,13 +1,11 @@
-// import { useCart } from "@/context/CartContext";
+import { useCart } from "@/context/CartContext";
 import CartItemPayment from "./cartItemPayment";
 
 export default function CartListPayment() {
-  const cartItemsString = localStorage.getItem("orderItems");
-  const rawCartItems = cartItemsString ? JSON.parse(cartItemsString) : [];
-  console.log(rawCartItems);
+  const { cartItems } = useCart();
 
   // Chuyển đổi dữ liệu từ localStorage sang định dạng CartItemPayment
-  const formattedCartItems = rawCartItems.map((item: any) => ({
+  const formattedCartItems = cartItems.map((item: any) => ({
     dishName: item.dish.dishName || "Unknown Dish",
     dishPrice: item.totalPrice / item.quantity,
     dishQuantity: item.quantity,

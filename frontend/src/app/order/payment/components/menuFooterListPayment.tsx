@@ -1,34 +1,33 @@
 "use client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
+import { get } from "axios";
 
 export default function MenuFooterListPayment() {
   const router = useRouter();
-  const cartItemsString = localStorage.getItem("orderItems");
-  const cartItems = cartItemsString ? JSON.parse(cartItemsString) : [];
-  const subTotal = cartItems.reduce((sum: number, item: any) => sum + item.totalPrice, 0);
+  const { cartItems, getTotalPrice } = useCart();
+
   const discount = 0;
-  const total = subTotal - discount;
+  const total = getTotalPrice() - discount;
 
   const handleApplyPromo = () => {
     alert(`Chức năng này chưa được triển khai!`);
   };
-
   const handleCancel = () => {
     alert(`Hủy bỏ đơn hàng!`);
     router.push("/order");
   };
-
   const handlePayNow = () => {
     const orderId = uuidv4();
     if (cartItems.length === 0) {
       alert("Giỏ hàng trống!");
       return;
     }
+    // window.location.href = `http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
     window.location.href = `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/vnpay/vnpay-url?total=${total}&orderId=${orderId}`;
   };
-
   return (
      <div className="w-full !px-2 !py-2 bg-white border-t shadow-lg lg:shadow-none lg:border-0">
       <div className="max-w-6xl mx-auto !space-y-2">
