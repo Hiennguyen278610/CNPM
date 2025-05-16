@@ -48,8 +48,13 @@ export class OrderController {
     return this.orderService.update(id, updateOrderDto);
   }
 
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.orderService.remove(id);
+  }
+  @Post(':id/status')
+  updateStatus(@Param('id') id: string) {
+    return this.orderService.updateStatus(id);
   }
 }
