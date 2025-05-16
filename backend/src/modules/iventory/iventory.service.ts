@@ -2,9 +2,11 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Recipe, RecipeDocument } from '../recipe/schemas/recipe.schema';
+import { Ingredient, IngredientDocument } from '../ingredients/schemas/ingredient.schema';
 import { CreateInventoryDto } from './dto/create-iventory.dto';
 import { UpdateInventoryDto } from './dto/update-iventory.dto';
 import { Inventory, InventoryDocument } from './schemas/iventory.schema';
+
 
 @Injectable()
 export class InventoryService {
@@ -13,6 +15,7 @@ export class InventoryService {
   constructor(
     @InjectModel(Inventory.name) private inventoryModel: Model<InventoryDocument>,
     @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
+    @InjectModel(Ingredient.name) private ingredientModel: Model<IngredientDocument>,
   ) {}
 
   async create(createInventoryDto: CreateInventoryDto): Promise<Inventory> {
@@ -21,9 +24,9 @@ export class InventoryService {
       return await createdInventory.save();
     } catch (error) {
       if (error.code === 11000) {
-        throw new BadRequestException('Tồn kho cho nguyên liệu này đã tồn tại');
+        throw new BadRequestException('Inventory for this ingredient already exists');
       }
-      throw new BadRequestException('Không thể tạo bản ghi tồn kho');
+      throw new BadRequestException('Failed to create inventory record');
     }
   }
 
@@ -34,7 +37,7 @@ export class InventoryService {
   async findOne(id: string): Promise<Inventory> {
     const inventory = await this.inventoryModel.findById(id).populate('ingredientID').exec();
     if (!inventory) {
-      throw new NotFoundException(`Không tìm thấy bản ghi tồn kho với ID ${id}`);
+      throw new NotFoundException(`Inventory record with ID ${id} not found`);
     }
     return inventory;
   }
@@ -45,7 +48,7 @@ export class InventoryService {
       .populate('ingredientID')
       .exec();
     if (!updatedInventory) {
-      throw new NotFoundException(`Không tìm thấy bản ghi tồn kho với ID ${id}`);
+      throw new NotFoundException(`Inventory record with ID ${id} not found`);
     }
     return updatedInventory;
   }
@@ -53,7 +56,7 @@ export class InventoryService {
   async remove(id: string): Promise<void> {
     const result = await this.inventoryModel.findByIdAndDelete(id).exec();
     if (!result) {
-      throw new NotFoundException(`Không tìm thấy bản ghi tồn kho với ID ${id}`);
+      throw new NotFoundException(`Inventory record with ID ${id} not found`);
     }
   }
 
@@ -61,10 +64,10 @@ export class InventoryService {
     this.logger.log(`Deducting inventory: ingredientID=${ingredientID}, amount=${amount}`);
     const inventory = await this.inventoryModel.findOne({ ingredientID }).exec();
     if (!inventory) {
-      throw new NotFoundException(`Không tìm thấy tồn kho cho nguyên liệu ${ingredientID}`);
+      throw new NotFoundException(`Inventory for ingredient ${ingredientID} not found`);
     }
     if (inventory.qty < amount) {
-      throw new BadRequestException(`Không đủ nguyên liệu trong kho. Cần ${amount}, hiện có ${inventory.qty}`);
+      throw new BadRequestException(`Insufficient ingredient in stock. Need ${amount}, available ${inventory.qty}`);
     }
     inventory.qty -= amount;
     await inventory.save();
@@ -78,7 +81,7 @@ export class InventoryService {
         this.logger.log(`Processing dishID: ${item.dishID}, quantity: ${item.quantity}`);
         const recipes = await this.recipeModel.find({ dishID: item.dishID }).exec();
         if (!recipes || recipes.length === 0) {
-          throw new BadRequestException(`Không tìm thấy công thức cho món ăn ${item.dishID}`);
+          throw new BadRequestException(`No recipes found for dish ${item.dishID}`);
         }
 
         for (const recipe of recipes) {
@@ -93,7 +96,67 @@ export class InventoryService {
       throw error;
     }
   }
-  findByIngredientID(ingredientID: string){
+
+  async checkDishStock(dishID: string, quantity: number): Promise<{ ingredientName: string; availableQty: number; requiredQty: number; unit: string }[]> {
+    this.logger.log(`Checking stock for dishID: ${dishID}, quantity: ${quantity}`);
+    const issues: { ingredientName: string; availableQty: number; requiredQty: number; unit: string }[] = [];
+
+    try {
+      const recipes = await this.recipeModel.find({ dishID }).exec();
+      if (!recipes || recipes.length === 0) {
+        this.logger.warn(`No recipes found for dish ${dishID}`);
+        return issues;
+      }
+
+      for (const recipe of recipes) {
+        const inventory = await this.inventoryModel.findOne({ ingredientID: recipe.ingredientID }).exec();
+        const ingredient = await this.ingredientModel.findById(recipe.ingredientID).exec();
+        if (!inventory || !ingredient) {
+          issues.push({
+            ingredientName: ingredient?.ingredientName || 'Unknown',
+            availableQty: 0,
+            requiredQty: recipe.amountRequired * quantity,
+            unit: ingredient?.unit || 'unit',
+          });
+          continue;
+        }
+
+        const requiredQty = recipe.amountRequired * quantity;
+        if (inventory.qty < requiredQty) {
+          issues.push({
+            ingredientName: ingredient.ingredientName,
+            availableQty: inventory.qty,
+            requiredQty: requiredQty,
+            unit: ingredient.unit,
+          });
+        }
+      }
+
+      this.logger.log(`Stock check completed for dishID: ${dishID}, issues: ${JSON.stringify(issues)}`);
+      return issues;
+    } catch (error) {
+      this.logger.error(`Error in checkDishStock: ${error.message}`, error.stack);
+      throw new BadRequestException(`Failed to check stock for dish ${dishID}`);
+    }
+  }
+
+  async addInventory(ingredientID: string, amount: number): Promise<void> {
+    this.logger.log(`Adding inventory: ingredientID=${ingredientID}, amount=${amount}`);
+    try {
+      const inventory = await this.inventoryModel.findOne({ ingredientID }).exec();
+      if (!inventory) {
+        throw new NotFoundException(`Inventory for ingredient ${ingredientID} not found`);
+      }
+      inventory.qty += amount;
+      await inventory.save();
+      this.logger.log(`Inventory updated: ingredientID=${ingredientID}, new qty=${inventory.qty}`);
+    } catch (error) {
+      this.logger.error(`Error in addInventory: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+  
+  async  findByIngredientID(ingredientID: string){
     return this.inventoryModel.findOne({ingredientID})
   }
 }
