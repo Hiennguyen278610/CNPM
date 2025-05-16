@@ -13,11 +13,11 @@ import { cartService } from '@/app/order/services/cart.service';
 import { CartItemProps, useCart } from '@/context/CartContext';   
 
 export default function OrderLayout() {
-    const [isDesktop, setIsDesktop] = useState(true);
-    const [isBottomCartOpen, setIsBottomCartOpen] = useState(false);
-    const router = useRouter();
-    const [update, setUpdate] = useState(0);
-    const [selectedType, setSelectedType] = useState('All');
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [isBottomCartOpen, setIsBottomCartOpen] = useState(false);
+  const router = useRouter();
+  const [update, setUpdate] = useState(0);
+  const [selectedType, setSelectedType] = useState('All');
 
     // Responsive check
     useEffect(() => {
@@ -25,12 +25,12 @@ export default function OrderLayout() {
         checkScreen();
         window.addEventListener("resize", checkScreen);
 
-        //Clean up function
-        return () => window.removeEventListener("resize", checkScreen);
-    }, []);
+    // Clean up function
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
 
-    const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
-    const tableNameLocal = table.tableName || 'Table 0';
+  const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
+  const tableNameLocal = table.tableName || 'Bàn số 0';
 
     const { cartItems, addToCart, increaseItem, decreaseItem, deleteItem, getTotalPrice, getTotalQuantity } = useCart();
 
@@ -71,116 +71,152 @@ export default function OrderLayout() {
             return;
         }
 
-        const customerID = '681ce5d685a510c2b8897dd9';
-        const tableID = '681ce60f85a510c2b8897ddb';
+    const customerID = '681ce5d685a510c2b8897dd9';
+    const tableID = '681ce60f85a510c2b8897ddb';
 
-        try {
-            const orderBody = {
-                customerID,
-                tableID,
-                orderStatus: 0,
-                totalPrice: getTotalPrice(),
-            };
-            // const orderRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order`, {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(orderBody),
-            // });
-            const orderRes = await fetch(`http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderBody),
-            });
+    try {
+      // Bước 1: Tạo đơn hàng
+      const orderBody = {
+        customerID,
+        tableID,
+        orderStatus: 0,
+        totalPrice: cartService.getTotal(),
+      };
+      const orderRes = await fetch(
+        `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderBody),
+        },
+      );
 
-            if (!orderRes.ok) {
-                const errText = await orderRes.text();
-                alert(`Tạo order thất bại! ${orderRes.status} - ${errText}`);
-                return;
-            }
+      if (!orderRes.ok) {
+        const errText = await orderRes.text();
+        alert(`Tạo đơn hàng thất bại! ${orderRes.status} - ${errText}`);
+        return;
+      }
 
-            const orderResponse = await orderRes.json();
-            const orderId = orderResponse.id || orderResponse._id;
-            if (!orderId || !/^[0-9a-fA-F]{24}$/.test(orderId)) {
-                alert('Không nhận được orderId hợp lệ từ server!');
-                return;
-            }
+      const orderResponse = await orderRes.json();
+      const orderId = orderResponse.id || orderResponse._id;
+      if (!orderId || !/^[0-9a-fA-F]{24}$/.test(orderId)) {
+        alert('Không nhận được orderId hợp lệ từ server!');
+        return;
+      }
 
-            const failedItems: string[] = [];
-            for (const item of cartItems) {
-                if (!item.dish._id || !/^[0-9a-fA-F]{24}$/.test(item.dish._id)) {
-                    failedItems.push(`${item.dish.dishName}: Invalid dish ID`);
-                    continue;
-                }
-
-                const optionsArr = item.selectedOptions.map((opt:any) => opt._id || '').filter((id:any) => id) || [];
-                const detailBody = {
-                    order: orderId,
-                    dish: item.dish._id,
-                    quantity: item.quantity,
-                    options: optionsArr,
-                };
-
-                console.log('Gửi order-detail với payload:', detailBody);
-                try {
-                    // const detailRes = await fetch(`http://localhost:${process.env.NEXT_PUBLIC_PORT_BACK_END}/backend/api/order-detail`, {
-                    //     method: 'POST',
-                    //     headers: { 'Content-Type': 'application/json' },
-                    //     body: JSON.stringify(detailBody),
-                    // });
-                    const detailRes = await fetch(`http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order-detail`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(detailBody),
-                    });
-
-                    if (!detailRes.ok) {
-                        const errText = await detailRes.text();
-                        failedItems.push(`${item.dish.dishName}: ${errText}`);
-                        continue;
-                    }
-
-                    const detailResponse = await detailRes.json();
-                    if (!detailResponse.success || !detailResponse.data) {
-                        failedItems.push(`${item.dish.dishName}: Phản hồi không hợp lệ`);
-                        continue;
-                    }
-                } catch (err) {
-                    failedItems.push(`${item.dish.dishName}: ${err instanceof Error ? err.message : 'Unknown error'}`);
-                }
-            }
-
-            if (failedItems.length > 0) {
-                alert(`Có lỗi khi tạo order-detail:\n${failedItems.join('\n')}`);
-            } else {
-                router.push('/order/payment');
-            }
-        } catch (err) {
-            alert(`Lỗi khi đặt hàng: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      // Bước 2: Tạo chi tiết đơn hàng
+      const failedItems: string[] = [];
+      for (const item of cartItems) {
+        if (!item.dish._id || !/^[0-9a-fA-F]{24}$/.test(item.dish._id)) {
+          failedItems.push(`${item.dish.dishName}: ID món ăn không hợp lệ`);
+          continue;
         }
-    };
 
-    const tableData = JSON.parse(localStorage.getItem("currentTable") || "{}");
+        const optionsArr = item.selectedOptions.map((opt:any) => opt._id || '').filter((id:any) => id) || [];
+        const detailBody = {
+          order: orderId,
+          dish: item.dish._id,
+          quantity: item.quantity,
+          options: optionsArr,
+        };
 
-    return (
-        <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row relative">
-            <div className="w-full md:w-[65%] h-full bg-transparent flex flex-col">
-                <MenuLeftHead onClick={() => {
-                  const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-                  if (user) {
-                    localStorage.removeItem('currentUser');
-                    localStorage.removeItem('currentTable');
-                  }
-                  router.push(`/?q=${tableData.qrToken}`);
-                }} />
-                <div className="w-full flex-1 flex flex-col overflow-y-auto">
-                    <MenuSlider onSelectType={setSelectedType} />
-                    <fieldset className="w-full">
-                        <legend className="text-center text-3xl font-semibold text-black !py-2 select-none">Menu</legend>
-                        <div className="h-px bg-dark flex-1"></div>
-                    </fieldset>
-                    <GridProduct onAddToCart={handleAddToCart} selectedType={selectedType} />
-                </div>
-            </div>
+        console.log('Gửi order-detail với payload:', detailBody);
+        try {
+          const detailRes = await fetch(
+            `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/order-detail`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(detailBody),
+            },
+          );
+
+          if (!detailRes.ok) {
+            const errText = await detailRes.text();
+            failedItems.push(`${item.dish.dishName}: ${errText}`);
+            continue;
+          }
+
+          const detailResponse = await detailRes.json();
+          if (!detailResponse.success || !detailResponse.data) {
+            failedItems.push(`${item.dish.dishName}: Phản hồi không hợp lệ`);
+            continue;
+          }
+        } catch (err) {
+          failedItems.push(`${item.dish.dishName}: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
+        }
+      }
+
+      if (failedItems.length > 0) {
+        alert(`Có lỗi khi tạo chi tiết đơn hàng:\n${failedItems.join('\n')}`);
+        return;
+      }
+
+      // Bước 3: Trừ kho
+      const items = cartItems.map((item:CartItemProps) => ({
+        dishID: item.dish._id,
+        quantity: item.quantity,
+      }));
+      try {
+        const deductRes = await fetch(
+          `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/inventory/deduct`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items }),
+          },
+        );
+
+        if (!deductRes.ok) {
+          const errText = await deductRes.text();
+          alert(`Cập nhật kho thất bại! ${deductRes.status} - ${errText}`);
+          return;
+        }
+
+        const deductResponse = await deductRes.json();
+        if (!deductResponse.success) {
+          alert(`Cập nhật kho thất bại: ${deductResponse.message || 'Lỗi không xác định'}`);
+          return;
+        }
+      } catch (err) {
+        alert(`Lỗi khi cập nhật kho: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
+        return;
+      }
+
+      // Bước 4: Hoàn tất đơn hàng
+      localStorage.setItem('orderItems', JSON.stringify(cartItems));
+      cartService.clearCart();
+      setUpdate(u => u + 1);
+      router.push('/order/payment');
+    } catch (err) {
+      alert(`Lỗi khi đặt hàng: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
+    }
+  };
+
+  const tableData = JSON.parse(localStorage.getItem('currentTable') || '{}');
+
+  return (
+    <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row relative">
+      <div className="w-full md:w-[65%] h-full bg-transparent flex flex-col">
+        <MenuLeftHead
+          onClick={() => {
+            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            if (user) {
+              localStorage.removeItem('currentUser');
+              localStorage.removeItem('currentTable');
+            }
+            router.push(`/?q=${tableData.qrToken}`);
+          }}
+        />
+        <div className="w-full flex-1 flex flex-col overflow-y-auto">
+          <MenuSlider onSelectType={setSelectedType} />
+          <fieldset className="w-full">
+            <legend className="text-center text-3xl font-semibold text-black !py-2 select-none">Menu</legend>
+            <div className="h-px bg-dark flex-1"></div>
+          </fieldset>
+          <GridProduct onAddToCart={handleAddToCart} selectedType={selectedType} />
+        </div>
+      </div>
 
 
             {/*Cart*/}
@@ -210,14 +246,14 @@ export default function OrderLayout() {
                 </div>
             )}
 
-            {/* Overlay + Bottom Sheet Cart (mobile) */}
-            {isBottomCartOpen && !isDesktop && (
-                <>
-                {/* Overlay */}
-                <div
-                    className="fixed inset-0 bg-black/40 z-40"
-                    onClick={() => setIsBottomCartOpen(false)}
-                ></div>
+      {/* Overlay + Bottom Sheet Cart (mobile) */}
+      {isBottomCartOpen && !isDesktop && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 bg-black/40 z-40"
+            onClick={() => setIsBottomCartOpen(false)}
+          ></div>
 
                 {/* Bottom Sheet */}
                 <div className="fixed bottom-0 w-full bg-white rounded-t-2xl shadow-xl z-50 max-h-[80%] flex flex-col animate-slide-up">

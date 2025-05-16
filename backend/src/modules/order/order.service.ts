@@ -91,4 +91,28 @@ export class OrderService {
     }, 0);
     return totalPrice;
   }
+
+  async updateStatus(id: string) {
+    const order = await this.orderModel.findById(id);
+    if (!order) {
+      throw new BadRequestException('Đơn hàng không tồn tại');
+    }
+
+    // Chuyển đổi trạng thái: 0 thành 1, 1 thành 0
+    const newStatus = order.orderStatus === 0 ? 1 : 0;
+
+    const updatedOrder = await this.orderModel.findByIdAndUpdate(
+      id,
+      { orderStatus: newStatus },
+      { new: true },
+    );
+
+    if (!updatedOrder) {
+      throw new BadRequestException('Đơn hàng không tồn tại');
+    }
+
+    return { success: true, id: updatedOrder._id.toString(), orderStatus: updatedOrder.orderStatus };
+  }
+
+
 }

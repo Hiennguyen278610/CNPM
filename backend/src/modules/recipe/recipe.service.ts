@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
-
+import { Recipe, RecipeDocument } from './schemas/recipe.schema';
 @Injectable()
 export class RecipeService {
-  create(createRecipeDto: CreateRecipeDto) {
-    return 'This action adds a new recipe';
+  constructor(
+    @InjectModel(Recipe.name) private recipeModel: Model<RecipeDocument>,
+  ) {}
+
+  async create(createRecipeDto: CreateRecipeDto): Promise<Recipe> {
+    try {
+      const createdRecipe = new this.recipeModel(createRecipeDto);
+      return await createdRecipe.save();
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequestException('Công thức cho món ăn và nguyên liệu này đã tồn tại');
+      }
+      throw new BadRequestException('Không thể tạo công thức');
+    }
   }
 
-  findAll() {
-    return `This action returns all recipe`;
+  async findAll(): Promise<Recipe[]> {
+    return this.recipeModel.find().populate('dishID ingredientID').exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipe`;
+  async findOne(id: string): Promise<Recipe> {
+    const recipe = await this.recipeModel
+      .findById(id)
+      .populate('dishID ingredientID')
+      .exec();
+    if (!recipe) {
+      throw new NotFoundException(`Không tìm thấy công thức với ID ${id}`);
+    }
+    return recipe;
   }
 
-  update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return `This action updates a #${id} recipe`;
+  async update(id: string, updateRecipeDto: UpdateRecipeDto): Promise<Recipe> {
+    const updatedRecipe = await this.recipeModel
+      .findByIdAndUpdate(id, updateRecipeDto, { new: true })
+      .populate('dishID ingredientID')
+      .exec();
+    if (!updatedRecipe) {
+      throw new NotFoundException(`Không tìm thấy công thức với ID ${id}`);
+    }
+    return updatedRecipe;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recipe`;
+  async remove(id: string): Promise<void> {
+    const result = await this.recipeModel.findByIdAndDelete(id).exec();
+    if (!result) {
+      throw new NotFoundException(`Không tìm thấy công thức với ID ${id}`);
+    }
   }
 }
