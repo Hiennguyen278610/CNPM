@@ -21,7 +21,7 @@ export function updateInventory(id: string, qty: number) {
     }
   ).then((res) => res.json());
 }
-export function getRecipe(dishID: string): Promise<recipe[]> {
+export function getRecipe(dishID: string): Promise<recipe> {
   return fetch(
     `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/recipe/find-by-dish?dishID=${dishID}`,
     {
@@ -33,7 +33,6 @@ export function getRecipe(dishID: string): Promise<recipe[]> {
   )
   // tai sao recipe lay ra lai la` mang rong~~~~~ ?????
     .then((res) => res.json())
-    .then((data) => (Array.isArray(data) ? data : data.data || []));
 }
 export function getInventory(ingredientID: string): Promise<iventory> {
   return fetch(
