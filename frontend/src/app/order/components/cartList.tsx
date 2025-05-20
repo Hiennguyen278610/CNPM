@@ -16,10 +16,7 @@ export default function CartList({ items, onIncrement, onDecrement, onDelete }: 
         <div className="w-full h-7/10 overflow-y-scroll !p-2 flex flex-col gap-4">
             <AnimatePresence mode="popLayout">
                 {items.map((item, index) => {
-                    const dishImage = item.dish.dishImg.startsWith('/product/')
-                        ? item.dish.dishImg
-                        : `/product/${item.dish.dishImg}`;
-
+                   
                     return (
                         <motion.div
                             key={item.dish._id + JSON.stringify(item.selectedOptions)}

@@ -14,7 +14,7 @@ export default function CartItem({
     onDecrement,
     onDelete,
 }: CartItem) {
-    const { dishName, dishPrice, dishImg } = item.dish;
+    const { dishName, dishImg } = item.dish;
     const dishOptions = item.selectedOptions.map((option) => ({
         _id: option._id,
         label: option.optionName,

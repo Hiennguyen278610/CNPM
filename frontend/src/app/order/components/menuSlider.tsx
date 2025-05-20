@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { dishService, Dish } from '../services/dish.service';
+import { dishService } from '../services/dish.service';
 
 interface MenuSliderProps {
     onSelectType: (type: string) => void;

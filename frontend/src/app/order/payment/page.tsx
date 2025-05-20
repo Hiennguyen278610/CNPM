@@ -3,7 +3,6 @@ import CartListPayment from "./components/cartListPayment";
 import MenuLeftHeadPayment from "./components/menuHeaderListPayment";
 import MenuFooterListPayment from "./components/menuFooterListPayment";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/context/CartContext";
 
 export default function Payment() {
   const router = useRouter();

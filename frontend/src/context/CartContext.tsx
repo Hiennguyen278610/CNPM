@@ -3,7 +3,17 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Dish } from "@/app/order/services/dish.service";
 import { Option } from "@/app/order/services/option.service";
 
-const CartContext = createContext<any>(null);
+interface CartContextType {
+  cartItems: CartItemProps[];
+  addToCart: (item: CartItemProps) => void;
+  increaseItem: (index: number) => void;
+  decreaseItem: (index: number) => void;
+  deleteItem: (index: number) => void;
+  getTotalPrice: () => number;
+  getTotalQuantity: () => number;
+}
+
+const CartContext = createContext<CartContextType>({} as CartContextType);
 export const useCart = () => useContext(CartContext);
 
 export interface CartItemProps {

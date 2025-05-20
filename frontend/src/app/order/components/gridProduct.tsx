@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { Dish, dishService } from '../services/dish.service';
 import { inventoryService } from '../services/inventory.service';
 import OrderItem from '@/app/order/components/orderItem';
-import OptionPage from '@/app/option/page';
-import { CartItemProps, useCart } from '@/context/CartContext';
+import OptionPage from '@/app/order/components/OptionModal';
+import { CartItemProps } from '@/context/CartContext';
 import { AnimatePresence } from 'framer-motion';
 
 
@@ -70,9 +70,9 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
         }, [] as MenuCategory[]);
 
         setMenuList(groupedDishes);
-      } catch (err: any) {
+      } catch (err : unknown) {
         console.error('Lỗi khi lấy món ăn:', err);
-        setError(`Không thể tải danh sách món ăn: ${err.message}`);
+        setError(`Không thể tải danh sách món ăn: ${err}`);
       } finally {
         setLoading(false);
       }
@@ -134,7 +134,6 @@ export default function GridProduct({ onAddToCart, selectedType }: GridProductPr
       {showOption && selectedDish && (
         <OptionPage
           dish={selectedDish}
-          _id={selectedDish._id}
           onClose={() => setShowOption(false)}
           onAddToCart={onAddToCart}
         />

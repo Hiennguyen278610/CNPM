@@ -1,193 +1,260 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Dish } from '../services/dish.service';
-import { optionService, GroupOption, Option } from '../services/option.service';
-import { cartService } from '../services/cart.service';
+import React, { useState, useEffect } from "react";
+import { motion } from 'framer-motion';
+import {
+  optionService,
+  GroupOption,
+  Option,
+} from "@/app/order/services/option.service";
 
-interface OptionModalProps {
-    dish: Dish;
-    onClose: () => void;
-    onAddToCart: (item: any) => void;
+import { inventoryService } from "@/app/order/services/inventory.service";
+import { CartItemProps } from "@/context/CartContext";
+
+interface Dish {
+    _id: string;
+    dishName: string;
+    dishPrice: number;
+    dishImg: string;
+    dishType: string;
 }
 
-const OptionModal: React.FC<OptionModalProps> = ({ dish, onClose, onAddToCart }) => {
-    const [groupOptions, setGroupOptions] = useState<GroupOption[]>([]);
-    const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
-    const [quantity, setQuantity] = useState(1);
-    const [note, setNote] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+interface OptionProps {
+  dish: Dish
+  onClose: () => void;
+  onAddToCart: (item: CartItemProps) => void;
+}
 
-    useEffect(() => {
-        const fetchOptions = async () => {
-            try {
-                setLoading(true);
-                const data = await optionService.getGroupOptionsByDishId(dish._id || '') as GroupOption[];
-                const mergedGroups = data.reduce((acc: GroupOption[], group: GroupOption) => {
-                    const existingGroup = acc.find(g => g.optionGroupName === group.optionGroupName);
-                    if (existingGroup) {
-                        const allOptions = [...existingGroup.optionID, ...group.optionID];
-                        const uniqueOptions = Array.from(
-                            new Map(allOptions.map(opt => [opt._id || opt.optionName, opt])).values()
-                        );
-                        existingGroup.optionID = uniqueOptions;
-                    } else {
-                        acc.push(group);
-                    }
-                    return acc;
-                }, []);
-                setGroupOptions(mergedGroups);
-                setError(null);
-            } catch (err) {
-                console.error('Error fetching options:', err);
-                setError(err instanceof Error ? err.message : 'Failed to fetch options');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchOptions();
-    }, [dish._id]);
+export default function OptionPage({
+  dish,
+  onClose,
+  onAddToCart,
+}: OptionProps) {
 
-    const handleOptionChange = (option: Option, groupName: string) => {
-        setSelectedOptions(prev => {
-            const filtered = prev.filter(opt => {
-                const group = groupOptions.find(g => g.optionID.some(o => o._id === opt._id || o.optionName === opt.optionName));
-                return group?.optionGroupName !== groupName;
-            });
-            return [...filtered, option];
-        });
+  const { _id: dishId, dishName, dishPrice, dishImg } = dish;
+
+  const [totalPrice, setTotalPrice] = useState(dishPrice);
+  const [checked, setChecked] = useState<string[]>([]);
+  const [groupOptions, setGroupOptions] = useState<GroupOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [maxQuantity, setMaxQuantity] = useState<number>(0);
+
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const groupOptions: GroupOption[] =
+          await optionService.getGroupOptionsByDishId(dishId);
+        setGroupOptions(groupOptions);
+      } catch (err) {
+        setGroupOptions([]);
+        console.error("Error fetching options:", err);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchOptions();
+    
+  }, [dishId]);
 
-    const calculateTotalPrice = () => {
-        const optionsPrice = selectedOptions.reduce((sum, option) => sum + option.optionPrice, 0);
-        return (dish.dishPrice + optionsPrice) * quantity;
+
+  useEffect(() => {
+    const base = Number(dishPrice) || 0;
+    let optionsPrice = 0;
+    groupOptions.forEach((group) => {
+      group.optionID.forEach((option) => {
+        if (checked.includes(option._id))
+          optionsPrice += Number(option.optionPrice) || 0;
+      });
+    });
+    setTotalPrice((base + optionsPrice));
+  }, [checked, dishPrice, groupOptions]);
+
+  const handleCheck = (id: string) => {
+    const isCheck = checked.includes(id);
+    if (isCheck) {
+      setChecked((prev) => prev.filter((item) => item !== id));
+    } else {
+      setChecked([...checked, id]);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch maxQuantity khi mở OptionPage
+    const fetchMaxQuantity = async () => {
+      try {
+        const qty = await inventoryService.getMaxDishQuantity(dish._id);
+        setMaxQuantity(qty);
+      } catch (error) {
+        console.error("Error fetching max quantity:", error);
+        setMaxQuantity(1);
+      }
     };
+    fetchMaxQuantity();
+  }, [dish._id]);
 
-    const handleAddToCart = () => {
-        const cartItem = {
-            dish,
-            quantity,
-            selectedOptions,
-            totalPrice: calculateTotalPrice(),
-        };
-        console.log('Adding to cart:', cartItem);
-        cartService.addToCart(dish, quantity, selectedOptions);
-        onAddToCart(cartItem);
-        onClose();
-    };
+  useEffect(() => {
+  if (!loading && groupOptions.length === 0 && maxQuantity > 0) {
+    onAddToCart({
+      dish,
+      quantity: 1,
+      selectedOptions: [],
+      totalPrice: totalPrice,
+      maxQuantity
+    });
+    onClose();
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [groupOptions, loading, maxQuantity]);
 
-    if (loading) return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
-        </div>
-    );
+  // if (loading)
+  //   return (
+  //     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+  //       <div className="bg-white p-4 rounded-lg">Loading options...</div>
+  //     </div>
+  //   );
 
-    if (error) return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white p-4 rounded-lg text-red-500">
-                Error: {error}
-            </div>
-        </div>
-    );
+  if(groupOptions.length === 0) return null;
+  return (
+    
+    <div className="fixed inset-0 z-[100] ">
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/40"></div>
 
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] flex flex-col">
-                <div className="p-4 border-b">
-                    <div className="flex items-center gap-4">
-                        <img
-                            src={dish.dishImg || '/product/placeholder.png'}
-                            alt={dish.dishName}
-                            className="w-20 h-20 object-cover rounded-lg"
-                        />
-                        <div>
-                            <h3 className="text-lg font-semibold">{dish.dishName}</h3>
-                            <p className="text-accent">${dish.dishPrice.toFixed(2)}</p>
-                        </div>
-                    </div>
+      {/* Modal content */}
+      <div className="relative flex justify-center items-center w-full h-full">
+        {/* Modal body */}
+        <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="bg-blue-100 rounded-lg shadow-lg"
+        >
+        <div className="bg-blue-100 rounded-lg shadow-lg">
+          {/* Modal inner */}
+          <div>
+            {/* Option form */}
+            <div>
+              {/* Option form header */}
+              <div className="flex items-start !p-3 !mt-6 bg-white shadow-sm w-full max-w-xl">
+                <img
+                  src={`/product/${dishImg}`}
+                  alt="Hamburger"
+                  className="w-24 h-24 !mr-4 object-cover rounded-md"
+                />
+                <div className="flex flex-col flex-grow">
+                  <div className="flex justify-between items-start">
+                    <h2 className="text-xl font-semibold text-gray-800 !mr-5">
+                      {dishName}
+                    </h2>
+                    <span className="text-xl text-black">${dishPrice}</span>
+                  </div>
+                  <p className="text-sm text-gray-600 !mt-3 md:block ">
+                    Please select the accompaniments to make your dish more delicious.
+                  </p>
                 </div>
+              </div>
 
-                <div className="flex-1 overflow-y-auto p-4">
-                    {groupOptions.map((group) => (
-                        <div key={group._id} className="mb-4">
-                            <h4 className="font-semibold mb-2">{group.optionGroupName}</h4>
-                            <div className="space-y-2">
-                                {group.optionID.map((option) => (
-                                    <label key={option._id || option.optionName} className="flex items-center gap-2">
-                                        <input
-                                            type="radio"
-                                            name={group.optionGroupName}
-                                            checked={selectedOptions.some(opt => opt._id === option._id || opt.optionName === option.optionName)}
-                                            onChange={() => handleOptionChange(option, group.optionGroupName)}
-                                            className="w-4 h-4 text-accent"
-                                        />
-                                        <span>{option.optionName}</span>
-                                        {option.optionPrice > 0 && (
-                                            <span className="text-accent">+${option.optionPrice.toFixed(2)}</span>
-                                        )}
-                                    </label>
-                                ))}
+              {/* Option form body */}
+              <div className="flex flex-col bg-white !p-4 !mt-2 md:!mt-3">
+                {groupOptions.length === 0 ? (
+                  <div className="text-gray-400 italic text-center">
+                    Không có lựa chọn thêm cho món này
+                  </div>
+                ) : (
+                  groupOptions.map((group) => {
+                    const uniqueOptions = group.optionID.filter(
+                      (opt, idx, arr) =>
+                        arr.findIndex((o) => o._id === opt._id) === idx
+                    );
+                    return (
+                      <div key={group._id} className="!mb-1">
+                        <h1 className="text-lg font-semibold !mb-1">
+                          Seasonings
+                        </h1>
+                        <div className="flex flex-col">
+                          {uniqueOptions.map((option) => (
+                            <div
+                              key={option._id}
+                              className="flex justify-between items-center"
+                            >
+                              <div className="flex items-center !my-1">
+                                <input
+                                  type="checkbox"
+                                  className="scale-125"
+                                  checked={checked.includes(option._id)}
+                                  onChange={() => handleCheck(option._id)}
+                                />
+                                <span className="!ml-2 text-sm md:text-lg">
+                                  {option.optionName}
+                                </span>
+                              </div>
+                              <span className="text-sm text-black">
+                                ${option.optionPrice}
+                              </span>
                             </div>
+                          ))}
                         </div>
-                    ))}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
 
-                    <div className="mt-4">
-                        <label className="block font-semibold mb-2">Quantity</label>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
-                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                            >
-                                -
-                            </button>
-                            <span className="text-lg font-semibold">{quantity}</span>
-                            <button
-                                onClick={() => setQuantity(prev => prev + 1)}
-                                className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                            >
-                                +
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="mt-4">
-                        <label className="block font-semibold mb-2">Note to kitchen</label>
-                        <textarea
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            className="w-full p-2 border rounded-lg"
-                            rows={3}
-                            placeholder="Add any special instructions..."
-                        />
-                    </div>
+              <div className="!mt-2 !p-2 bg-white flex flex-col rounded-lg shadow-lg">
+                <div className="flex justify-center items-center !mb-2">
+                  <input
+                    type="text"
+                    placeholder="Note to the kitchen"
+                    className="bg-blue-50 w-full !p-2.5 rounded-md"
+                  />
                 </div>
 
-                <div className="p-4 border-t">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="font-semibold">Total:</span>
-                        <span className="text-lg font-semibold text-accent">
-                            ${calculateTotalPrice().toFixed(2)}
-                        </span>
-                    </div>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={onClose}
-                            className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={handleAddToCart}
-                            className="flex-1 py-2 bg-accent text-white rounded-lg hover:bg-accent/90"
-                        >
-                            Add to Cart
-                        </button>
-                    </div>
+                <div className="flex justify-between items-center">
+                  <h1 className="text-xl">Total : </h1>
+                  <h3 className="text-red-600 text-xl">
+                    ${totalPrice.toFixed(2)}
+                  </h3>
                 </div>
+
+                <div className="flex flex-row justify-center item !mt-0.5 !p-1 ">
+                  <button
+                    className="bg-gray-300 text-black rounded-2xl w-[160px] !py-1 !mx-1 hover:bg-gray-400 transition"
+                    onClick={onClose}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-red-500 text-white rounded-2xl w-[160px] !py-1 !ml-1 hover:bg-red-800 transition"
+                    onClick={() => {
+                      // Lấy đúng Option[] đã chọn
+                      const selectedOptions: Option[] = [];
+                      groupOptions.forEach((group) => {
+                        group.optionID.forEach((option) => {
+                          if (checked.includes(option._id))
+                            selectedOptions.push(option);
+                        });
+                      });
+                      onAddToCart({
+                        dish: dish,
+                        quantity:1,
+                        selectedOptions,
+                        totalPrice : totalPrice,
+                        maxQuantity
+                      });
+                      onClose();
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    );
-};
-
-export default OptionModal;
+        </motion.div>
+      </div>
+    </div>
+  );
+}

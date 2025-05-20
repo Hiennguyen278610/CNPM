@@ -9,69 +9,76 @@ import MenuRightHead from '@/app/order/components/menuRightHead';
 import CartList from '@/app/order/components/cartList';
 import CartFooter from '@/app/order/components/cartFooter';
 import '@/app/globals.css';
-import { cartService } from '@/app/order/services/cart.service';
-import { CartItemProps, useCart } from '@/context/CartContext';   
+import { CartItemProps, useCart } from '@/context/CartContext';
 
 export default function OrderLayout() {
   const [isDesktop, setIsDesktop] = useState(true);
   const [isBottomCartOpen, setIsBottomCartOpen] = useState(false);
-  const router = useRouter();
   const [selectedType, setSelectedType] = useState('All');
+  const [tableData, setTableData] = useState<{ tableName?: string; qrToken?: string }>({});
+  const router = useRouter();
 
-    // Responsive check
-    useEffect(() => {
-        const checkScreen = () => setIsDesktop(window.innerWidth >= 768);
-        checkScreen();
-        window.addEventListener("resize", checkScreen);
-
-    // Clean up function
+  // Responsive check
+  useEffect(() => {
+    const checkScreen = () => setIsDesktop(window.innerWidth >= 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
     return () => window.removeEventListener('resize', checkScreen);
   }, []);
 
-  const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
-  const tableNameLocal = table.tableName || 'Bàn số 0';
+  // Lấy thông tin bàn từ localStorage (chỉ client)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const table = JSON.parse(localStorage.getItem('currentTable') || '{}');
+      setTableData(table);
+    }
+  }, []);
 
-    const { cartItems, addToCart, increaseItem, decreaseItem, deleteItem, getTotalPrice, getTotalQuantity } = useCart();
+  const tableNameLocal = tableData.tableName || 'Bàn số 0';
 
-    const totalPrice = getTotalPrice()
-    const cartQuantity = getTotalQuantity();
+  const { cartItems, addToCart, increaseItem, decreaseItem, deleteItem, getTotalPrice, getTotalQuantity } = useCart();
 
-    const handleAddToCart = (item: CartItemProps) => {
-        if (!item.dish || !item.dish._id) {
-            alert('Invalid Dish!');
-            return;
-        }
-        addToCart(item);
-    };
+  const totalPrice = getTotalPrice();
+  const cartQuantity = getTotalQuantity();
 
-    const handleIncrement = (index: number) => {
-        if (cartItems[index].quantity >= 99) {
-            alert('Max quantity is 99!');
-            return;
-        }
-        increaseItem(index)
-    };
+  const handleAddToCart = (item: CartItemProps) => {
+    if (!item.dish || !item.dish._id) {
+      alert('Invalid Dish!');
+      return;
+    }
+    addToCart(item);
+  };
 
-    const handleDecrement = (index: number) => {
-        if (cartItems[index].quantity <= 1) {
-            alert('Min quantity is 1!');
-        }
-        decreaseItem(index)
-    };
+  const handleIncrement = (index: number) => {
+    if (cartItems[index].quantity >= 99) {
+      alert('Max quantity is 99!');
+      return;
+    }
+    increaseItem(index);
+  };
 
-    const handleDelete = (index: number) => {
-        console.log('Delete item at index:', index);
-        deleteItem(index);
-    };
+  const handleDecrement = (index: number) => {
+    if (cartItems[index].quantity <= 1) {
+      alert('Min quantity is 1!');
+    }
+    decreaseItem(index);
+  };
+
+  const handleDelete = (index: number) => {
+    console.log('Delete item at index:', index);
+    deleteItem(index);
+  };
 
   const handleOrder = async () => {
     if (!cartItems.length) {
       alert('Giỏ hàng trống!');
       return;
     }
-    localStorage.setItem('cart',JSON.stringify(cartItems))
-    const customer = localStorage.getItem('currentUser');
-    const table = localStorage.getItem('currentTable');
+    if (typeof window !== "undefined") {
+      localStorage.setItem('cart', JSON.stringify(cartItems));
+    }
+    const customer = typeof window !== "undefined" ? localStorage.getItem('currentUser') : null;
+    const table = typeof window !== "undefined" ? localStorage.getItem('currentTable') : null;
     const customerID = customer ? JSON.parse(customer)._id : null;
     const tableID = table ? JSON.parse(table)._id : null;
     try {
@@ -112,7 +119,9 @@ export default function OrderLayout() {
           continue;
         }
 
-        const optionsArr = item.selectedOptions.map((opt:any) => opt._id || '').filter((id:any) => id) || [];
+        const optionsArr = (item.selectedOptions || [])
+          .map((opt: { _id: string }) => opt._id || '')
+          .filter((id: string) => id) || [];
         const detailBody = {
           order: orderId,
           dish: item.dish._id,
@@ -152,37 +161,6 @@ export default function OrderLayout() {
         return;
       }
 
-      // // Bước 3: Trừ kho
-      // const items = cartItems.map((item:CartItemProps) => ({
-      //   dishID: item.dish._id,
-      //   quantity: item.quantity,
-      // }));
-      // try {
-      //   const deductRes = await fetch(
-      //     `http://${process.env.NEXT_PUBLIC_IPURL}:${process.env.NEXT_PUBLIC_URL_BACK_END}/backend/api/inventory/deduct`,
-      //     {
-      //       method: 'POST',
-      //       headers: { 'Content-Type': 'application/json' },
-      //       body: JSON.stringify({ items }),
-      //     },
-      //   );
-
-      //   if (!deductRes.ok) {
-      //     const errText = await deductRes.text();
-      //     alert(`Cập nhật kho thất bại! ${deductRes.status} - ${errText}`);
-      //     return;
-      //   }
-
-      //   const deductResponse = await deductRes.json();
-      //   if (!deductResponse.success) {
-      //     alert(`Cập nhật kho thất bại: ${deductResponse.message || 'Lỗi không xác định'}`);
-      //     return;
-      //   }
-      // } catch (err) {
-      //   alert(`Lỗi khi cập nhật kho: ${err instanceof Error ? err.message : 'Lỗi không xác định'}`);
-      //   return;
-      // }
-
       // Bước 4: Hoàn tất đơn hàng
       router.push('/order/payment');
     } catch (err) {
@@ -190,19 +168,19 @@ export default function OrderLayout() {
     }
   };
 
-  const tableData = JSON.parse(localStorage.getItem('currentTable') || '{}');
-
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col md:flex-row relative">
       <div className="w-full md:w-[65%] h-full bg-transparent flex flex-col">
         <MenuLeftHead
           onClick={() => {
-            const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            if (user) {
-              localStorage.removeItem('currentUser');
-              localStorage.removeItem('currentTable');
+            if (typeof window !== "undefined") {
+              const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+              if (user) {
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('currentTable');
+              }
+              router.push(`/?q=${tableData.qrToken}`);
             }
-            router.push(`/?q=${tableData.qrToken}`);
           }}
         />
         <div className="w-full flex-1 flex flex-col overflow-y-auto">
@@ -215,33 +193,32 @@ export default function OrderLayout() {
         </div>
       </div>
 
+      {/*Cart*/}
+      {isDesktop && (
+        <div className="w-full md:w-[35%] h-1/4 md:h-full bg-white flex flex-col z-40">
+          <MenuRightHead cartItems={cartQuantity} tableName={tableNameLocal} />
+          <CartList
+            items={cartItems}
+            onIncrement={handleIncrement}
+            onDecrement={handleDecrement}
+            onDelete={handleDelete}
+          />
+          <CartFooter onClick={handleOrder} totalPrice={totalPrice} />
+        </div>
+      )}
 
-            {/*Cart*/}
-            {isDesktop && (
-                <div className="w-full md:w-[35%] h-1/4 md:h-full bg-white flex flex-col z-40">
-                <MenuRightHead cartItems={cartQuantity} tableName={tableNameLocal} />
-                <CartList
-                    items={cartItems}
-                    onIncrement={handleIncrement}
-                    onDecrement={handleDecrement}
-                    onDelete={handleDelete}
-                />
-                <CartFooter onClick={handleOrder} totalPrice={totalPrice} />
-                </div>
-            )}
-
-            {/* Bottom Bar (mobile) */}
-            {!isDesktop && (
-                <div className="fixed bottom-0 w-full z-50">
-                <button
-                    className="bg-accent text-white w-full !p-2 flex justify-between items-center text-lg rounded-xl hover:bg-red-800"
-                    onClick={() => setIsBottomCartOpen(true)}
-                >
-                    <span>Your Cart • {cartQuantity} items</span>
-                    <span>${totalPrice}</span>
-                </button>
-                </div>
-            )}
+      {/* Bottom Bar (mobile) */}
+      {!isDesktop && (
+        <div className="fixed bottom-0 w-full z-50">
+          <button
+            className="bg-accent text-white w-full !p-2 flex justify-between items-center text-lg rounded-xl hover:bg-red-800"
+            onClick={() => setIsBottomCartOpen(true)}
+          >
+            <span>Your Cart • {cartQuantity} items</span>
+            <span>${totalPrice}</span>
+          </button>
+        </div>
+      )}
 
       {/* Overlay + Bottom Sheet Cart (mobile) */}
       {isBottomCartOpen && !isDesktop && (
@@ -252,34 +229,34 @@ export default function OrderLayout() {
             onClick={() => setIsBottomCartOpen(false)}
           ></div>
 
-                {/* Bottom Sheet */}
-                <div className="fixed bottom-0 w-full bg-white rounded-t-2xl shadow-xl z-50 max-h-[80%] flex flex-col animate-slide-up">
-                    <div className="flex justify-between items-center !p-4 border-b">
-                    <div className="flex flex-row justify-center items-center">
-                        <h2 className="text-xl font-bold !mr-3">Your Cart</h2>
-                        <div className="w-max h-full bg-secondary flex flex-row justify-center items-center !p-2 rounded-3xl">
-                        <p className="text-md select-none md:text-xs">{tableNameLocal}</p>
-                        </div>
-                    </div>
-                    <button 
-                        onClick={() => setIsBottomCartOpen(false)} 
-                        className="text-gray-500 text-2xl hover:text-gray-900"
-                    >
-                        &times;
-                    </button>
-                    </div>
-                    <div className="flex-1 overflow-y-auto !px-4">
-                    <CartList
-                        items={cartItems}
-                        onIncrement={handleIncrement}
-                        onDecrement={handleDecrement}
-                        onDelete={handleDelete}
-                    />
-                    </div>
-                    <CartFooter onClick={handleOrder} totalPrice={totalPrice} />
+          {/* Bottom Sheet */}
+          <div className="fixed bottom-0 w-full bg-white rounded-t-2xl shadow-xl z-50 max-h-[80%] flex flex-col animate-slide-up">
+            <div className="flex justify-between items-center !p-4 border-b">
+              <div className="flex flex-row justify-center items-center">
+                <h2 className="text-xl font-bold !mr-3">Your Cart</h2>
+                <div className="w-max h-full bg-secondary flex flex-row justify-center items-center !p-2 rounded-3xl">
+                  <p className="text-md select-none md:text-xs">{tableNameLocal}</p>
                 </div>
-                </>
-            )}
-        </div>
-    );
+              </div>
+              <button
+                onClick={() => setIsBottomCartOpen(false)}
+                className="text-gray-500 text-2xl hover:text-gray-900"
+              >
+                &times;
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto !px-4">
+              <CartList
+                items={cartItems}
+                onIncrement={handleIncrement}
+                onDecrement={handleDecrement}
+                onDelete={handleDelete}
+              />
+            </div>
+            <CartFooter onClick={handleOrder} totalPrice={totalPrice} />
+          </div>
+        </>
+      )}
+    </div>
+  );
 }

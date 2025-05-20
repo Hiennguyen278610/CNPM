@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import { useCart } from "@/context/CartContext";
 import { useRouter } from "next/navigation";
-import { get } from "axios";
 import { getOrderByCustomerIdAndTableId } from "@/services/order.service";
 
 export default function MenuFooterListPayment() {
@@ -41,7 +39,7 @@ export default function MenuFooterListPayment() {
         <div className="grid grid-cols-1 md:grid-cols-3 !gap-2">
           <div className="flex justify-between md:flex-col">
             <span className="text-lg font-medium text-gray-700 !px-2">Subtotal:</span>
-            <span className="text-lg font-semibold !px-2">{getTotalPrice().toFixed(2)}</span>
+            <span className="text-lg font-semibold !px-2">${getTotalPrice().toFixed(2)}</span>
           </div>
           
           <div className="flex justify-between md:flex-col">
@@ -59,7 +57,7 @@ export default function MenuFooterListPayment() {
           
           <div className="flex justify-between md:flex-col">
             <span className="text-xl font-bold text-gray-800 !px-2">Total:</span>
-            <span className="text-2xl font-bold text-red-600 !px-2">{total.toFixed(2)}</span>
+            <span className="text-2xl font-bold text-red-600 !px-2">${total.toFixed(2)}</span>
           </div>
         </div>
 
