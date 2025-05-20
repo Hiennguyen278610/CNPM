@@ -18,10 +18,10 @@ export default function CartListPayment() {
   }));
 
   return (
-    <div className="w-full h-13/20 overflow-y-scroll !p-2 flex flex-col gap-4">
+    <div className="w-full h-full overflow-y-scroll !p-2 flex flex-col gap-4">
       <div className="w-full h-1/10 flex items-center !p-2">
         <div className="flex-1 h-px bg-dark"></div>
-        <legend className="text-center !text-2xl text-primary px-4 select-none whitespace-nowrap">
+        <legend className="text-center !text-2xl text-primary !px-4 select-none whitespace-nowrap">
           Order List
         </legend>
         <div className="flex-1 h-px bg-dark"></div>
