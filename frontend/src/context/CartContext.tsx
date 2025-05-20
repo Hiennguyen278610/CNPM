@@ -17,14 +17,13 @@ export interface CartItemProps {
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItemProps[]>([]);
   useEffect(() => {
-  console.log("Cart items changed:", cartItems);
-}, [cartItems]);
+    console.log("Cart items changed:", cartItems);
+  }, [cartItems]);
 
-  // Helper: sort and stringify options to compare
   const normalizeOptions = (options: Option[]) =>
     JSON.stringify(
       [...options].sort((a, b) => a._id.localeCompare(b._id))
-    );
+  );
 
   // Kiểm tra item giống nhau: same dish ID + same selected options
   function isSameCartItem(a: CartItemProps, b: CartItemProps) {

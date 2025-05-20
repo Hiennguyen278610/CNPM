@@ -74,7 +74,7 @@ export default function MenuSlider({ onSelectType }: MenuSliderProps) {
         <div className="w-full h-2/10 flex flex-col items-center justify-center md:flex-wrap">
             <Swiper
                 spaceBetween={20}
-                slidesPerView={2}
+                slidesPerView={3}
                 pagination={{ clickable: true }}
                 scrollbar={{ draggable: false }}
                 loop={false}
