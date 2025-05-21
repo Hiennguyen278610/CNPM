@@ -29,9 +29,11 @@ export default function OrderItem({ dish, onShowOption }: OrderItemProps) {
             className="absolute inset-0 w-full h-full object-cover object-center z-0"
           />
         </div>
+
       </div>
+      <p className="w-full h-1/2 text-primary !py-2">{dishName}</p>
       <div className="flex flex-col w-full">
-        <p className="w-full h-1/2 text-primary">{dishName}</p>
+        
         <div className="w-full h-1/2 flex flex-row justify-between items-center">
           <span className="text-lg text-accent">${dishPrice.toFixed(2)}</span>
           {onShowOption && !outOfStock && (

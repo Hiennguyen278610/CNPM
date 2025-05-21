@@ -1,7 +1,6 @@
 'use client';
 
 import { CartItemProps } from '@/context/CartContext';
-
 interface CartItem {
     item:CartItemProps
     onIncrement: () => void;
