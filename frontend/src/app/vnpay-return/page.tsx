@@ -127,7 +127,7 @@ export default function VnPayReturn() {
             )}
           </div>
           <h1
-            className={`text-3xl font-bold ${
+            className={`text-3xl font-bold text-center${
               isSuccess ? "text-green-600" : "text-red-600"
             }`}
           >

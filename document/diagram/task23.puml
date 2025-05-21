@@ -101,7 +101,7 @@ class Ingredient {
 }
 
 class Inventory {
-    + inventoryID: int
+    + ingredientID: int
     + quantity: int
 }
 
@@ -113,8 +113,8 @@ enum unit <<enumeration>> {
     + pcs
 }
 
-Account   "1" o-- "0..*" Customer     : has
-Customer  "1" o-- "0..*" Order        : has
+Customer   "1" *-- "1"  Account: composition
+Customer  "1" o-- "1..*" Order        : has
 Table     "1" o-- "0..*" Order        : has
 
 Order     "1" *-- "1..*" OrderDetail  : composition
